@@ -1,6 +1,7 @@
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { getShirt, useAppearanceStore } from '../../stores/appearanceStore';
 
 // Camera-locked iPad + hands.
 //
@@ -17,7 +18,6 @@ import * as THREE from 'three';
 //     chest level in drive mode), so when the iPad disappears for
 //     driving the hands settle into a natural surfing stance.
 
-const SHIRT_COLOR = '#e25a3a';
 const SKIN_COLOR = '#f0caa0';
 
 const IPAD_POS_IPAD: [number, number, number] = [0, 0, -0.7];
@@ -39,6 +39,7 @@ interface Props {
 }
 
 export default function IpadRig({ lookMode }: Props) {
+  const shirtColor = getShirt(useAppearanceStore((s) => s.shirtId)).color;
   const ipadGroupRef = useRef<THREE.Group>(null);
   const ipadRef = useRef<THREE.Group>(null);
   const armsGroupRef = useRef<THREE.Group>(null);
@@ -114,73 +115,77 @@ export default function IpadRig({ lookMode }: Props) {
       {/* Arms — lag-following the camera so they swing when you look around. */}
       <group ref={armsGroupRef}>
         <group ref={handLRef}>
-          <Hand side="left" />
+          <Hand side="left" shirtColor={shirtColor} />
         </group>
         <group ref={handRRef}>
-          <Hand side="right" />
+          <Hand side="right" shirtColor={shirtColor} />
         </group>
       </group>
     </>
   );
 }
 
-// Forearm + upper-arm dimensions. The forearm is the visible "arm" the
-// player sees from a first-person POV — long enough to clearly read as a
-// limb running off-screen toward the elbow. The upper arm hints at the
-// continuation toward the (mostly invisible) shoulder.
-const FOREARM_LEN = 0.72;
-const UPPERARM_LEN = 0.55;
+// Long thin forearm that stretches from the hand back/up/inboard toward
+// the (off-screen) shoulder. Single segment — no upper arm or elbow blob
+// near the camera, both of which would balloon huge on the near clip plane
+// and block the screen.
+const FOREARM_LEN = 1.05;
+const FOREARM_RADIUS = 0.055;
 
-function Hand({ side }: { side: 'left' | 'right' }) {
+function Hand({
+  side,
+  shirtColor,
+}: {
+  side: 'left' | 'right';
+  shirtColor: string;
+}) {
   const sign = side === 'left' ? -1 : 1;
+
+  // Direction from hand → elbow. -sign*x means slightly inboard (toward
+  // the body centerline), -y means DOWN (the elbow tucks below the hand,
+  // not above — otherwise the arm reads as "hanging from the ceiling"),
+  // +z means behind the camera so the elbow disappears off-screen.
+  const { position, rotation } = useMemo(() => {
+    const dir = new THREE.Vector3(-sign * 0.2, -0.55, 0.7).normalize();
+    const q = new THREE.Quaternion().setFromUnitVectors(
+      new THREE.Vector3(0, 1, 0),
+      dir,
+    );
+    const e = new THREE.Euler().setFromQuaternion(q);
+    // Cylinder midpoint is L/2 along the elbow direction (so the NEAR end
+    // sits at the hand origin (0,0,0) and the FAR end is at elbow ~= dir·L).
+    const midpoint: [number, number, number] = [
+      (dir.x * FOREARM_LEN) / 2,
+      (dir.y * FOREARM_LEN) / 2,
+      (dir.z * FOREARM_LEN) / 2,
+    ];
+    return {
+      position: midpoint,
+      rotation: [e.x, e.y, e.z] as [number, number, number],
+    };
+  }, [sign]);
+
   return (
     <group>
-      {/* Forearm — runs from the hand (near end) up + inboard + back toward
-          the elbow. The cylinder's local +Y is its long axis, so we tilt
-          back (rotation.x) and inboard (rotation.z) and translate the
-          midpoint along that direction. With length 0.72 you see most of
-          the forearm in view, with the elbow tucking off-screen. */}
-      <mesh
-        position={[sign * -0.13, -0.26, 0.32]}
-        rotation={[0.55, 0, sign * 0.42]}
-        castShadow
-      >
-        <cylinderGeometry args={[0.07, 0.085, FOREARM_LEN, 12]} />
-        <meshStandardMaterial color={SHIRT_COLOR} flatShading />
-      </mesh>
-      {/* Upper arm — continues from the elbow toward the shoulder (mostly
-          off-screen). Slightly steeper tilt back so it looks like the arm
-          bends naturally at the elbow. */}
-      <mesh
-        position={[sign * -0.3, -0.6, 0.78]}
-        rotation={[0.85, 0, sign * 0.55]}
-        castShadow
-      >
-        <cylinderGeometry args={[0.085, 0.095, UPPERARM_LEN, 12]} />
-        <meshStandardMaterial color={SHIRT_COLOR} flatShading />
-      </mesh>
-      {/* Elbow joint — sphere bridging the two limb segments. */}
-      <mesh position={[sign * -0.22, -0.45, 0.6]} castShadow>
-        <sphereGeometry args={[0.08, 10, 10]} />
-        <meshStandardMaterial color={SHIRT_COLOR} flatShading />
-      </mesh>
-      {/* Wrist (slight skin-tone cuff at hand end) */}
-      <mesh position={[sign * -0.02, -0.04, 0.04]} castShadow>
-        <sphereGeometry args={[0.085, 10, 10]} />
-        <meshStandardMaterial color={SKIN_COLOR} flatShading />
+      {/* Long thin forearm stretching off-screen toward the implied shoulder. */}
+      <mesh position={position} rotation={rotation} castShadow>
+        <cylinderGeometry
+          args={[FOREARM_RADIUS, FOREARM_RADIUS * 1.15, FOREARM_LEN, 12]}
+        />
+        <meshStandardMaterial color={shirtColor} flatShading />
       </mesh>
       {/* Hand */}
       <mesh castShadow>
-        <sphereGeometry args={[0.11, 12, 10]} />
+        <sphereGeometry args={[0.09, 12, 10]} />
         <meshStandardMaterial color={SKIN_COLOR} flatShading />
       </mesh>
       {/* Thumb wrapping toward the iPad face. */}
       <mesh
-        position={[sign * 0.055, 0.075, 0.04]}
+        position={[sign * 0.05, 0.07, 0.03]}
         rotation={[0, 0, sign * -0.5]}
         castShadow
       >
-        <capsuleGeometry args={[0.03, 0.085, 4, 8]} />
+        <capsuleGeometry args={[0.026, 0.07, 4, 8]} />
         <meshStandardMaterial color={SKIN_COLOR} flatShading />
       </mesh>
     </group>

@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useTideData } from '../../hooks/useTideData';
 import { useImpactStore } from '../../stores/impactStore';
+import { useMovementStore } from '../../stores/movementStore';
 import { playWaveHeightAt } from './waveFunction';
 
 // Drives the camera's Y position + pitch + roll so the player rides the wave
@@ -78,14 +79,19 @@ export default function SurfingMotion({ lookMode }: Props) {
     const t = state.clock.elapsedTime;
     const amp = animState.current.amplitude;
     const sp = animState.current.speed;
+    // Use the accumulated drift distance as the wave phase time so we stay
+    // in lock-step with the rendered wave plane (which is also driven by
+    // driftDistance now). Avoids the "press W and everything jumps" glitch
+    // by integrating speedMul changes smoothly.
+    const phaseT = useMovementStore.getState().driftDistance;
 
     // Sample wave at the player + 4 neighbors so we both ride the local max
     // (no sinking) and can estimate the slope under the board.
-    const w = playWaveHeightAt(0, 0, t, amp, sp);
-    const wF = playWaveHeightAt(0, SLOPE_PROBE, t, amp, sp);
-    const wB = playWaveHeightAt(0, -SLOPE_PROBE, t, amp, sp);
-    const wR = playWaveHeightAt(SLOPE_PROBE, 0, t, amp, sp);
-    const wL = playWaveHeightAt(-SLOPE_PROBE, 0, t, amp, sp);
+    const w = playWaveHeightAt(0, 0, phaseT, amp, sp);
+    const wF = playWaveHeightAt(0, SLOPE_PROBE, phaseT, amp, sp);
+    const wB = playWaveHeightAt(0, -SLOPE_PROBE, phaseT, amp, sp);
+    const wR = playWaveHeightAt(SLOPE_PROBE, 0, phaseT, amp, sp);
+    const wL = playWaveHeightAt(-SLOPE_PROBE, 0, phaseT, amp, sp);
     const localMax = Math.max(w, wF, wB, wR, wL);
 
     const targetBob = lookMode ? BOB_INTENSITY_LOOK : BOB_INTENSITY_IPAD;

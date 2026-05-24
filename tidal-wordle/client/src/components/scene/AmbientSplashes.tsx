@@ -63,8 +63,10 @@ export default function AmbientSplashes() {
     animState.current.amplitude += (waveHeight - animState.current.amplitude) * 0.04;
     animState.current.speed += (waveSpeed - animState.current.speed) * 0.04;
     const t = state.clock.elapsedTime;
-    const speedMul = useMovementStore.getState().forwardSpeedMul;
-    const effSpeed = animState.current.speed * speedMul;
+    // Wave-phase time stays in step with PlayWave / SurfingMotion via the
+    // drift-distance integral. Avoids the wave snapping on speed-mul changes.
+    const phaseT = useMovementStore.getState().driftDistance;
+    const effSpeed = animState.current.speed;
     const cam = state.camera.position;
 
     // Recenter the whole group on the player's XZ each frame so splashes
@@ -91,7 +93,7 @@ export default function AmbientSplashes() {
       const wave = playWaveHeightAt(
         cam.x + inst.laneX,
         cam.z + inst.laneZ,
-        t,
+        phaseT,
         animState.current.amplitude,
         effSpeed,
       );

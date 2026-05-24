@@ -33,11 +33,12 @@ export default function PlayWave() {
   useFrame((state) => {
     animState.current.amplitude += (waveHeight - animState.current.amplitude) * 0.04;
     animState.current.speed += (waveSpeed - animState.current.speed) * 0.04;
-    const t = state.clock.elapsedTime;
-    // WASD speed multiplier scales the wave phase scroll so W visibly
-    // rushes the wave past, S visibly slows it down.
-    const speedMul = useMovementStore.getState().forwardSpeedMul;
-    const effectiveSpeed = animState.current.speed * speedMul;
+    // Smooth phase: use the accumulated drift distance instead of raw clock
+    // time × speedMul. drift integrates `delta · speedMul` continuously, so
+    // changing speed never jumps the wave pattern — it just changes the
+    // rate. (Was: t · speed · speedMul, which discontinuously jumped the
+    // whole product whenever speedMul changed → big wave-pattern glitch.)
+    const wavePhaseTime = useMovementStore.getState().driftDistance;
     const arr = geometry.attributes.position.array as Float32Array;
     for (let i = 0; i < arr.length; i += 3) {
       const x = restPositions[i];
@@ -45,9 +46,9 @@ export default function PlayWave() {
       arr[i + 1] = playWaveHeightAt(
         x,
         z,
-        t,
+        wavePhaseTime,
         animState.current.amplitude,
-        effectiveSpeed,
+        animState.current.speed,
       );
     }
     geometry.attributes.position.needsUpdate = true;

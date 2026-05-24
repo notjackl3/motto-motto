@@ -2,6 +2,11 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useMovementStore } from '../../stores/movementStore';
+import {
+  getBoard,
+  getShorts,
+  useAppearanceStore,
+} from '../../stores/appearanceStore';
 
 // The player's lower body + surfboard + foam wake. Yaw + roll attachment to
 // the camera (so the body turns with your head and leans with A/D) but
@@ -12,11 +17,14 @@ import { useMovementStore } from '../../stores/movementStore';
 // No torso / shoulders / chest. From a first-person POV looking down you
 // should see your legs and surfboard with foam beneath, not a wall of shirt.
 
-const PANTS_COLOR = '#1f2a55';
+// Defaults that match the original look. Colors flowing in from the wardrobe
+// (appearanceStore) override these via props/context to the children below.
 const SKIN_COLOR = '#f0caa0';
-const SHIRT_COLOR = '#e25a3a';
 
 export default function BodyRig() {
+  const shortsColor = getShorts(useAppearanceStore((s) => s.shortsId)).color;
+  const board = getBoard(useAppearanceStore((s) => s.boardId));
+
   const groupRef = useRef<THREE.Group>(null);
   const boardRef = useRef<THREE.Group>(null);
 
@@ -50,8 +58,8 @@ export default function BodyRig() {
           that reads as "looking at your own butt". */}
 
       {/* Legs angled forward + outward toward the feet on the board. */}
-      <Leg side="left" />
-      <Leg side="right" />
+      <Leg side="left" pantsColor={shortsColor} />
+      <Leg side="right" pantsColor={shortsColor} />
 
       {/* Feet planted on the board, in front of the rider. */}
       <mesh position={[-0.2, -1.5, -0.55]} castShadow>
@@ -65,7 +73,7 @@ export default function BodyRig() {
 
       {/* Surfboard — center under the feet, extending forward into the wave. */}
       <group ref={boardRef} position={[0, -1.6, -1.1]}>
-        <Surfboard />
+        <Surfboard deck={board.deck} stripe={board.stripe} rail={board.rail} />
       </group>
 
       {/* Foam wake bursting from the board nose. */}
@@ -74,7 +82,13 @@ export default function BodyRig() {
   );
 }
 
-function Leg({ side }: { side: 'left' | 'right' }) {
+function Leg({
+  side,
+  pantsColor,
+}: {
+  side: 'left' | 'right';
+  pantsColor: string;
+}) {
   // Single cylinder hip → foot so the leg cleanly bridges the two.
   const sign = side === 'left' ? -1 : 1;
   const hip: [number, number, number] = [sign * 0.13, -0.85, -0.2];
@@ -102,33 +116,41 @@ function Leg({ side }: { side: 'left' | 'right' }) {
   return (
     <mesh position={position} rotation={rotation} castShadow>
       <cylinderGeometry args={[0.11, 0.09, length, 10]} />
-      <meshStandardMaterial color={PANTS_COLOR} flatShading />
+      <meshStandardMaterial color={pantsColor} flatShading />
     </mesh>
   );
 }
 
-function Surfboard() {
+function Surfboard({
+  deck,
+  stripe,
+  rail,
+}: {
+  deck: string;
+  stripe: string;
+  rail: string;
+}) {
   return (
     <group>
       <mesh castShadow>
         <boxGeometry args={[0.85, 0.1, 2.6]} />
-        <meshStandardMaterial color="#f8e8b0" flatShading />
+        <meshStandardMaterial color={deck} flatShading />
       </mesh>
       <mesh position={[0, 0.055, 0]}>
         <boxGeometry args={[0.12, 0.012, 2.5]} />
-        <meshStandardMaterial color={SHIRT_COLOR} flatShading />
+        <meshStandardMaterial color={stripe} flatShading />
       </mesh>
       <mesh position={[0, 0, -1.45]}>
         <coneGeometry args={[0.42, 0.7, 4]} />
-        <meshStandardMaterial color="#f8e8b0" flatShading />
+        <meshStandardMaterial color={deck} flatShading />
       </mesh>
       <mesh position={[-0.28, 0.055, 0]}>
         <boxGeometry args={[0.04, 0.013, 2.0]} />
-        <meshStandardMaterial color="#2898d4" flatShading />
+        <meshStandardMaterial color={rail} flatShading />
       </mesh>
       <mesh position={[0.28, 0.055, 0]}>
         <boxGeometry args={[0.04, 0.013, 2.0]} />
-        <meshStandardMaterial color="#2898d4" flatShading />
+        <meshStandardMaterial color={rail} flatShading />
       </mesh>
       <mesh position={[0, -0.13, 1.15]}>
         <coneGeometry args={[0.1, 0.3, 4]} />

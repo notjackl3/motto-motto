@@ -63,24 +63,20 @@ interface Rock {
   color: string;
 }
 
+// Only big rocks — small ones (scale < 2.0) read as floating debris rather
+// than solid seafloor outcroppings.
 const ROCKS: Rock[] = [
-  { baseZ: -12, laneX: -9, scale: 1.4, rot: 0.2, color: '#4a4a4a' },
   { baseZ: -18, laneX: -22, scale: 2.6, rot: 0.4, color: '#404040' },
-  { baseZ: -28, laneX: 17, scale: 1.8, rot: 1.2, color: '#525252' },
-  { baseZ: -35, laneX: -14, scale: 1.2, rot: -0.5, color: '#5a5a5a' },
-  { baseZ: -45, laneX: 14, scale: 2.0, rot: 1.2, color: '#525252' },
+  { baseZ: -45, laneX: 14, scale: 2.4, rot: 1.2, color: '#525252' },
   { baseZ: -55, laneX: -28, scale: 3.2, rot: 0.8, color: '#3a3a3a' },
-  { baseZ: -68, laneX: 8, scale: 1.5, rot: -0.3, color: '#4f4f4f' },
   { baseZ: -78, laneX: 26, scale: 2.4, rot: 1.5, color: '#484848' },
   { baseZ: -90, laneX: -22, scale: 3.4, rot: -0.7, color: '#3f3f3f' },
-  { baseZ: -105, laneX: 32, scale: 2.0, rot: 0.5, color: '#555' },
-  { baseZ: -115, laneX: -16, scale: 1.6, rot: 1.0, color: '#4a4a4a' },
+  { baseZ: -105, laneX: 32, scale: 2.4, rot: 0.5, color: '#555' },
   { baseZ: -130, laneX: 24, scale: 2.8, rot: 2.1, color: '#4f4f4f' },
   { baseZ: -148, laneX: -34, scale: 3.6, rot: 0.3, color: '#3a3a3a' },
-  { baseZ: -158, laneX: 12, scale: 1.4, rot: -1.0, color: '#525252' },
-  { baseZ: -170, laneX: -8, scale: 2.0, rot: 0.9, color: '#5a5a5a' },
+  { baseZ: -170, laneX: -8, scale: 2.6, rot: 0.9, color: '#5a5a5a' },
   { baseZ: -180, laneX: 38, scale: 3.0, rot: 1.8, color: '#444' },
-  { baseZ: -195, laneX: -19, scale: 2.2, rot: -0.4, color: '#4a4a4a' },
+  { baseZ: -195, laneX: -19, scale: 2.4, rot: -0.4, color: '#4a4a4a' },
   { baseZ: -205, laneX: 18, scale: 2.8, rot: 1.6, color: '#444' },
   { baseZ: -218, laneX: -30, scale: 3.4, rot: 0.6, color: '#3f3f3f' },
 ];
@@ -446,92 +442,6 @@ function Boat({ track }: { track: BoatTrack }) {
   );
 }
 
-// ---------- Fishing boats (chunky working vessels) ----------
-
-interface FishingBoatTrack {
-  baseZ: number;
-  laneX: number;
-  scale: number;
-}
-
-const FISHING_BOATS: FishingBoatTrack[] = [
-  { baseZ: -55, laneX: -42, scale: 1.0 },
-  { baseZ: -175, laneX: 44, scale: 0.85 },
-];
-
-function FishingBoat({ track }: { track: FishingBoatTrack }) {
-  const ref = useRef<THREE.Group>(null);
-  const s = track.scale;
-  useFrame((state) => {
-    if (!ref.current) return;
-    const t = state.clock.elapsedTime;
-    const z = driftedZ(track.baseZ, t);
-    ref.current.position.x = track.laneX;
-    ref.current.position.z = z;
-    ref.current.position.y = waveYAt(track.laneX, z, t) + 1.2 * s;
-    const slopeX =
-      waveYAt(track.laneX + 2, z, t) - waveYAt(track.laneX - 2, z, t);
-    const slopeZ = waveYAt(track.laneX, z + 2, t) - waveYAt(track.laneX, z - 2, t);
-    ref.current.rotation.z = -slopeX * 0.18;
-    ref.current.rotation.x = -slopeZ * 0.15;
-  });
-
-  return (
-    <group ref={ref} position={[track.laneX, -0.6, track.baseZ]}>
-      {/* Wide chunky hull */}
-      <mesh castShadow>
-        <boxGeometry args={[5 * s, 1.2 * s, 1.8 * s]} />
-        <meshStandardMaterial color="#3a5a78" flatShading />
-      </mesh>
-      {/* Hull waterline stripe */}
-      <mesh position={[0, -0.2 * s, 0]}>
-        <boxGeometry args={[5.02 * s, 0.18 * s, 1.82 * s]} />
-        <meshStandardMaterial color="#c83a2a" flatShading />
-      </mesh>
-      {/* Tapered bow */}
-      <mesh position={[2.5 * s, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <coneGeometry args={[0.9 * s, 1.2 * s, 4]} />
-        <meshStandardMaterial color="#3a5a78" flatShading />
-      </mesh>
-      {/* Cabin */}
-      <mesh position={[-0.8 * s, 1.0 * s, 0]} castShadow>
-        <boxGeometry args={[1.8 * s, 1.0 * s, 1.4 * s]} />
-        <meshStandardMaterial color="#f4f1ea" flatShading />
-      </mesh>
-      {/* Cabin windows */}
-      <mesh position={[-0.8 * s, 1.15 * s, 0.71 * s]}>
-        <boxGeometry args={[1.5 * s, 0.4 * s, 0.04]} />
-        <meshStandardMaterial
-          color="#1a3a4a"
-          emissive="#3a6a8a"
-          emissiveIntensity={0.25}
-          flatShading
-        />
-      </mesh>
-      {/* Smokestack */}
-      <mesh position={[-1.5 * s, 1.9 * s, 0]} castShadow>
-        <cylinderGeometry args={[0.18 * s, 0.18 * s, 0.9 * s, 6]} />
-        <meshStandardMaterial color="#2a2a2a" flatShading />
-      </mesh>
-      {/* Antenna mast */}
-      <mesh position={[-0.8 * s, 2.1 * s, 0]}>
-        <cylinderGeometry args={[0.03 * s, 0.03 * s, 1.4 * s, 5]} />
-        <meshStandardMaterial color="#5a5a5a" flatShading />
-      </mesh>
-      {/* Crane arm — fishing rig */}
-      <mesh position={[1.0 * s, 1.6 * s, 0]} rotation={[0, 0, 0.5]}>
-        <cylinderGeometry args={[0.06 * s, 0.06 * s, 2.4 * s, 5]} />
-        <meshStandardMaterial color="#3a3a3a" flatShading />
-      </mesh>
-      {/* Hanging net bundle */}
-      <mesh position={[1.9 * s, 1.0 * s, 0]}>
-        <sphereGeometry args={[0.35 * s, 8, 6]} />
-        <meshStandardMaterial color="#5a6a4a" flatShading />
-      </mesh>
-    </group>
-  );
-}
-
 // ---------- Speedboats (small, fast, with wake) ----------
 
 interface SpeedboatTrack {
@@ -554,11 +464,12 @@ function Speedboat({ track }: { track: SpeedboatTrack }) {
     const z = driftedZ(track.baseZ, t);
     ref.current.position.x = track.laneX;
     ref.current.position.z = z;
-    ref.current.position.y = waveYAt(track.laneX, z, t) + 0.5;
+    ref.current.position.y = waveYAt(track.laneX, z, t) + 0.35;
     const slopeX = waveYAt(track.laneX + 1, z, t) - waveYAt(track.laneX - 1, z, t);
     ref.current.rotation.z = -slopeX * 0.4;
-    // Nose-up planing pose.
-    ref.current.rotation.x = -0.12;
+    // Nose-up planing pose — boats run with the bow lifted at speed.
+    ref.current.rotation.y = Math.PI / 2; // orient along Z so bow faces +Z
+    ref.current.rotation.x = -0.15;
     if (wakeRef.current) {
       wakeRef.current.position.set(track.laneX, WATER_LEVEL + 0.02, z + 2.5);
       const pulse = 1 + Math.sin(t * 6) * 0.15;
@@ -569,19 +480,29 @@ function Speedboat({ track }: { track: SpeedboatTrack }) {
   return (
     <>
       <group ref={ref} position={[track.laneX, -0.6, track.baseZ]}>
-        {/* Sleek narrow hull */}
-        <mesh castShadow>
-          <boxGeometry args={[2.6, 0.5, 0.9]} />
+        {/* Curved hull — capsule lying horizontally along Z. */}
+        <mesh castShadow rotation={[Math.PI / 2, 0, 0]}>
+          <capsuleGeometry args={[0.32, 2.0, 4, 12]} />
           <meshStandardMaterial color={track.color} flatShading />
         </mesh>
-        {/* Pointed bow */}
-        <mesh position={[1.4, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-          <coneGeometry args={[0.45, 0.8, 4]} />
+        {/* Sharper bow taper extending forward. */}
+        <mesh position={[0, 0, 1.5]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+          <coneGeometry args={[0.32, 0.7, 12]} />
           <meshStandardMaterial color={track.color} flatShading />
         </mesh>
-        {/* Windshield */}
-        <mesh position={[0.2, 0.35, 0]} rotation={[0, 0, -0.4]}>
-          <boxGeometry args={[0.6, 0.05, 0.6]} />
+        {/* Hull dark waterline stripe */}
+        <mesh position={[0, -0.15, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <capsuleGeometry args={[0.33, 2.0, 4, 12]} />
+          <meshStandardMaterial color="#1a1a1a" flatShading />
+        </mesh>
+        {/* Flat deck on top of the hull */}
+        <mesh position={[0, 0.2, -0.1]}>
+          <boxGeometry args={[0.78, 0.04, 1.8]} />
+          <meshStandardMaterial color="#e8e0c8" flatShading />
+        </mesh>
+        {/* Windshield wrapping over the cockpit */}
+        <mesh position={[0, 0.45, 0.4]} rotation={[0.4, 0, 0]} scale={[0.85, 0.6, 1.0]}>
+          <sphereGeometry args={[0.4, 10, 8]} />
           <meshStandardMaterial
             color="#5a8ab0"
             transparent
@@ -590,14 +511,19 @@ function Speedboat({ track }: { track: SpeedboatTrack }) {
           />
         </mesh>
         {/* Driver figure */}
-        <mesh position={[-0.3, 0.4, 0]} castShadow>
-          <sphereGeometry args={[0.15, 8, 6]} />
+        <mesh position={[0, 0.5, 0.1]} castShadow>
+          <sphereGeometry args={[0.13, 8, 6]} />
           <meshStandardMaterial color="#f0caa0" flatShading />
         </mesh>
-        {/* Motor on the back */}
-        <mesh position={[-1.4, 0, 0]}>
-          <boxGeometry args={[0.4, 0.6, 0.5]} />
+        {/* Outboard motor mounted on the transom */}
+        <mesh position={[0, 0.15, -1.2]} rotation={[0.1, 0, 0]}>
+          <boxGeometry args={[0.25, 0.45, 0.3]} />
           <meshStandardMaterial color="#1a1a1a" flatShading />
+        </mesh>
+        {/* Propeller shaft below motor */}
+        <mesh position={[0, -0.05, -1.25]}>
+          <cylinderGeometry args={[0.04, 0.04, 0.35, 6]} />
+          <meshStandardMaterial color="#3a3a3a" flatShading />
         </mesh>
       </group>
       {/* Foam wake trail behind the boat */}
@@ -606,74 +532,6 @@ function Speedboat({ track }: { track: SpeedboatTrack }) {
         <meshBasicMaterial color="#ffffff" transparent opacity={0.45} />
       </mesh>
     </>
-  );
-}
-
-// ---------- Yachts (long sleek pleasure craft) ----------
-
-interface YachtTrack {
-  baseZ: number;
-  laneX: number;
-}
-
-const YACHTS: YachtTrack[] = [
-  { baseZ: -200, laneX: 38 },
-  { baseZ: -90, laneX: -55 },
-];
-
-function Yacht({ track }: { track: YachtTrack }) {
-  const ref = useRef<THREE.Group>(null);
-  useFrame((state) => {
-    if (!ref.current) return;
-    const t = state.clock.elapsedTime;
-    const z = driftedZ(track.baseZ, t);
-    ref.current.position.x = track.laneX;
-    ref.current.position.z = z;
-    ref.current.position.y = waveYAt(track.laneX, z, t) + 1.2;
-    const slopeX = waveYAt(track.laneX + 3, z, t) - waveYAt(track.laneX - 3, z, t);
-    const slopeZ = waveYAt(track.laneX, z + 3, t) - waveYAt(track.laneX, z - 3, t);
-    ref.current.rotation.z = -slopeX * 0.1;
-    ref.current.rotation.x = -slopeZ * 0.08;
-  });
-
-  return (
-    <group ref={ref} position={[track.laneX, -0.6, track.baseZ]}>
-      {/* Long sleek hull */}
-      <mesh castShadow>
-        <boxGeometry args={[7, 1.0, 1.6]} />
-        <meshStandardMaterial color="#f0f0f0" flatShading />
-      </mesh>
-      {/* Hull dark trim */}
-      <mesh position={[0, -0.3, 0]}>
-        <boxGeometry args={[7.02, 0.3, 1.62]} />
-        <meshStandardMaterial color="#1a3050" flatShading />
-      </mesh>
-      {/* Pointed bow */}
-      <mesh position={[3.5, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <coneGeometry args={[0.8, 1.4, 4]} />
-        <meshStandardMaterial color="#f0f0f0" flatShading />
-      </mesh>
-      {/* Lower deck cabin */}
-      <mesh position={[0.3, 1.0, 0]} castShadow>
-        <boxGeometry args={[3.6, 1.0, 1.4]} />
-        <meshStandardMaterial color="#fafafa" flatShading />
-      </mesh>
-      {/* Lower deck dark windows */}
-      <mesh position={[0.3, 1.05, 0.71]}>
-        <boxGeometry args={[3.2, 0.5, 0.04]} />
-        <meshStandardMaterial color="#1a2a3a" flatShading />
-      </mesh>
-      {/* Upper deck / flying bridge */}
-      <mesh position={[-0.2, 2.0, 0]} castShadow>
-        <boxGeometry args={[2.2, 0.7, 1.2]} />
-        <meshStandardMaterial color="#fafafa" flatShading />
-      </mesh>
-      {/* Radar arch */}
-      <mesh position={[-1.1, 2.7, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <torusGeometry args={[0.4, 0.04, 4, 8, Math.PI]} />
-        <meshStandardMaterial color="#3a3a3a" flatShading />
-      </mesh>
-    </group>
   );
 }
 
@@ -2018,89 +1876,6 @@ function HazardRock({ track }: { track: HazardTrack }) {
   );
 }
 
-// ---------- Cruise ships (huge multi-deck liners in the distance) ----------
-
-interface CruiseTrack {
-  baseZ: number;
-  laneX: number;
-  scale: number;
-}
-
-const CRUISES: CruiseTrack[] = [
-  { baseZ: -160, laneX: 60, scale: 1.0 },
-  { baseZ: -230, laneX: -65, scale: 1.1 },
-];
-
-function Cruise({ track }: { track: CruiseTrack }) {
-  const ref = useRef<THREE.Group>(null);
-  useFrame((state) => {
-    if (!ref.current) return;
-    const t = state.clock.elapsedTime;
-    const z = driftedZ(track.baseZ, t);
-    ref.current.position.x = track.laneX;
-    ref.current.position.z = z;
-    // Cruise rides the swell — hull center sits 1.5m above water surface.
-    // Heavy displacement, so the response to slope is gentle (small mult).
-    ref.current.position.y = waveYAt(track.laneX, z, t) + 1.5;
-    const slopeX = waveYAt(track.laneX + 4, z, t) - waveYAt(track.laneX - 4, z, t);
-    const slopeZ = waveYAt(track.laneX, z + 4, t) - waveYAt(track.laneX, z - 4, t);
-    ref.current.rotation.z = -slopeX * 0.04;
-    ref.current.rotation.x = -slopeZ * 0.03;
-  });
-
-  const s = track.scale;
-  return (
-    <group ref={ref} position={[track.laneX, -0.5, track.baseZ]}>
-      {/* Hull */}
-      <mesh castShadow>
-        <boxGeometry args={[18 * s, 2.0 * s, 4.5 * s]} />
-        <meshStandardMaterial color="#0d3f5e" flatShading />
-      </mesh>
-      {/* White superstructure deck */}
-      <mesh position={[0, 2.0 * s, 0]} castShadow>
-        <boxGeometry args={[16 * s, 1.6 * s, 4.0 * s]} />
-        <meshStandardMaterial color="#f4f1ea" flatShading />
-      </mesh>
-      {/* Second deck */}
-      <mesh position={[0, 3.4 * s, 0]} castShadow>
-        <boxGeometry args={[14 * s, 1.2 * s, 3.4 * s]} />
-        <meshStandardMaterial color="#f4f1ea" flatShading />
-      </mesh>
-      {/* Top deck */}
-      <mesh position={[0, 4.4 * s, 0]} castShadow>
-        <boxGeometry args={[10 * s, 0.8 * s, 2.6 * s]} />
-        <meshStandardMaterial color="#e8e4d8" flatShading />
-      </mesh>
-      {/* Bow taper */}
-      <mesh position={[9.5 * s, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <coneGeometry args={[2.25 * s, 2.0 * s, 4]} />
-        <meshStandardMaterial color="#0d3f5e" flatShading />
-      </mesh>
-      {/* Two funnels */}
-      <mesh position={[-2.5 * s, 5.4 * s, 0]} castShadow>
-        <cylinderGeometry args={[0.55 * s, 0.55 * s, 1.8 * s, 8]} />
-        <meshStandardMaterial color="#c83a2a" flatShading />
-      </mesh>
-      <mesh position={[2.5 * s, 5.4 * s, 0]} castShadow>
-        <cylinderGeometry args={[0.55 * s, 0.55 * s, 1.8 * s, 8]} />
-        <meshStandardMaterial color="#c83a2a" flatShading />
-      </mesh>
-      {/* Window rows — three strips along the hull */}
-      {[-1.4, 0.4, 2.2].map((y, i) => (
-        <mesh key={i} position={[0, y * s, 2.26 * s]}>
-          <boxGeometry args={[15 * s, 0.18 * s, 0.05]} />
-          <meshStandardMaterial
-            color="#fff6c0"
-            emissive="#fff080"
-            emissiveIntensity={0.4}
-            flatShading
-          />
-        </mesh>
-      ))}
-    </group>
-  );
-}
-
 // ---------- Lighthouse on a far rock (stationary in lane, drifts past) ----------
 
 interface LighthouseTrack {
@@ -2501,6 +2276,178 @@ function Wreck({ track }: { track: WreckTrack }) {
   );
 }
 
+// ---------- Big breaking waves (dramatic curling waves around the player) ----------
+//
+// Discrete wave models that drift past at various distances and sizes —
+// close, mid-range, and far on the horizon — to make the ocean feel busy
+// and dramatic instead of a flat plane. Each wave has a leaning wall,
+// foamy curl on top, scattered foam blobs along the crest, and a base
+// foam line where it's breaking against the surface.
+
+interface BigWaveTrack {
+  baseZ: number;
+  laneX: number;
+  scale: number;
+  width: number;
+  hue: string;
+  faceAngle: number;
+  phase: number;
+  // Cycle of build-up + break for animation
+  breakCycle: number;
+}
+
+const BIG_WAVES: BigWaveTrack[] = [
+  // Close waves (laneX 25–35, near player)
+  { baseZ: -28, laneX: -28, scale: 0.9, width: 12, hue: '#2c8ac8', faceAngle: 0.5, phase: 0, breakCycle: 9 },
+  { baseZ: -52, laneX: 32, scale: 1.1, width: 16, hue: '#1a78b8', faceAngle: -0.7, phase: 2.0, breakCycle: 11 },
+  { baseZ: -78, laneX: -34, scale: 1.0, width: 14, hue: '#2898d4', faceAngle: 0.4, phase: 4.0, breakCycle: 10 },
+
+  // Mid-distance waves
+  { baseZ: -110, laneX: 42, scale: 1.5, width: 22, hue: '#1a78b8', faceAngle: -0.5, phase: 1.5, breakCycle: 12 },
+  { baseZ: -135, laneX: -45, scale: 1.4, width: 20, hue: '#2c8ac8', faceAngle: 0.4, phase: 3.0, breakCycle: 13 },
+  { baseZ: -158, laneX: 36, scale: 1.6, width: 24, hue: '#1a68a8', faceAngle: -0.3, phase: 0.5, breakCycle: 11 },
+
+  // Distant horizon waves (bigger to read at distance)
+  { baseZ: -185, laneX: -58, scale: 2.2, width: 32, hue: '#2898d4', faceAngle: 0.3, phase: 5.0, breakCycle: 14 },
+  { baseZ: -205, laneX: 55, scale: 2.0, width: 28, hue: '#1a78b8', faceAngle: -0.4, phase: 1.2, breakCycle: 15 },
+  { baseZ: -220, laneX: -40, scale: 2.4, width: 36, hue: '#1a68a8', faceAngle: 0.2, phase: 3.6, breakCycle: 16 },
+];
+
+function BigWave({ track }: { track: BigWaveTrack }) {
+  const ref = useRef<THREE.Group>(null);
+  const crestRef = useRef<THREE.Group>(null);
+  const foamRefs = useRef<THREE.Mesh[]>([]);
+  const s = track.scale;
+  const H = 3.2 * s;
+  const W = track.width;
+
+  useFrame((state) => {
+    if (!ref.current) return;
+    const t = state.clock.elapsedTime;
+    const z = driftedZ(track.baseZ, t);
+    const x = track.laneX;
+    ref.current.position.x = x;
+    ref.current.position.z = z;
+    // Anchor base at the live wave surface so the wave foot sits on water.
+    ref.current.position.y = waveYAt(x, z, t);
+
+    // Build-up + break cycle. Wave grows for 70% of cycle, peaks, breaks for
+    // remaining 30% — foam blobs spray harder during the break window.
+    const cyclePos = ((t + track.phase) % track.breakCycle) / track.breakCycle;
+    const buildup =
+      cyclePos < 0.7
+        ? 0.5 + (cyclePos / 0.7) * 0.5 // ramp 0.5 → 1.0
+        : 1.0 - (cyclePos - 0.7) / 0.3 * 0.3; // collapse 1.0 → 0.7
+    const breaking = cyclePos > 0.7 ? (cyclePos - 0.7) / 0.3 : 0;
+
+    if (crestRef.current) {
+      crestRef.current.scale.set(1, buildup, 1);
+      crestRef.current.rotation.z = Math.sin(t * 0.45 + track.phase) * 0.04;
+    }
+    // Foam blobs spread + scatter during the break.
+    foamRefs.current.forEach((mesh, i) => {
+      if (!mesh) return;
+      const localT = t * 1.5 + i * 0.7 + track.phase;
+      const sprayOut = breaking * (0.5 + (i % 3) * 0.3);
+      mesh.position.y = H * 1.05 + Math.sin(localT) * 0.25 + sprayOut * 0.4;
+      mesh.position.z = 0.5 * s + sprayOut * 0.8;
+      const sz = (0.5 + Math.sin(localT * 1.3) * 0.15) * s * (1 + breaking * 0.7);
+      mesh.scale.setScalar(sz);
+      const mat = mesh.material as THREE.MeshStandardMaterial;
+      mat.opacity = 0.7 + breaking * 0.25;
+    });
+  });
+
+  // Spread of foam-blob X positions along the crest.
+  const foamPositions = useMemo(
+    () => [-0.42, -0.22, -0.05, 0.12, 0.3, 0.45].map((p) => p * W),
+    [W],
+  );
+
+  return (
+    <group
+      ref={ref}
+      position={[track.laneX, WATER_LEVEL, track.baseZ]}
+      rotation={[0, track.faceAngle, 0]}
+    >
+      <group ref={crestRef}>
+        {/* Wave wall — tall mass leaning forward to suggest the curl. */}
+        <mesh position={[0, H * 0.5, 0]} rotation={[-0.35, 0, 0]} castShadow>
+          <boxGeometry args={[W, H, 1.4 * s]} />
+          <meshStandardMaterial color={track.hue} flatShading roughness={0.5} metalness={0.08} />
+        </mesh>
+        {/* Darker stripe down the face — gives depth to the wave wall. */}
+        <mesh position={[0, H * 0.25, 0.72 * s]} rotation={[-0.35, 0, 0]}>
+          <boxGeometry args={[W * 0.98, H * 0.5, 0.04]} />
+          <meshStandardMaterial color="#0e4a78" flatShading />
+        </mesh>
+        {/* Translucent green underside — the light coming through the wave face. */}
+        <mesh position={[0, H * 0.7, 0.74 * s]} rotation={[-0.35, 0, 0]}>
+          <boxGeometry args={[W * 0.92, H * 0.25, 0.04]} />
+          <meshStandardMaterial
+            color="#5ad0c8"
+            flatShading
+            transparent
+            opacity={0.55}
+            emissive="#3aa8a0"
+            emissiveIntensity={0.3}
+          />
+        </mesh>
+        {/* Foam lip / crest — long cylinder along the top edge. */}
+        <mesh position={[0, H * 1.0, 0.35 * s]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.55 * s, 0.65 * s, W, 6]} />
+          <meshStandardMaterial
+            color="#ffffff"
+            flatShading
+            emissive="#e8f0ff"
+            emissiveIntensity={0.35}
+          />
+        </mesh>
+        {/* Curl tube — forward of the crest, the lip starting to spill. */}
+        <mesh position={[0, H * 0.75, 0.95 * s]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.35 * s, 0.35 * s, W * 0.92, 6]} />
+          <meshStandardMaterial color="#ffffff" flatShading transparent opacity={0.7} />
+        </mesh>
+        {/* Foam splash blobs along the crest — animated for crash drama. */}
+        {foamPositions.map((px, i) => (
+          <mesh
+            key={i}
+            ref={(el) => {
+              if (el) foamRefs.current[i] = el;
+            }}
+            position={[px, H * 1.1, 0.5 * s]}
+          >
+            <sphereGeometry args={[0.55, 8, 6]} />
+            <meshStandardMaterial
+              color="#ffffff"
+              flatShading
+              transparent
+              opacity={0.85}
+              emissive="#e0e8f0"
+              emissiveIntensity={0.2}
+            />
+          </mesh>
+        ))}
+        {/* Base foam line — where the wave is breaking against the surface. */}
+        <mesh position={[0, 0.25, 0.3 * s]}>
+          <boxGeometry args={[W * 1.05, 0.35 * s, 1.5 * s]} />
+          <meshStandardMaterial
+            color="#ffffff"
+            flatShading
+            transparent
+            opacity={0.55}
+          />
+        </mesh>
+        {/* Back side of the wave — gentler hump fading away. */}
+        <mesh position={[0, H * 0.4, -0.7 * s]} rotation={[0.3, 0, 0]}>
+          <boxGeometry args={[W * 0.95, H * 0.7, 0.9 * s]} />
+          <meshStandardMaterial color="#1a5878" flatShading roughness={0.6} />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
 // ---------- Combined export ----------
 
 // Invisible utility component: reads the live tide and writes amp/speed
@@ -2572,9 +2519,6 @@ export default function EnvironmentObjects() {
       {HAZARD_ROCKS.map((h, i) => (
         <HazardRock key={`hz${i}`} track={h} />
       ))}
-      {CRUISES.map((c, i) => (
-        <Cruise key={`cr${i}`} track={c} />
-      ))}
       {LIGHTHOUSES.map((l, i) => (
         <Lighthouse key={`lh${i}`} track={l} />
       ))}
@@ -2593,14 +2537,8 @@ export default function EnvironmentObjects() {
       {WRECKS.map((w, i) => (
         <Wreck key={`wk${i}`} track={w} />
       ))}
-      {FISHING_BOATS.map((b, i) => (
-        <FishingBoat key={`fb${i}`} track={b} />
-      ))}
       {SPEEDBOATS.map((b, i) => (
         <Speedboat key={`sb${i}`} track={b} />
-      ))}
-      {YACHTS.map((y, i) => (
-        <Yacht key={`yc${i}`} track={y} />
       ))}
       {KAYAKS.map((k, i) => (
         <Kayak key={`kk${i}`} track={k} />
@@ -2619,6 +2557,9 @@ export default function EnvironmentObjects() {
       ))}
       {GOOSE_FORMATIONS.map((g, i) => (
         <GooseFormation key={`gf${i}`} track={g} />
+      ))}
+      {BIG_WAVES.map((w, i) => (
+        <BigWave key={`bw${i}`} track={w} />
       ))}
     </group>
   );

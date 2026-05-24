@@ -4,6 +4,12 @@ import * as THREE from 'three';
 import { Html } from '@react-three/drei';
 import { useTideData } from '../../hooks/useTideData';
 import { useGameStore } from '../../stores/gameStore';
+import {
+  getBoard,
+  getShirt,
+  getShorts,
+  useAppearanceStore,
+} from '../../stores/appearanceStore';
 import { waveHeightAt } from './waveFunction';
 
 const SURFER_X = 0;
@@ -15,6 +21,10 @@ export default function Surfer() {
   const sprayRefs = useRef<THREE.Mesh[]>([]);
   const { waveHeight, waveSpeed } = useTideData();
   const faceSwap = useGameStore((s) => s.faceSwap);
+
+  const shirt = getShirt(useAppearanceStore((s) => s.shirtId));
+  const shorts = getShorts(useAppearanceStore((s) => s.shortsId));
+  const board = getBoard(useAppearanceStore((s) => s.boardId));
 
   const animState = useRef({ amplitude: waveHeight, speed: waveSpeed });
 
@@ -78,35 +88,44 @@ export default function Surfer() {
         {/* Surfboard */}
         <mesh position={[0, 0, 0]} castShadow>
           <boxGeometry args={[0.7, 0.08, 2.2]} />
-          <meshStandardMaterial color="#f0e0a8" />
+          <meshStandardMaterial color={board.deck} />
         </mesh>
         {/* Board stripe */}
         <mesh position={[0, 0.045, 0]} castShadow>
           <boxGeometry args={[0.12, 0.01, 2.0]} />
-          <meshStandardMaterial color="#d04848" />
+          <meshStandardMaterial color={board.stripe} />
+        </mesh>
+        {/* Board rails — added so the wardrobe rail color reads in the menu showcase. */}
+        <mesh position={[-0.32, 0.045, 0]} castShadow>
+          <boxGeometry args={[0.04, 0.01, 1.9]} />
+          <meshStandardMaterial color={board.rail} />
+        </mesh>
+        <mesh position={[0.32, 0.045, 0]} castShadow>
+          <boxGeometry args={[0.04, 0.01, 1.9]} />
+          <meshStandardMaterial color={board.rail} />
         </mesh>
         {/* Legs */}
         <mesh position={[-0.12, 0.25, 0.1]} castShadow>
           <cylinderGeometry args={[0.07, 0.07, 0.4, 12]} />
-          <meshStandardMaterial color="#2a3f57" />
+          <meshStandardMaterial color={shorts.color} />
         </mesh>
         <mesh position={[0.12, 0.25, 0.1]} castShadow>
           <cylinderGeometry args={[0.07, 0.07, 0.4, 12]} />
-          <meshStandardMaterial color="#2a3f57" />
+          <meshStandardMaterial color={shorts.color} />
         </mesh>
         {/* Body */}
         <mesh position={[0, 0.7, 0.05]} castShadow>
           <cylinderGeometry args={[0.18, 0.22, 0.55, 14]} />
-          <meshStandardMaterial color="#ff7a59" />
+          <meshStandardMaterial color={shirt.color} />
         </mesh>
         {/* Arms */}
         <mesh position={[-0.32, 0.7, 0]} rotation={[0, 0, 0.6]} castShadow>
           <cylinderGeometry args={[0.06, 0.06, 0.5, 10]} />
-          <meshStandardMaterial color="#ff7a59" />
+          <meshStandardMaterial color={shirt.color} />
         </mesh>
         <mesh position={[0.32, 0.7, 0]} rotation={[0, 0, -0.6]} castShadow>
           <cylinderGeometry args={[0.06, 0.06, 0.5, 10]} />
-          <meshStandardMaterial color="#ff7a59" />
+          <meshStandardMaterial color={shirt.color} />
         </mesh>
         {/* Head */}
         <mesh position={[0, 1.15, 0.05]} castShadow>
