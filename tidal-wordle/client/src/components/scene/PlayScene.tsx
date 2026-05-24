@@ -5,8 +5,11 @@ import SkyAndLighting from './SkyAndLighting';
 import PlayWave from './PlayWave';
 import MouseLookControls from './MouseLookControls';
 import BodyRig from './BodyRig';
+import IpadRig from './IpadRig';
 import SurfingMotion from './SurfingMotion';
 import EnvironmentObjects from './EnvironmentObjects';
+import PlayerControls from './PlayerControls';
+import AmbientSplashes from './AmbientSplashes';
 import { useGameStore } from '../../stores/gameStore';
 import { ambientMusic, unlockAudio } from '../../lib/audio';
 
@@ -100,7 +103,10 @@ export default function PlayScene({ lookMode }: Props) {
             frame rather than getting wiped by it. */}
         <MouseLookControls active={lookMode} />
         <SurfingMotion lookMode={lookMode} />
+        <PlayerControls active={lookMode} />
         <BodyRig />
+        <AmbientSplashes />
+        <IpadRig lookMode={lookMode} />
       </Canvas>
     </div>
   );

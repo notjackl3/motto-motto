@@ -24,25 +24,30 @@ export default function BodyRig() {
     if (!groupRef.current) return;
     const cam = state.camera;
     groupRef.current.position.copy(cam.position);
-    const e = new THREE.Euler().setFromQuaternion(cam.quaternion, 'YXZ');
-    // Yaw with the camera, lean with A/D (Z roll). No pitch — body stays
-    // upright when you tilt your head up/down.
-    const lean = useMovementStore.getState().lateralLean;
-    groupRef.current.rotation.set(0, e.y, lean);
+    const mv = useMovementStore.getState();
+    const lean = mv.lateralLean;
+    const speedDelta = mv.forwardSpeedMul - 1.0; // +ve = accelerating, -ve = braking
 
-    // Board exaggerates the lean so the surf feels alive when carving.
+    // Body + surfboard always face world-forward — looking around with the
+    // mouse moves the camera/head only, never the board. Lean (A/D) rolls
+    // the body around the rider's spine so the carve is felt.
+    groupRef.current.rotation.set(0, 0, lean);
+
     if (boardRef.current) {
-      boardRef.current.rotation.z = lean * 0.4;
+      // Board carves harder than the body — lean × 1.4 total when combined
+      // with the body roll.
+      boardRef.current.rotation.z = lean * 0.7;
+      // W tips the nose into the wave, S kicks it up for a brake. Multiplier
+      // pushes ~18° of nose drop at full accel.
+      boardRef.current.rotation.x = -speedDelta * 0.4;
     }
   });
 
   return (
     <group ref={groupRef}>
-      {/* Hips — visible only when you pitch the camera way down. */}
-      <mesh position={[0, -0.95, -0.15]} castShadow>
-        <boxGeometry args={[0.52, 0.2, 0.36]} />
-        <meshStandardMaterial color={PANTS_COLOR} flatShading />
-      </mesh>
+      {/* No hips box — when the player looks down they should see two
+          distinct legs over the board, not a single broad pelvis silhouette
+          that reads as "looking at your own butt". */}
 
       {/* Legs angled forward + outward toward the feet on the board. */}
       <Leg side="left" />

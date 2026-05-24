@@ -136,26 +136,37 @@ export default function GameLayout({ onBackToMenu }: GameLayoutProps) {
 // ---------- IpadOverlay ----------
 //
 // The iPad mesh in IpadRig is camera-locked, so its screen-space position
-// depends ONLY on its camera-local (xCam, yCam, zCam) — pitch from
-// mouse-look doesn't move it. We mirror the two iPad poses from IpadRig
-// here and project them with the standard NDC formula:
-//
-//   ndc_y = yCam / (|zCam| · tan(half_fov_y))
-//   top%  = (1 - ndc_y) / 2 · 100
-//
-// In look (driving) mode the iPad drops to the bottom of view and tilts
-// back; the height shrinks by cos(tilt) due to foreshortening.
+// depends ONLY on its camera-local (xCam, yCam, zCam) and orientation —
+// camera pitch from mouse-look doesn't move it. We mirror the two iPad
+// poses from IpadRig here and project them with the standard NDC formula
+// using the live window aspect ratio, so the DOM UI always sits exactly
+// over the 3D iPad screen face in both modes.
 
 const IPAD_SCREEN_W = 0.72;
 const IPAD_SCREEN_H = 0.49;
 const HALF_FOV_Y = (70 * Math.PI) / 180 / 2; // 35° in radians
 const TAN_HALF_FOV_Y = Math.tan(HALF_FOV_Y);
 
-// Keep these in sync with IPAD_POS_IPAD / IPAD_POS_LOOK / IPAD_TILT_LOOK in
-// IpadRig.tsx.
+// Must mirror IPAD_POS_IPAD / IPAD_POS_LOOK / IPAD_TILT_LOOK / IPAD_YAW_LOOK
+// in IpadRig.tsx.
 const IPAD_CAM_IPAD: [number, number, number] = [0, 0, -0.7];
-const IPAD_CAM_LOOK: [number, number, number] = [0, -0.55, -0.85];
-const IPAD_TILT_LOOK = 0.55;
+const IPAD_CAM_LOOK: [number, number, number] = [0.7, -0.5, -1.25];
+const IPAD_TILT_LOOK = 0.32;
+const IPAD_YAW_LOOK = -0.48;
+
+function useWindowAspect() {
+  const [aspect, setAspect] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth / window.innerHeight : 16 / 9,
+  );
+  useEffect(() => {
+    function onResize() {
+      setAspect(window.innerWidth / window.innerHeight);
+    }
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  return aspect;
+}
 
 function IpadOverlay({
   controlMode,
@@ -164,34 +175,44 @@ function IpadOverlay({
   controlMode: ControlMode;
   onQuit: () => void;
 }) {
+  const aspect = useWindowAspect();
   const isLook = controlMode === 'look';
-  const [, yCam, zCam] = isLook ? IPAD_CAM_LOOK : IPAD_CAM_IPAD;
-  const tilt = isLook ? IPAD_TILT_LOOK : 0;
+
+  const [xCam, yCam, zCam] = isLook ? IPAD_CAM_LOOK : IPAD_CAM_IPAD;
+  const tiltX = isLook ? IPAD_TILT_LOOK : 0;
+  const yawY = isLook ? IPAD_YAW_LOOK : 0;
 
   const distance = -zCam;
+  const tanHfovX = aspect * TAN_HALF_FOV_Y;
+
+  // Project iPad center to NDC, then to viewport %.
+  const ndcX = xCam / (distance * tanHfovX);
   const ndcY = yCam / (distance * TAN_HALF_FOV_Y);
+  const leftPct = ((1 + ndcX) / 2) * 100;
   const topPct = ((1 - ndcY) / 2) * 100;
 
-  // Foreshortening from the tilt-back collapses the screen height a bit.
-  const heightVh =
-    ((IPAD_SCREEN_H * Math.cos(tilt)) / (2 * distance * TAN_HALF_FOV_Y)) * 100;
-  const widthVh = (IPAD_SCREEN_W / (2 * distance * TAN_HALF_FOV_Y)) * 100;
+  // Foreshortened on-screen size. Width shrinks with yaw, height with tilt.
+  const widthVw = ((IPAD_SCREEN_W * Math.cos(yawY)) / (2 * distance * tanHfovX)) * 100;
+  const heightVh = ((IPAD_SCREEN_H * Math.cos(tiltX)) / (2 * distance * TAN_HALF_FOV_Y)) * 100;
 
   return (
     <div
       className="ipad-screen-overlay"
       style={{
         position: 'absolute',
+        left: `${leftPct}vw`,
         top: `${topPct}vh`,
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: `${widthVh}vh`,
+        width: `${widthVw}vw`,
         height: `${heightVh}vh`,
-        maxWidth: '92vw',
-        pointerEvents: controlMode === 'ipad' ? 'auto' : 'none',
+        transform: 'translate(-50%, -50%)',
+        pointerEvents: isLook ? 'none' : 'auto',
         transition:
-          'opacity 180ms ease, top 240ms ease, width 240ms ease, height 240ms ease',
-        opacity: 1,
+          'opacity 180ms ease, left 240ms ease, top 240ms ease, width 240ms ease, height 240ms ease',
+        // Drive mode hides the UI entirely — the player is surfing, not
+        // reading. `visibility: hidden` after the fade-out also kills any
+        // residual hit-testing and inner CSS animation cost.
+        opacity: isLook ? 0 : 1,
+        visibility: isLook ? 'hidden' : 'visible',
       }}
     >
       <IpadUI onQuit={onQuit} />

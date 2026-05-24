@@ -20,8 +20,22 @@ const FORWARD_MIN = 0.4;
 const LEAN_ABS = 0.38;
 const SPEED_EASE = 0.08;
 const LEAN_EASE = 0.12;
+// Steering: how fast the player slides sideways when fully leaned, and how
+// far they can drift from the centerline before being held back. The clamp
+// keeps the player well inside PLAYER_SAFE_RADIUS / smallest env lane (7m).
+const LATERAL_VEL_AT_FULL_LEAN = 7.0; // m/s
+const LATERAL_OFFSET_CLAMP = 4.0; // m from centerline
+// While focused on the iPad we ease the rider back to the centerline.
+const RECENTER_EASE = 0.04;
 
-export default function PlayerControls() {
+interface Props {
+  // True when the player is in look-mode (free-look). WASD only affects the
+  // rider when active; in iPad mode keys are ignored and everything eases
+  // back to baseline so the UI is calm.
+  active: boolean;
+}
+
+export default function PlayerControls({ active }: Props) {
   const keysRef = useRef({ w: false, a: false, s: false, d: false });
 
   useEffect(() => {
@@ -57,8 +71,13 @@ export default function PlayerControls() {
     };
   }, []);
 
-  useFrame((_, delta) => {
-    const keys = keysRef.current;
+  useFrame((state, delta) => {
+    // Only honor key state when in look mode. In iPad mode keys are
+    // ignored entirely — everything eases back to baseline and the rider
+    // re-centers so the focused UI isn't disturbed by stray key presses.
+    const keys = active
+      ? keysRef.current
+      : { w: false, a: false, s: false, d: false };
     const targetSpeed = keys.w ? FORWARD_MAX : keys.s ? FORWARD_MIN : 1.0;
     const targetLean = keys.a ? -LEAN_ABS : keys.d ? LEAN_ABS : 0;
 
@@ -67,11 +86,26 @@ export default function PlayerControls() {
     const newLean = cur.lateralLean + (targetLean - cur.lateralLean) * LEAN_EASE;
     const newDistance = cur.driftDistance + delta * newSpeed;
 
+    let newLateral: number;
+    if (active) {
+      // Lean → lateral velocity → integrated lateral position.
+      const lateralVel = (newLean / LEAN_ABS) * LATERAL_VEL_AT_FULL_LEAN;
+      newLateral = cur.lateralPosition + lateralVel * delta;
+      if (newLateral > LATERAL_OFFSET_CLAMP) newLateral = LATERAL_OFFSET_CLAMP;
+      else if (newLateral < -LATERAL_OFFSET_CLAMP) newLateral = -LATERAL_OFFSET_CLAMP;
+    } else {
+      // Ease back to the centerline so the iPad UI is settled.
+      newLateral = cur.lateralPosition + (0 - cur.lateralPosition) * RECENTER_EASE;
+    }
+
     useMovementStore.setState({
       forwardSpeedMul: newSpeed,
       lateralLean: newLean,
+      lateralPosition: newLateral,
       driftDistance: newDistance,
     });
+
+    state.camera.position.x = newLateral;
   });
 
   return null;

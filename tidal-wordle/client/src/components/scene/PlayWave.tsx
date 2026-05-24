@@ -2,6 +2,7 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useTideData } from '../../hooks/useTideData';
+import { useMovementStore } from '../../stores/movementStore';
 import { playWaveHeightAt } from './waveFunction';
 
 // Big stylized water plane centered on the player so the ocean is visible in
@@ -33,6 +34,10 @@ export default function PlayWave() {
     animState.current.amplitude += (waveHeight - animState.current.amplitude) * 0.04;
     animState.current.speed += (waveSpeed - animState.current.speed) * 0.04;
     const t = state.clock.elapsedTime;
+    // WASD speed multiplier scales the wave phase scroll so W visibly
+    // rushes the wave past, S visibly slows it down.
+    const speedMul = useMovementStore.getState().forwardSpeedMul;
+    const effectiveSpeed = animState.current.speed * speedMul;
     const arr = geometry.attributes.position.array as Float32Array;
     for (let i = 0; i < arr.length; i += 3) {
       const x = restPositions[i];
@@ -42,7 +47,7 @@ export default function PlayWave() {
         z,
         t,
         animState.current.amplitude,
-        animState.current.speed,
+        effectiveSpeed,
       );
     }
     geometry.attributes.position.needsUpdate = true;

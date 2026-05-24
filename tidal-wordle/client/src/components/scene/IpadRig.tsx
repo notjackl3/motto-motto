@@ -1,170 +1,188 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { useTideData } from '../../hooks/useTideData';
-import { playWaveHeightAt } from './waveFunction';
 
-// Camera-locked: just the iPad and the hands gripping it. The torso, legs,
-// surfboard, and foam live in BodyRig (yaw-only) so they hide behind the
-// view frustum when looking forward and become visible when looking down —
-// real first-person convention.
+// Camera-locked iPad + hands.
 //
-// Hands get short orange wrist nubs that hint at arms going off-screen,
-// without us needing to dynamically connect them to the body's shoulders.
+// Architecture:
+//   - ipadGroupRef is camera-locked instantly (position + quaternion copy).
+//     It carries the iPad mesh, which is hidden in drive (look) mode.
+//   - armsGroupRef trails the camera with a per-frame lerp/slerp so the
+//     hands SWING subtly when the player turns their head. In iPad mode
+//     the lerp factor is 1.0 (snap) so the hands stay glued to the iPad
+//     they're gripping. In drive mode it's 0.16, giving ~4-frame lag for
+//     a natural inertial swing.
+//   - Hand positions inside armsGroupRef ease between a "grip" pose
+//     (gripping the iPad in focus mode) and a "rest" pose (relaxed at
+//     chest level in drive mode), so when the iPad disappears for
+//     driving the hands settle into a natural surfing stance.
 
-const FORWARD_TILT_MULT = 0.16;
 const SHIRT_COLOR = '#e25a3a';
 const SKIN_COLOR = '#f0caa0';
 
-// iPad position in camera-local space.
-//   - Focus (ipad) mode: held up centered, primary reading surface.
-//   - Look (driving) mode: dropped to the bottom of the view, tilted back
-//     so its face is still readable when the camera looks forward.
 const IPAD_POS_IPAD: [number, number, number] = [0, 0, -0.7];
-const IPAD_POS_LOOK: [number, number, number] = [0, -0.55, -0.85];
-const IPAD_TILT_LOOK = 0.55; // ~31° tilt back to face the camera
 const IPAD_BODY: [number, number, number] = [0.78, 0.55, 0.025];
 const IPAD_SCREEN: [number, number] = [0.72, 0.49];
 
-// Hands sit just under the iPad in both modes — we offset them to follow.
-const HAND_OFFSET_X = 0.42;
-const HAND_OFFSET_Y = -0.05;
-const HAND_OFFSET_Z = 0.04;
+// Hand pose targets, in camera-local space (i.e. armsGroup-local once it
+// catches up to the camera).
+const HAND_GRIP_L: [number, number, number] = [-0.42, -0.05, -0.66];
+const HAND_GRIP_R: [number, number, number] = [0.42, -0.05, -0.66];
+const HAND_REST_L: [number, number, number] = [-0.5, -0.55, -0.55];
+const HAND_REST_R: [number, number, number] = [0.5, -0.55, -0.55];
+
+const ARM_LAG_LOOK = 0.16; // smaller = laggier = more swing
+const HAND_POSE_EASE = 0.1;
 
 interface Props {
   lookMode: boolean;
 }
 
 export default function IpadRig({ lookMode }: Props) {
-  const groupRef = useRef<THREE.Group>(null);
+  const ipadGroupRef = useRef<THREE.Group>(null);
   const ipadRef = useRef<THREE.Group>(null);
+  const armsGroupRef = useRef<THREE.Group>(null);
   const handLRef = useRef<THREE.Group>(null);
   const handRRef = useRef<THREE.Group>(null);
-  const { waveHeight, waveSpeed } = useTideData();
-  const animState = useRef({ amplitude: waveHeight, speed: waveSpeed });
-  const easedSlope = useRef(0);
-  const easedPos = useRef<[number, number, number]>([...IPAD_POS_IPAD]);
-  const easedTilt = useRef(0);
+  const initializedArms = useRef(false);
+  const easedHandL = useRef(new THREE.Vector3(...HAND_GRIP_L));
+  const easedHandR = useRef(new THREE.Vector3(...HAND_GRIP_R));
+  const tmpTarget = useRef(new THREE.Vector3()).current;
 
   useFrame((state) => {
-    if (!groupRef.current) return;
-    animState.current.amplitude += (waveHeight - animState.current.amplitude) * 0.04;
-    animState.current.speed += (waveSpeed - animState.current.speed) * 0.04;
+    const cam = state.camera;
 
-    const t = state.clock.elapsedTime;
-    const amp = animState.current.amplitude;
-    const spd = animState.current.speed;
-
-    // Glue to the camera 1:1 — body parts in IpadRig stay locked in screen
-    // space; SurfingMotion handles the surfing bob via the camera itself.
-    groupRef.current.position.copy(state.camera.position);
-    groupRef.current.quaternion.copy(state.camera.quaternion);
-
-    // Ease the iPad position + tilt between the two modes so toggling E
-    // smoothly drops the iPad to the bottom of the view (or back up).
-    const target = lookMode ? IPAD_POS_LOOK : IPAD_POS_IPAD;
-    const targetTilt = lookMode ? IPAD_TILT_LOOK : 0;
-    const k = 0.12;
-    easedPos.current[0] += (target[0] - easedPos.current[0]) * k;
-    easedPos.current[1] += (target[1] - easedPos.current[1]) * k;
-    easedPos.current[2] += (target[2] - easedPos.current[2]) * k;
-    easedTilt.current += (targetTilt - easedTilt.current) * k;
-
-    // In look mode the iPad is fully stabilized — no wave rock — because
-    // the camera is already doing the rocking and we want the iPad to feel
-    // gripped in the player's hands. We keep a tiny breathing slope only
-    // for iPad mode where the camera is still and the iPad needs life.
-    const targetSlope = lookMode
-      ? 0
-      : (playWaveHeightAt(0, 0.8, t, amp, spd) -
-          playWaveHeightAt(0, -0.8, t, amp, spd)) *
-        0.25;
-    easedSlope.current += (targetSlope - easedSlope.current) * 0.08;
-
-    if (ipadRef.current) {
-      ipadRef.current.position.set(
-        easedPos.current[0],
-        easedPos.current[1],
-        easedPos.current[2],
-      );
-      ipadRef.current.rotation.x =
-        easedTilt.current + easedSlope.current * FORWARD_TILT_MULT;
+    // --- iPad group: snaps to camera, hidden in drive mode. ---
+    if (ipadGroupRef.current) {
+      ipadGroupRef.current.position.copy(cam.position);
+      ipadGroupRef.current.quaternion.copy(cam.quaternion);
+      ipadGroupRef.current.visible = !lookMode;
     }
-    // Hands follow the iPad so the player still appears to be holding it.
+    if (ipadRef.current) {
+      ipadRef.current.position.set(...IPAD_POS_IPAD);
+      ipadRef.current.rotation.set(0, 0, 0);
+    }
+
+    // --- Arms group: trails the camera. Lag factor controls the swing. ---
+    if (armsGroupRef.current) {
+      if (!initializedArms.current) {
+        armsGroupRef.current.position.copy(cam.position);
+        armsGroupRef.current.quaternion.copy(cam.quaternion);
+        initializedArms.current = true;
+      }
+      const lerpFactor = lookMode ? ARM_LAG_LOOK : 1.0;
+      armsGroupRef.current.position.lerp(cam.position, lerpFactor);
+      armsGroupRef.current.quaternion.slerp(cam.quaternion, lerpFactor);
+    }
+
+    // Hand pose targets — gripping the iPad vs. resting at chest level.
+    const targetL = lookMode ? HAND_REST_L : HAND_GRIP_L;
+    const targetR = lookMode ? HAND_REST_R : HAND_GRIP_R;
+    tmpTarget.set(...targetL);
+    easedHandL.current.lerp(tmpTarget, HAND_POSE_EASE);
+    tmpTarget.set(...targetR);
+    easedHandR.current.lerp(tmpTarget, HAND_POSE_EASE);
+
     if (handLRef.current) {
-      handLRef.current.position.set(
-        -HAND_OFFSET_X + easedPos.current[0],
-        HAND_OFFSET_Y + easedPos.current[1],
-        HAND_OFFSET_Z + easedPos.current[2],
-      );
-      handLRef.current.rotation.x = easedTilt.current;
+      handLRef.current.position.copy(easedHandL.current);
     }
     if (handRRef.current) {
-      handRRef.current.position.set(
-        HAND_OFFSET_X + easedPos.current[0],
-        HAND_OFFSET_Y + easedPos.current[1],
-        HAND_OFFSET_Z + easedPos.current[2],
-      );
-      handRRef.current.rotation.x = easedTilt.current;
+      handRRef.current.position.copy(easedHandR.current);
     }
   });
 
   return (
-    <group ref={groupRef}>
-      {/* Hands gripping the iPad with short wrist sleeves trailing off. */}
-      <group ref={handLRef}>
-        <Hand side="left" />
-      </group>
-      <group ref={handRRef}>
-        <Hand side="right" />
+    <>
+      {/* iPad — camera-locked, hidden while driving. */}
+      <group ref={ipadGroupRef}>
+        <group ref={ipadRef}>
+          <mesh castShadow>
+            <boxGeometry args={IPAD_BODY} />
+            <meshStandardMaterial color="#1a1a1a" flatShading />
+          </mesh>
+          <mesh position={[0, 0, 0.014]}>
+            <boxGeometry args={[IPAD_BODY[0] - 0.02, IPAD_BODY[1] - 0.02, 0.005]} />
+            <meshStandardMaterial color="#0a0a0a" flatShading />
+          </mesh>
+          <mesh position={[0, 0, 0.018]}>
+            <planeGeometry args={IPAD_SCREEN} />
+            <meshBasicMaterial color="#0a2336" />
+          </mesh>
+        </group>
       </group>
 
-      {/* iPad — screen face is blank in 3D; DOM overlay paints the UI. */}
-      <group ref={ipadRef}>
-        <mesh castShadow>
-          <boxGeometry args={IPAD_BODY} />
-          <meshStandardMaterial color="#1a1a1a" flatShading />
-        </mesh>
-        <mesh position={[0, 0, 0.014]}>
-          <boxGeometry args={[IPAD_BODY[0] - 0.02, IPAD_BODY[1] - 0.02, 0.005]} />
-          <meshStandardMaterial color="#0a0a0a" flatShading />
-        </mesh>
-        <mesh position={[0, 0, 0.018]}>
-          <planeGeometry args={IPAD_SCREEN} />
-          <meshBasicMaterial color="#0a2336" />
-        </mesh>
+      {/* Arms — lag-following the camera so they swing when you look around. */}
+      <group ref={armsGroupRef}>
+        <group ref={handLRef}>
+          <Hand side="left" />
+        </group>
+        <group ref={handRRef}>
+          <Hand side="right" />
+        </group>
       </group>
-    </group>
+    </>
   );
 }
 
+// Forearm + upper-arm dimensions. The forearm is the visible "arm" the
+// player sees from a first-person POV — long enough to clearly read as a
+// limb running off-screen toward the elbow. The upper arm hints at the
+// continuation toward the (mostly invisible) shoulder.
+const FOREARM_LEN = 0.72;
+const UPPERARM_LEN = 0.55;
+
 function Hand({ side }: { side: 'left' | 'right' }) {
+  const sign = side === 'left' ? -1 : 1;
   return (
     <group>
-      {/* Wrist sleeve fading off toward the (off-screen) elbow. */}
+      {/* Forearm — runs from the hand (near end) up + inboard + back toward
+          the elbow. The cylinder's local +Y is its long axis, so we tilt
+          back (rotation.x) and inboard (rotation.z) and translate the
+          midpoint along that direction. With length 0.72 you see most of
+          the forearm in view, with the elbow tucking off-screen. */}
       <mesh
-        position={[side === 'left' ? -0.06 : 0.06, -0.06, 0.06]}
-        rotation={[0.3, 0, side === 'left' ? 0.4 : -0.4]}
+        position={[sign * -0.13, -0.26, 0.32]}
+        rotation={[0.55, 0, sign * 0.42]}
         castShadow
       >
-        <cylinderGeometry args={[0.06, 0.07, 0.28, 10]} />
+        <cylinderGeometry args={[0.07, 0.085, FOREARM_LEN, 12]} />
         <meshStandardMaterial color={SHIRT_COLOR} flatShading />
+      </mesh>
+      {/* Upper arm — continues from the elbow toward the shoulder (mostly
+          off-screen). Slightly steeper tilt back so it looks like the arm
+          bends naturally at the elbow. */}
+      <mesh
+        position={[sign * -0.3, -0.6, 0.78]}
+        rotation={[0.85, 0, sign * 0.55]}
+        castShadow
+      >
+        <cylinderGeometry args={[0.085, 0.095, UPPERARM_LEN, 12]} />
+        <meshStandardMaterial color={SHIRT_COLOR} flatShading />
+      </mesh>
+      {/* Elbow joint — sphere bridging the two limb segments. */}
+      <mesh position={[sign * -0.22, -0.45, 0.6]} castShadow>
+        <sphereGeometry args={[0.08, 10, 10]} />
+        <meshStandardMaterial color={SHIRT_COLOR} flatShading />
+      </mesh>
+      {/* Wrist (slight skin-tone cuff at hand end) */}
+      <mesh position={[sign * -0.02, -0.04, 0.04]} castShadow>
+        <sphereGeometry args={[0.085, 10, 10]} />
+        <meshStandardMaterial color={SKIN_COLOR} flatShading />
       </mesh>
       {/* Hand */}
       <mesh castShadow>
-        <sphereGeometry args={[0.1, 12, 10]} />
+        <sphereGeometry args={[0.11, 12, 10]} />
         <meshStandardMaterial color={SKIN_COLOR} flatShading />
       </mesh>
-      {/* Thumb wrapping around to the iPad face. */}
+      {/* Thumb wrapping toward the iPad face. */}
       <mesh
-        position={[side === 'left' ? 0.05 : -0.05, 0.07, 0.03]}
-        rotation={[0, 0, side === 'left' ? -0.5 : 0.5]}
+        position={[sign * 0.055, 0.075, 0.04]}
+        rotation={[0, 0, sign * -0.5]}
         castShadow
       >
-        <capsuleGeometry args={[0.028, 0.07, 4, 8]} />
+        <capsuleGeometry args={[0.03, 0.085, 4, 8]} />
         <meshStandardMaterial color={SKIN_COLOR} flatShading />
       </mesh>
     </group>
   );
 }
-

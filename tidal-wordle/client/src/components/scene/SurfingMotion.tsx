@@ -38,12 +38,18 @@ const MAX_PITCH_OFFSET = 0.22; // ~13°
 const MAX_ROLL = 0.26; // ~15°
 
 // Object-collision shake: triggered via useImpactStore when a rock or other
-// obstacle in EnvironmentObjects drifts through the player's lane. Spikes a
-// high-frequency multi-octave shake on pitch and roll that decays over
-// ~0.7s. Waves themselves no longer trigger any extra tilt or shake — the
-// only motion from the swell is the steady slope-based pitch/roll below.
-const SHAKE_DURATION = 0.7;
-const SHAKE_AMP = 0.22; // rad — pronounced jolt
+// obstacle in EnvironmentObjects drifts through the player's lane.
+//
+// Notes on smoothness: the previous version used very high sine frequencies
+// (40–127 rad/s) which alias at 60fps — each frame the sin value jumped by
+// nearly a full cycle, producing visible glitchiness. We now combine
+// lower-frequency sines (well under Nyquist) AND low-pass filter the result
+// with a per-frame ease, so the shake reads as motion-blurred camera judder
+// instead of teleporting rotations. Amplitude is reduced too so the impact
+// is felt rather than seizure-inducing.
+const SHAKE_DURATION = 0.9;
+const SHAKE_AMP = 0.085; // rad — felt but smooth
+const SHAKE_EASE = 0.32; // low-pass filter on the per-frame shake delta
 
 interface Props {
   lookMode: boolean;
@@ -62,6 +68,8 @@ export default function SurfingMotion({ lookMode }: Props) {
   const easedTiltIntensity = useRef(TILT_INTENSITY_IPAD);
   const easedPitchOffset = useRef(0);
   const easedRoll = useRef(0);
+  const easedShakePitch = useRef(0);
+  const easedShakeRoll = useRef(0);
 
   useFrame((state) => {
     animState.current.amplitude += (waveHeight - animState.current.amplitude) * 0.04;
@@ -108,29 +116,40 @@ export default function SurfingMotion({ lookMode }: Props) {
     easedPitchOffset.current += (targetPitch - easedPitchOffset.current) * tiltEase;
     easedRoll.current += (targetRoll - easedRoll.current) * tiltEase;
 
-    // Solid-object shake: pulled from the impact store. Fades linearly over
-    // SHAKE_DURATION starting when the impact was triggered. Multi-octave
-    // so it feels chaotic rather than sinusoidal. Gated by tilt intensity
-    // so iPad mode stays rock-steady even if an obstacle drifts past.
+    // Solid-object shake from the impact store. Smoothed via a per-frame
+    // ease so even GPU stutter doesn't make the shake teleport — the
+    // raw multi-sine target rides under Nyquist, and `easedShake` low-pass
+    // filters whatever's left.
     const impact = useImpactStore.getState();
     const sinceHit = t - impact.lastImpactAt;
-    const shakeEnvelope =
+    // Quadratic envelope: hits hard immediately, eases out gently instead
+    // of a hard linear cutoff.
+    const fade =
       sinceHit >= 0 && sinceHit < SHAKE_DURATION
-        ? (1 - sinceHit / SHAKE_DURATION) * impact.lastImpactStrength
+        ? Math.pow(1 - sinceHit / SHAKE_DURATION, 2) * impact.lastImpactStrength
         : 0;
-    const shakeStrength = shakeEnvelope * SHAKE_AMP * easedTiltIntensity.current;
-    const pitchShake =
-      (Math.sin(t * 41.3) * 0.6 + Math.sin(t * 73.7) * 0.3 + Math.sin(t * 113) * 0.2) *
+    const shakeStrength = fade * SHAKE_AMP * easedTiltIntensity.current;
+
+    // Lower-frequency oscillators (3–11 Hz), comfortably below Nyquist at 60fps.
+    const rawShakePitch =
+      (Math.sin(t * 19.2) * 0.55 +
+        Math.sin(t * 38.4) * 0.3 +
+        Math.sin(t * 67.1) * 0.18) *
       shakeStrength;
-    const rollShake =
-      (Math.sin(t * 53.1) * 0.55 + Math.sin(t * 89.3) * 0.35 + Math.sin(t * 127) * 0.2) *
+    const rawShakeRoll =
+      (Math.cos(t * 21.1) * 0.55 +
+        Math.cos(t * 41.7) * 0.3 +
+        Math.cos(t * 72.3) * 0.18) *
       shakeStrength;
+
+    easedShakePitch.current += (rawShakePitch - easedShakePitch.current) * SHAKE_EASE;
+    easedShakeRoll.current += (rawShakeRoll - easedShakeRoll.current) * SHAKE_EASE;
 
     camera.rotation.order = 'YXZ';
     camera.rotation.x +=
-      easedPitchOffset.current * easedTiltIntensity.current + pitchShake;
+      easedPitchOffset.current * easedTiltIntensity.current + easedShakePitch.current;
     camera.rotation.z =
-      easedRoll.current * easedTiltIntensity.current + rollShake;
+      easedRoll.current * easedTiltIntensity.current + easedShakeRoll.current;
   });
 
   return null;
