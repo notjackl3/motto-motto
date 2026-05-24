@@ -7,17 +7,47 @@ export function useEffectExpiry(): void {
     const tick = () => {
       const now = Date.now();
       const state = useGameStore.getState();
+      const hadRecipeSpam = state.overlays.some((o) => o.type === 'recipe-spam');
       const overlays = state.overlays.filter(
         (o) => !o.expiresAt || o.expiresAt > now
       );
       const activeEffects = state.activeEffects.filter(
         (e) => !e.expiresAt || e.expiresAt > now
       );
+      const updates: Partial<typeof state> = {};
+      if (overlays.length !== state.overlays.length) {
+        updates.overlays = overlays;
+        if (
+          hadRecipeSpam &&
+          !overlays.some((o) => o.type === 'recipe-spam') &&
+          state.halfGuessMask
+        ) {
+          updates.halfGuessMask = null;
+        }
+      }
+      if (activeEffects.length !== state.activeEffects.length) {
+        updates.activeEffects = activeEffects;
+        if (
+          state.faceSwap &&
+          !activeEffects.some((e) => e.cardId === 'face-swap-glitch')
+        ) {
+          updates.faceSwap = false;
+          updates.faceSwapImageUrl = null;
+        }
+      }
       if (
-        overlays.length !== state.overlays.length ||
-        activeEffects.length !== state.activeEffects.length
+        state.forcedBreakLabel &&
+        !state.forcedBreakPending &&
+        !state.myGuesses.some(
+          (g) => g.colorsRevealAt && g.colorsRevealAt > now
+        )
       ) {
-        useGameStore.setState({ overlays, activeEffects });
+        updates.forcedBreakLabel = null;
+        updates.forcedBreakIconUrl = null;
+        updates.forcedBreakIconFallbackUrl = null;
+      }
+      if (Object.keys(updates).length > 0) {
+        useGameStore.setState(updates);
       }
     };
     const id = setInterval(tick, 200);

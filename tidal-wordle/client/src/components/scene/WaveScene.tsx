@@ -5,7 +5,7 @@ import SkyAndLighting from './SkyAndLighting';
 
 export default function WaveScene() {
   return (
-    <div className="absolute inset-0 -z-10">
+    <div className="absolute inset-0 z-0">
       <Canvas camera={{ position: [4, 3, 6], fov: 50 }}>
         <SkyAndLighting />
         <Wave />

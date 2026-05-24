@@ -2,7 +2,9 @@
  * gameStore seam (Dev A / Dev B):
  * - Dev B owns: mode (sync), opponentGuesses (write via socket), opponentCooldownEndsAt,
  *   tide fields, and reads musicSwapActive + faceSwap from scene.
- * - Dev A owns: answer, guesses (my), scoring, cards, hints, overlays, inputLocked, glitchActive.
+ * - Dev A owns: answer, guesses (my), scoring, cards, hints, overlays, inputLocked,
+ *   glitchActive, halfGuessMask, bonusProbe*, forcedBreak*, distractionBlocking.
+ * - answerLength: player-known length only (null until a hint reveals it; never from guesses).
  * - Coordinate before adding fields Dev B must read (document in PR).
  */
 import { create } from 'zustand';
@@ -11,27 +13,67 @@ import type {
   EffectTarget,
   GameMode,
   Guess,
+  HalfGuessMask,
   Hint,
   MatchWinner,
   OverlayState,
+  Card,
+  CardDetailPopupState,
+  CardDetailSource,
+  CompletedRoundRecord,
   RoundBannerState,
   SubmitGuessResult,
 } from '../types';
-import { evaluateGuess, isGuessCorrect } from '../lib/guessEvaluator';
-import {
-  applyCriticsAtRoundEnd,
-  fireCardAfterGuess,
-} from '../lib/cardEffects';
-import { getRandomWord, isValidGuess, normalizeWord } from '../lib/wordList';
+import { isValidProbeWord } from '../lib/cardContent/probeWords';
+import { stopPlaylist } from '../lib/cardAudio';
+import { evaluateGuess, isSolvedGuess } from '../lib/guessEvaluator';
+import { getRandomWord, normalizeWord } from '../lib/wordList';
 import {
   DEFAULT_COOLDOWN_MS,
-  MIN_FIRST_GUESS_LENGTH,
-  MAX_GUESSES,
+  MIN_GUESS_LENGTH,
   ROUND_START_SCORE,
   applyRoundToMatch,
   computeRoundScoreAfterGuess,
+  resolveCriticsRating,
   isMatchOver,
 } from '../lib/scoring';
+
+function applyCriticsAtRoundEnd(): void {
+  const state = useGameStore.getState();
+  const bonus = resolveCriticsRating(
+    state.mode,
+    state.myGuesses,
+    state.opponentGuesses
+  );
+  const updates: Partial<ReturnType<typeof useGameStore.getState>> = {
+    lastCriticsRatings: { me: bonus.myStars, opponent: bonus.oppStars },
+    criticsRatingPending: false,
+  };
+  if (state.criticsRatingPending) {
+    updates.roundScore = {
+      me: state.roundScore.me + bonus.me,
+      opponent: state.roundScore.opponent + bonus.opponent,
+    };
+  }
+  useGameStore.setState(updates);
+}
+
+function triggerCardDrawAfterGuess(): void {
+  void import('../lib/cardEffects').then((m) => m.fireCardAfterGuess());
+}
+
+function withoutRecipeSpamOverlays(overlays: OverlayState[]): OverlayState[] {
+  return overlays.filter((o) => o.type !== 'recipe-spam');
+}
+
+function clearRecipeSpamState(
+  overlays: OverlayState[]
+): Pick<GameStoreState, 'overlays' | 'halfGuessMask'> {
+  return {
+    overlays: withoutRecipeSpamOverlays(overlays),
+    halfGuessMask: null,
+  };
+}
 
 type MatchEndListener = (winner: MatchWinner) => void;
 const matchEndListeners = new Set<MatchEndListener>();
@@ -68,17 +110,35 @@ interface GameStoreState {
   glitchUntilNextGuess: boolean;
   overlays: OverlayState[];
   cooldownFrozen: boolean;
-  forcedBreakActive: boolean;
   chessPuzzleActive: boolean;
   chessLockUntil: number | null;
-  pendingDiceRandomize: boolean;
-  pendingCardSwap: boolean;
   criticsRatingPending: boolean;
   lastCriticsRatings: { me: number; opponent: number } | null;
   roundOver: boolean;
   roundBanner: RoundBannerState | null;
+  /** Completed rounds this match (word revealed after each round). */
+  roundHistory: CompletedRoundRecord[];
+  cardDetailPopup: CardDetailPopupState | null;
   musicSwapActive: boolean;
   faceSwap: boolean;
+  /** Set by face-swap-glitch; Dev B scene may read, Dev A shows HUD fallback. */
+  faceSwapImageUrl: string | null;
+  /** Recipe-spam: hide half of each guess row for this target until round ends. */
+  halfGuessMask: HalfGuessMask | null;
+  /** Rejection-letter: player may submit one probe word. */
+  bonusProbePending: boolean;
+  bonusProbeGuess: Guess | null;
+  /** Row index where bonusProbeGuess is pinned (myGuesses.length at submit time). */
+  bonusProbeRowIndex: number | null;
+  /** Forced-break: flavor label shown while color reveal is pending. */
+  forcedBreakLabel: string | null;
+  /** Forced-break: next self guess gets delayed tile colors. */
+  forcedBreakPending: boolean;
+  /** Forced-break: theme icon (primary URL). */
+  forcedBreakIconUrl: string | null;
+  forcedBreakIconFallbackUrl: string | null;
+  /** Bored-distraction: blocks input until scroll dismissed. */
+  distractionBlocking: boolean;
 
   setMode: (mode: GameMode | null) => void;
   startMatch: (mode: GameMode) => void;
@@ -86,9 +146,14 @@ interface GameStoreState {
   submitGuess: (word: string) => SubmitGuessResult;
   endRound: (winner: 'me' | 'opponent') => void;
   dismissRoundBanner: () => void;
+  /** Reveal answer length to the player (hint cards call this). */
+  revealAnswerLength: () => void;
+  showCardDetailPopup: (card: Card, source?: CardDetailSource) => void;
+  dismissCardDetailPopup: () => void;
   resetRound: () => void;
   resetMatch: () => void;
   setMyCooldownEndsAt: (at: number | null) => void;
+  clearDistractionBlock: () => void;
 }
 
 const initialRoundState = {
@@ -107,13 +172,21 @@ const initialRoundState = {
   glitchUntilNextGuess: false,
   overlays: [] as OverlayState[],
   cooldownFrozen: false,
-  forcedBreakActive: false,
   chessPuzzleActive: false,
   chessLockUntil: null as number | null,
   criticsRatingPending: false,
   lastCriticsRatings: null as { me: number; opponent: number } | null,
   roundOver: false,
   roundBanner: null as RoundBannerState | null,
+  halfGuessMask: null as HalfGuessMask | null,
+  bonusProbePending: false,
+  bonusProbeGuess: null as Guess | null,
+  bonusProbeRowIndex: null as number | null,
+  forcedBreakLabel: null as string | null,
+  forcedBreakPending: false,
+  forcedBreakIconUrl: null as string | null,
+  forcedBreakIconFallbackUrl: null as string | null,
+  distractionBlocking: false,
 };
 
 export const useGameStore = create<GameStoreState>((set, get) => ({
@@ -124,11 +197,21 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   roundsWon: { me: 0, opponent: 0 },
   roundsToWin: 2,
   matchWinner: null,
+  roundHistory: [],
+  cardDetailPopup: null,
   cardDrawHistory: [],
-  pendingDiceRandomize: false,
-  pendingCardSwap: false,
   musicSwapActive: false,
   faceSwap: false,
+  faceSwapImageUrl: null as string | null,
+  halfGuessMask: null,
+  bonusProbePending: false,
+  bonusProbeGuess: null,
+  bonusProbeRowIndex: null,
+  forcedBreakLabel: null,
+  forcedBreakPending: false,
+  forcedBreakIconUrl: null,
+  forcedBreakIconFallbackUrl: null,
+  distractionBlocking: false,
 
   setMode: (mode) => set({ mode }),
 
@@ -138,9 +221,10 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       matchScore: { me: 0, opponent: 0 },
       roundsWon: { me: 0, opponent: 0 },
       matchWinner: null,
+      roundHistory: [],
+      cardDetailPopup: null,
       cardDrawHistory: [],
       myHand: [],
-      roundBanner: null,
       ...initialRoundState,
       roundScore: { me: ROUND_START_SCORE, opponent: ROUND_START_SCORE },
     });
@@ -156,8 +240,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       roundScore: { me: ROUND_START_SCORE, opponent: ROUND_START_SCORE },
       roundOver: false,
       roundBanner: null,
-      pendingDiceRandomize: false,
-      pendingCardSwap: false,
+      cardDrawHistory: [],
     });
   },
 
@@ -167,9 +250,40 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     if (state.roundOver || state.matchWinner) {
       return { ok: false, reason: 'round_over' };
     }
-    if (state.inputLocked || state.chessPuzzleActive) {
+    if (
+      state.inputLocked ||
+      state.chessPuzzleActive ||
+      state.distractionBlocking
+    ) {
       return { ok: false, reason: 'locked' };
     }
+    const word = normalizeWord(rawWord);
+    if (!word || word.length < MIN_GUESS_LENGTH) {
+      return { ok: false, reason: 'length' };
+    }
+
+    const answerLen = state.answer.length;
+
+    if (state.bonusProbePending && !state.bonusProbeGuess) {
+      if (!isValidProbeWord(word, answerLen)) {
+        return { ok: false, reason: 'length' };
+      }
+      const results = evaluateGuess(word, state.answer);
+      const probeGuess: Guess = {
+        word,
+        results,
+        submittedAt: Date.now(),
+        isProbe: true,
+      };
+      set({
+        bonusProbeGuess: probeGuess,
+        bonusProbeRowIndex: state.myGuesses.length,
+        bonusProbePending: false,
+        ...clearRecipeSpamState(state.overlays),
+      });
+      return { ok: true, solved: false };
+    }
+
     if (
       state.myCooldownEndsAt &&
       Date.now() < state.myCooldownEndsAt &&
@@ -177,51 +291,46 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     ) {
       return { ok: false, reason: 'locked' };
     }
-    if (state.myGuesses.length >= MAX_GUESSES) {
-      return { ok: false, reason: 'round_over' };
-    }
-
-    const word = normalizeWord(rawWord);
-    if (!word) return { ok: false, reason: 'length' };
-
-    if (state.answerLength === null) {
-      if (word.length < MIN_FIRST_GUESS_LENGTH) {
-        return { ok: false, reason: 'length' };
-      }
-    } else {
-      if (word.length !== state.answerLength) {
-        return { ok: false, reason: 'length' };
-      }
-      if (!isValidGuess(word)) {
-        return { ok: false, reason: 'not_in_list' };
-      }
-    }
-
     const results = evaluateGuess(word, state.answer);
-    const solved = isGuessCorrect(results);
+    const solved = isSolvedGuess(word, state.answer);
     const guess: Guess = { word, results, submittedAt: Date.now() };
+
+    if (state.forcedBreakPending) {
+      guess.colorsRevealAt = Date.now() + answerLen * 1000;
+    }
 
     let newRoundScore = state.roundScore.me;
     if (!solved) {
-      newRoundScore = computeRoundScoreAfterGuess(
-        state.roundScore.me,
-        results,
-        false
-      );
+      newRoundScore = computeRoundScoreAfterGuess(state.roundScore.me, false);
     }
 
     const updates: Partial<GameStoreState> = {
       myGuesses: [...state.myGuesses, guess],
       roundScore: { ...state.roundScore, me: newRoundScore },
+      ...clearRecipeSpamState(state.overlays),
     };
 
-    if (state.answerLength === null) {
-      updates.answerLength = state.answer.length;
+    if (state.forcedBreakPending) {
+      updates.forcedBreakPending = false;
     }
 
     if (state.glitchUntilNextGuess) {
       updates.glitchActive = null;
       updates.glitchUntilNextGuess = false;
+    }
+    if (state.activeEffects.some((e) => e.cardId === 'brainrot-glitch')) {
+      updates.activeEffects = state.activeEffects.filter(
+        (e) => e.cardId !== 'brainrot-glitch'
+      );
+    }
+    if (
+      state.activeEffects.some(
+        (e) => e.cardId === 'meme-cannon' && e.target === 'self'
+      )
+    ) {
+      updates.activeEffects = (
+        updates.activeEffects ?? state.activeEffects
+      ).filter((e) => !(e.cardId === 'meme-cannon' && e.target === 'self'));
     }
 
     set(updates);
@@ -230,11 +339,8 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       set({ myCooldownEndsAt: Date.now() + DEFAULT_COOLDOWN_MS });
     }
 
-    const guessCount = get().myGuesses.length;
-    const roundEnds = solved || guessCount >= MAX_GUESSES;
-
-    if (!roundEnds) {
-      fireCardAfterGuess();
+    if (!solved) {
+      triggerCardDrawAfterGuess();
     }
 
     if (solved) {
@@ -242,12 +348,20 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       return { ok: true, solved: true };
     }
 
-    if (guessCount >= MAX_GUESSES) {
-      get().endRound('opponent');
-      return { ok: true, solved: false };
-    }
-
     return { ok: true, solved: false };
+  },
+
+  revealAnswerLength: () => {
+    const answer = get().answer;
+    if (answer) set({ answerLength: answer.length });
+  },
+
+  showCardDetailPopup: (card, source = 'history') => {
+    set({ cardDetailPopup: { card, source } });
+  },
+
+  dismissCardDetailPopup: () => {
+    set({ cardDetailPopup: null });
   },
 
   endRound: (winner: 'me' | 'opponent') => {
@@ -276,11 +390,30 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     const roundNumber =
       newRoundsWon.me + newRoundsWon.opponent;
 
+    const winningGuess =
+      winner === 'me'
+        ? afterCritics.myGuesses[afterCritics.myGuesses.length - 1]?.word
+        : afterCritics.opponentGuesses[
+            afterCritics.opponentGuesses.length - 1
+          ]?.word;
+
+    const historyEntry: CompletedRoundRecord = {
+      roundIndex: roundNumber,
+      answer: afterCritics.answer ?? '????',
+      winner,
+      pointsBanked: winnerScore,
+      myFinalRoundScore: afterCritics.roundScore.me,
+      myGuessCount: afterCritics.myGuesses.length,
+      opponentGuessCount: afterCritics.opponentGuesses.length,
+      winningGuess,
+    };
+
     set({
       roundOver: true,
       matchScore: newMatchScore,
       roundsWon: newRoundsWon,
       matchWinner,
+      roundHistory: [...afterCritics.roundHistory, historyEntry],
       roundBanner: matchWinner
         ? null
         : {
@@ -316,22 +449,26 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   },
 
   resetMatch: () => {
+    stopPlaylist();
     set({
       mode: null,
       matchScore: { me: 0, opponent: 0 },
       roundsWon: { me: 0, opponent: 0 },
       matchWinner: null,
+      roundHistory: [],
+      cardDetailPopup: null,
       cardDrawHistory: [],
       myHand: [],
-      pendingDiceRandomize: false,
-      pendingCardSwap: false,
       musicSwapActive: false,
       faceSwap: false,
-      roundBanner: null,
+  faceSwapImageUrl: null as string | null,
       ...initialRoundState,
       roundScore: { me: ROUND_START_SCORE, opponent: ROUND_START_SCORE },
     });
   },
 
   setMyCooldownEndsAt: (at) => set({ myCooldownEndsAt: at }),
+
+  clearDistractionBlock: () =>
+    set({ distractionBlocking: false, inputLocked: false }),
 }));

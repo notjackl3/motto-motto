@@ -1,4 +1,4 @@
-import type { Card } from '../../types';
+import type { Card, GameMode } from '../../types';
 
 export const CARD_DEFINITIONS: Card[] = [
   {
@@ -6,6 +6,8 @@ export const CARD_DEFINITIONS: Card[] = [
     name: 'Meme Cannon',
     type: 'attack',
     description: 'Drops a goofy meme image over the board with your last wrong guess as caption.',
+    soloDescription:
+      'Chaos draw — drops a goofy meme over your board with your last wrong guess as caption.',
     targetSelf: false,
     duration: 'instant',
   },
@@ -13,7 +15,10 @@ export const CARD_DEFINITIONS: Card[] = [
     id: 'brainrot-glitch',
     name: 'Brainrot Glitch',
     type: 'attack',
-    description: "Glitch-shakes the target's letter tiles for one guess cycle.",
+    description:
+      "Distorts tile colors in a chaotic cycle so the target can't tell which letters were green or orange — lasts one guess.",
+    soloDescription:
+      "Chaos draw — your tile colors glitch and shift so you can't tell which letters were green or orange until your next guess.",
     targetSelf: false,
     duration: 'instant',
   },
@@ -21,7 +26,9 @@ export const CARD_DEFINITIONS: Card[] = [
     id: 'status-dog',
     name: 'Status Dog',
     type: 'attack',
-    description: "A loyal pup covers one of the target's revealed letters for 10 seconds.",
+    description: "A loyal pup covers one of the target's letter tiles for 10 seconds.",
+    soloDescription:
+      'Chaos draw — a loyal pup covers one of your letter tiles for 10 seconds.',
     targetSelf: false,
     duration: 'persistent',
   },
@@ -30,6 +37,7 @@ export const CARD_DEFINITIONS: Card[] = [
     name: 'Playful Insult',
     type: 'attack',
     description: 'A playful jab pops up in front of the target.',
+    soloDescription: 'Chaos draw — a playful jab pops up on your screen.',
     targetSelf: false,
     duration: 'instant',
   },
@@ -37,7 +45,10 @@ export const CARD_DEFINITIONS: Card[] = [
     id: 'forced-break',
     name: 'Forced Break',
     type: 'attack',
-    description: 'Opens a popup the target must manually dismiss.',
+    description:
+      'Delays color feedback on the target\'s next guess — green and yellow tiles stay neutral for answer-length seconds.',
+    soloDescription:
+      'Chaos draw — your next guess hides green/yellow colors for answer-length seconds (you can still guess on the normal cooldown).',
     targetSelf: false,
     duration: 'instant',
   },
@@ -46,6 +57,8 @@ export const CARD_DEFINITIONS: Card[] = [
     name: 'Bored Distraction',
     type: 'attack',
     description: 'A corner distraction popup with a random activity suggestion.',
+    soloDescription:
+      'Chaos draw — a corner distraction with a random activity suggestion.',
     targetSelf: false,
     duration: 'instant',
   },
@@ -54,6 +67,8 @@ export const CARD_DEFINITIONS: Card[] = [
     name: 'Recipe Spam',
     type: 'attack',
     description: 'Overlays a food-blog style scrolling ingredient list.',
+    soloDescription:
+      'Chaos draw — overlays a food-blog style scrolling ingredient list on your board.',
     targetSelf: false,
     duration: 'instant',
   },
@@ -62,6 +77,7 @@ export const CARD_DEFINITIONS: Card[] = [
     name: 'Rejection Letter',
     type: 'attack',
     description: 'A formal rejection email overlay for your guess.',
+    soloDescription: 'Chaos draw — a formal rejection email for your latest guess.',
     targetSelf: false,
     duration: 'instant',
   },
@@ -69,9 +85,12 @@ export const CARD_DEFINITIONS: Card[] = [
     id: 'face-swap-glitch',
     name: 'Face Swap Glitch',
     type: 'attack',
-    description: 'Triggers a cartoon face-swap on the surfer for 5 seconds.',
+    description:
+      'Glitch face overlay on the target board for answer-length seconds (category-themed).',
+    soloDescription:
+      'Chaos draw — a glitchy cartoon face covers your board for answer-length seconds.',
     targetSelf: false,
-    duration: 'instant',
+    duration: 'persistent',
   },
   {
     id: 'letter-reveal',
@@ -134,6 +153,7 @@ export const CARD_DEFINITIONS: Card[] = [
     name: 'Chess Gambit',
     type: 'wildcard',
     description: 'Both players must solve a mini chess puzzle before continuing.',
+    soloDescription: 'Solve a mini chess puzzle before you can continue.',
     targetSelf: false,
     duration: 'instant',
   },
@@ -141,7 +161,10 @@ export const CARD_DEFINITIONS: Card[] = [
     id: 'dice-roll',
     name: 'Dice Roll',
     type: 'wildcard',
-    description: 'Randomizes or swaps the next card draw for both players.',
+    description:
+      'Discards this draw and instantly plays a random card from the deck instead (one reroll).',
+    soloDescription:
+      'Discards this draw and instantly plays a random card from the deck instead (one reroll).',
     targetSelf: false,
     duration: 'instant',
   },
@@ -158,11 +181,26 @@ export const CARD_DEFINITIONS: Card[] = [
     name: "Critic's Rating",
     type: 'wildcard',
     description: 'Rates guess efficiency at round end; winner gets a bonus.',
+    soloDescription:
+      'Rates your guess efficiency at round end; 4+ stars earns a +25 bonus.',
     targetSelf: false,
     duration: 'instant',
   },
 ];
 
+export const CARD_IDS = CARD_DEFINITIONS.map((c) => c.id) as [
+  string,
+  ...string[],
+];
+
 export function getCardById(id: string): Card | undefined {
   return CARD_DEFINITIONS.find((c) => c.id === id);
+}
+
+export function getCardDescription(
+  card: Card,
+  mode: GameMode | null
+): string {
+  if (mode === 'solo' && card.soloDescription) return card.soloDescription;
+  return card.description;
 }

@@ -1,126 +1,97 @@
-import { CARD_DEFINITIONS, getCardById } from '../components/cards/CardDefinitions';
-import type { ActiveEffect, Card, EffectTarget, Hint } from '../types';
+import {
+  CARD_DEFINITIONS,
+  CARD_IDS,
+  getCardById,
+} from '../components/cards/CardDefinitions';
+import { getCardDrawPool } from './devCardPool';
+import type { ActiveEffect, Card, EffectTarget, Guess, Hint } from '../types';
 import { useGameStore } from '../stores/gameStore';
-import { isGuessCorrect } from './guessEvaluator';
-import { criticsRatingBonus } from './scoring';
+import { evaluateGuess, isSolvedGuess } from './guessEvaluator';
+import { getRelatedHint } from './relatedHints';
+import { buildLetterPattern, formatLetterPattern } from './playerKnowledge';
+import { resolveCriticsRating } from './scoring';
+import { getWordTheme, getThemeParentCategory, categoryLabel, getCategoryRelatedWord } from './wordMeta';
+import {
+  pickMemeCannon,
+  pickBrainrot,
+  pickStatusDog,
+  pickForcedBreak,
+  pickBoredDistraction,
+  pickRecipeSpam,
+  pickRejectionLetter,
+  pickPlayfulInsult,
+  pickFaceSwap,
+  hintPrefix,
+  pickDiceFlavor,
+  fillTemplate,
+} from './cardContent/tierBVariants';
+import { getCategoryStickerUrls } from './cardAssets';
+import { generateBrainrotStickers } from './cardContent/brainrotStickers';
+import {
+  getMemeHeroUrls,
+  getStatusDogUrls,
+  getRecipeHeaderUrls,
+  getRejectionLetterheadUrls,
+  getRejectionPaperTextureUrl,
+  getDistractionHeaderUrls,
+  getFaceSwapUrls,
+  getForcedBreakIconUrls,
+} from './cardAssets';
+import { playCardSfx, startPlaylistForTheme, stopPlaylist } from './cardAudio';
+import { suggestWordFromPattern } from './cardContent/suggestWord';
+import { isValidProbeWord } from './cardContent/probeWords';
+import { pickRandomChessPuzzle, getChessPuzzleById } from './chessPuzzles';
+
+export { CARD_IDS };
+
+/** Cards that use a full-screen / board-blocking overlay instead of CardDetailPopup on draw. */
+const CARDS_SKIP_DRAW_DETAIL_POPUP = new Set([
+  'bored-distraction',
+  'chess-gambit',
+  'playful-insult',
+  'rejection-letter',
+  'recipe-spam',
+]);
+
+function showCardDetailOnDraw(card: Card): void {
+  if (!CARDS_SKIP_DRAW_DETAIL_POPUP.has(card.id)) {
+    useGameStore.getState().showCardDetailPopup(card, 'draw');
+  }
+}
 
 const VOWELS = new Set(['A', 'E', 'I', 'O', 'U']);
-
-export const RELATED_HINTS: Record<string, string> = {
-  SAND: 'dune',
-  SURF: 'wave',
-  WAVE: 'swell',
-  TIDE: 'ebb',
-  SHELL: 'clam',
-  CRAB: 'lobster',
-  REEF: 'coral',
-  CORAL: 'reef',
-  SHORE: 'coast',
-  DUNE: 'sand',
-  BEACH: 'shore',
-  SALT: 'brine',
-  KELP: 'seaweed',
-  BUOY: 'marker',
-  BOAT: 'sail',
-  SHARK: 'fish',
-  SAIL: 'wind',
-  SWIM: 'float',
-  FOAM: 'surf',
-  PALM: 'tropical',
-  OCEAN: 'sea',
-  PIER: 'dock',
-  ROCK: 'stone',
-  FISH: 'swim',
-  SUN: 'warmth',
-  TOWEL: 'dry',
-  WETSUIT: 'dive',
-  LIFEGUARD: 'rescue',
-  BAY: 'inlet',
-  COAST: 'shore',
-  GULF: 'bay',
-  COVE: 'inlet',
-  DOCK: 'pier',
-  LAGOON: 'bay',
-  WHALE: 'mammal',
-  DOLPHIN: 'porpoise',
-  SEAL: 'pup',
-  GULL: 'bird',
-  SWELL: 'wave',
-  CURRENT: 'flow',
-  ISLAND: 'atoll',
-  DRIFTWOOD: 'wreck',
-  SEAWEED: 'kelp',
-  SUNSET: 'dusk',
-  HORIZON: 'skyline',
-  TROPICAL: 'warm',
-  VOYAGE: 'sail',
-  MARINA: 'harbor',
-  HARBOR: 'port',
-  LIGHTHOUSE: 'beacon',
-  SNORKEL: 'dive',
-  KAYAK: 'paddle',
-  YACHT: 'boat',
-  UMBRELLA: 'shade',
-  HAMMOCK: 'rest',
-};
-
-const PLAYFUL_INSULTS = [
-  'Your guesses are weak sauce.',
-  'Did you even read the rules?',
-  'The tide waits for no one — neither should you.',
-  'That guess had all the confidence of a deflated beach ball.',
-  'Were you typing with sunscreen on your hands?',
-  'Even the seagulls are judging you.',
-  'Bold strategy. Lets see if it pays off.',
-  'Your word sense is drier than low tide.',
-  'The ocean called — it wants its vowels back.',
-  'Nice try. The beach sends its regards.',
-];
-
-const BORED_SUGGESTIONS = [
-  'Why not learn origami?',
-  'Touch grass? (Or sand?)',
-  'Count the waves for a minute.',
-  'Hydrate — the sun is relentless.',
-  'Sketch a crab in the margin.',
-  'Practice your shaka hand sign.',
-];
-
-const RECIPE_INGREDIENTS = [
-  '2 cups all-purpose flour',
-  '1 tsp sea salt (harvested at dawn)',
-  '3 tbsp melted coconut oil',
-  '1/2 cup granulated sugar',
-  '2 large eggs, room temperature',
-  '1 tsp vanilla extract',
-  '1 cup whole milk',
-  '2 tsp baking powder',
-  'Zest of one lime',
-  '1/4 cup toasted coconut flakes',
-  'Pinch of sand — just kidding',
-  '1 tbsp honey from local bees',
-  'Fresh berries for garnish',
-  'Powdered sugar for dusting',
-  'Whipped cream (optional)',
-  'Edible flowers (Instagram optional)',
-  '1 stick unsalted butter',
-  '1/2 tsp cinnamon',
-  '1/4 tsp nutmeg',
-  'Dark chocolate chips',
-  'Chopped macadamia nuts',
-  'Lemon juice',
-  'Orange blossom water',
-  'Almond extract',
-  'Graham cracker crumbs',
-  'Sweetened condensed milk',
-  'Evaporated milk',
-  'Cream cheese frosting',
-  'Caramel drizzle',
-  'Sea salt caramel',
-];
+const MAX_OVERLAYS = 3;
 
 function uid(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function getGuessesForTarget(target: EffectTarget) {
+  const state = useGameStore.getState();
+  return target === 'self' ? state.myGuesses : state.opponentGuesses;
+}
+
+function getLastWrongGuess(target: EffectTarget, answer: string): string {
+  const guesses = getGuessesForTarget(target);
+  const lastWrong = [...guesses]
+    .reverse()
+    .find((g) => !g.isProbe && answer && !isSolvedGuess(g.word, answer));
+  return lastWrong?.word ?? '???';
+}
+
+/** Rightmost revealed letter on the latest guess row (matches board row indices). */
+function pickStatusDogCoverTile(guesses: Guess[]): { row: number; col: number } {
+  if (guesses.length === 0) {
+    return { row: 0, col: 0 };
+  }
+  const row = guesses.length - 1;
+  const results = guesses[row].results;
+  for (let col = results.length - 1; col >= 0; col--) {
+    if (results[col].state !== 'empty') {
+      return { row, col };
+    }
+  }
+  return { row, col: 0 };
 }
 
 function addHint(text: string): void {
@@ -132,14 +103,39 @@ function addOverlay(
   type: string,
   message?: string,
   expiresAt?: number,
-  dismissable = true
+  dismissable = true,
+  meta?: Record<string, unknown>
 ): void {
-  useGameStore.setState((s) => ({
-    overlays: [
+  useGameStore.setState((s) => {
+    let overlays = [
       ...s.overlays,
-      { id: uid(), type, message, expiresAt, dismissable },
-    ],
-  }));
+      { id: uid(), type, message, expiresAt, dismissable, meta },
+    ];
+    const blocking = overlays.filter(
+      (o) => o.type === 'chess-gambit' || o.type === 'bored-distraction'
+    );
+    const nonBlocking = overlays.filter(
+      (o) => o.type !== 'chess-gambit' && o.type !== 'bored-distraction'
+    );
+    while (nonBlocking.length > MAX_OVERLAYS) {
+      const oldest = nonBlocking.shift();
+      if (oldest) {
+        overlays = overlays.filter((o) => o.id !== oldest.id);
+      }
+    }
+    if (blocking.length > 0) {
+      overlays = [
+        ...blocking,
+        ...overlays
+          .filter(
+            (o) =>
+              o.type !== 'chess-gambit' && o.type !== 'bored-distraction'
+          )
+          .slice(-MAX_OVERLAYS),
+      ];
+    }
+    return { overlays };
+  });
 }
 
 function addActiveEffect(
@@ -160,103 +156,220 @@ function addActiveEffect(
   }));
 }
 
-export function drawCard(): Card {
-  const state = useGameStore.getState();
-  let pool = [...CARD_DEFINITIONS];
-
-  if (state.pendingDiceRandomize) {
-    pool = pool.sort(() => Math.random() - 0.5);
-    useGameStore.setState({ pendingDiceRandomize: false });
-  }
-
-  const card = pool[Math.floor(Math.random() * pool.length)];
-  return card;
+function replaceActiveEffectForTarget(
+  cardId: string,
+  target: EffectTarget,
+  expiresAt?: number,
+  payload?: Record<string, unknown>
+): void {
+  const effect: ActiveEffect = {
+    id: uid(),
+    cardId,
+    target,
+    expiresAt,
+    payload,
+  };
+  useGameStore.setState((s) => ({
+    activeEffects: [
+      ...s.activeEffects.filter(
+        (e) => !(e.cardId === cardId && e.target === target)
+      ),
+      effect,
+    ],
+  }));
 }
 
-export function getCardTarget(mode: 'solo' | 'multiplayer' | null, card: Card): EffectTarget {
+export function clearMemeCannonForTarget(target: EffectTarget): void {
+  useGameStore.setState((s) => ({
+    activeEffects: s.activeEffects.filter(
+      (e) => !(e.cardId === 'meme-cannon' && e.target === target)
+    ),
+  }));
+}
+
+export function clearFaceSwapForTarget(target: EffectTarget): void {
+  const state = useGameStore.getState();
+  const remaining = state.activeEffects.filter(
+    (e) => !(e.cardId === 'face-swap-glitch' && e.target === target)
+  );
+  const updates: Partial<typeof state> = { activeEffects: remaining };
+  if (
+    state.faceSwap &&
+    !remaining.some((e) => e.cardId === 'face-swap-glitch')
+  ) {
+    updates.faceSwap = false;
+    updates.faceSwapImageUrl = null;
+  }
+  useGameStore.setState(updates);
+}
+
+function pickFromPool(pool: Card[]): Card {
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+export function drawCard(): Card {
+  return pickFromPool(getCardDrawPool());
+}
+
+export function getCardTarget(
+  mode: 'solo' | 'multiplayer' | null,
+  card: Card
+): EffectTarget {
   if (card.type === 'buff' || card.targetSelf) return 'self';
   return mode === 'solo' ? 'self' : 'opponent';
 }
 
-export function applyEffect(cardId: string, target: EffectTarget): void {
+export function applyEffect(
+  cardId: string,
+  target: EffectTarget,
+  options?: { skipDiceReroll?: boolean }
+): void {
   const state = useGameStore.getState();
   const card = getCardById(cardId);
   if (!card) return;
 
   const answer = state.answer?.toUpperCase() ?? '';
+  const answerWord = state.answer?.toLowerCase() ?? '';
+  const theme = answerWord ? getWordTheme(answerWord) : 'abstract-beach';
   const now = Date.now();
+  const wrongGuess = getLastWrongGuess(target, answer);
+
+  playCardSfx(cardId);
 
   switch (cardId) {
     case 'meme-cannon': {
-      const lastWrong = [...state.myGuesses]
-        .reverse()
-        .find((g) => !isGuessCorrect(g.results));
-      const caption = lastWrong?.word ?? 'NO CAPTION';
-      addOverlay('meme-cannon', caption, now + 3000, false);
+      const v = pickMemeCannon(theme, answerWord);
+      const caption = fillTemplate(v.captionTemplate, wrongGuess);
+      const stickerUrls = getCategoryStickerUrls(theme);
+      const heroUrls = getMemeHeroUrls(theme);
+      replaceActiveEffectForTarget('meme-cannon', target, undefined, {
+        stickerUrl: stickerUrls.primary,
+        stickerFallbackUrl: stickerUrls.fallback,
+        caption,
+        borderClass: v.borderClass,
+        stickerEmoji: v.stickerEmoji,
+        memeHeroUrl: heroUrls.primary,
+        memeHeroFallbackUrl: heroUrls.fallback,
+      });
       break;
     }
-    case 'brainrot-glitch':
+    case 'brainrot-glitch': {
+      const v = pickBrainrot(theme);
+      const guesses = getGuessesForTarget(target);
+      const rowCount = Math.max(guesses.length, 1);
+      const maxCols = answer.length || 5;
+      const stickers = generateBrainrotStickers(rowCount, maxCols, v.stickerStyle);
+      addActiveEffect('brainrot-glitch', target, undefined, {
+        stickers,
+        theme,
+      });
       useGameStore.setState({
         glitchActive: target,
         glitchUntilNextGuess: true,
       });
       break;
+    }
     case 'status-dog': {
-      const guesses = target === 'self' ? state.myGuesses : state.opponentGuesses;
-      const revealed: { row: number; col: number }[] = [];
-      guesses.forEach((g, row) => {
-        g.results.forEach((r, col) => {
-          if (r.state === 'correct' || r.state === 'present') {
-            revealed.push({ row, col });
-          }
-        });
+      const v = pickStatusDog(theme);
+      const guesses = getGuessesForTarget(target);
+      const tile = pickStatusDogCoverTile(guesses);
+      const dogUrls = getStatusDogUrls(theme);
+      addActiveEffect('status-dog', target, now + 10000, {
+        ...tile,
+        dogEmoji: v.dogEmoji,
+        dogImageUrl: dogUrls.primary,
+        dogImageFallbackUrl: dogUrls.fallback,
       });
-      if (revealed.length > 0) {
-        const pick = revealed[Math.floor(Math.random() * revealed.length)];
-        addActiveEffect('status-dog', target, now + 10000, pick);
-      }
       break;
     }
     case 'playful-insult': {
-      const insult =
-        PLAYFUL_INSULTS[Math.floor(Math.random() * PLAYFUL_INSULTS.length)];
-      addOverlay('playful-insult', insult, now + 2000, false);
+      const v = pickPlayfulInsult(theme, answerWord);
+      addOverlay('playful-insult', v.line, undefined, true, { target });
       break;
     }
-    case 'forced-break':
+    case 'forced-break': {
+      const v = pickForcedBreak(theme, answerWord);
+      const iconUrls = getForcedBreakIconUrls(theme);
+      if (target === 'self') {
+        useGameStore.setState({
+          forcedBreakPending: true,
+          forcedBreakLabel: v.label,
+          forcedBreakIconUrl: iconUrls.primary,
+          forcedBreakIconFallbackUrl: iconUrls.fallback,
+        });
+      } else {
+        addHint(`Forced break — opponent's next guess colors stay hidden (${v.label}).`);
+      }
+      break;
+    }
+    case 'bored-distraction': {
+      const v = pickBoredDistraction(theme);
+      const headerUrls = getDistractionHeaderUrls(theme);
       useGameStore.setState({
         inputLocked: true,
-        cooldownFrozen: true,
-        forcedBreakActive: true,
+        distractionBlocking: true,
       });
-      addOverlay('forced-break', 'Time for a mandatory beach break.', undefined, true);
-      break;
-    case 'bored-distraction': {
-      const suggestion =
-        BORED_SUGGESTIONS[Math.floor(Math.random() * BORED_SUGGESTIONS.length)];
-      addOverlay('bored-distraction', suggestion, now + 5000, true);
+      addOverlay('bored-distraction', v.title, undefined, true, {
+        title: v.title,
+        paragraphs: v.paragraphs,
+        headerImageUrl: headerUrls.primary,
+        headerImageFallbackUrl: headerUrls.fallback,
+      });
       break;
     }
-    case 'recipe-spam':
+    case 'recipe-spam': {
+      const v = pickRecipeSpam(theme, answerWord);
+      const recipeSpamDurationMs = 8000;
+      const headerUrls = getRecipeHeaderUrls(theme);
       addOverlay(
         'recipe-spam',
-        RECIPE_INGREDIENTS.join('\n'),
-        undefined,
-        true
+        v.ingredients.join('\n'),
+        Date.now() + recipeSpamDurationMs,
+        false,
+        {
+          recipeTitle: v.recipeTitle,
+          maskSide: v.maskSide,
+          target,
+          headerImageUrl: headerUrls.primary,
+          headerImageFallbackUrl: headerUrls.fallback,
+        }
       );
       break;
-    case 'rejection-letter':
-      addOverlay(
-        'rejection-letter',
-        'We regret to inform you that your guess does not align with our needs at this time. We encourage you to apply yourself to other shores.',
-        undefined,
-        true
+    }
+    case 'rejection-letter': {
+      const v = pickRejectionLetter(theme);
+      const body = fillTemplate(v.body, wrongGuess);
+      const letterUrls = getRejectionLetterheadUrls(theme);
+      useGameStore.setState({ inputLocked: true });
+      addOverlay('rejection-letter', body, undefined, false, {
+        letterhead: v.letterhead,
+        letterheadImageUrl: letterUrls.primary,
+        letterheadImageFallbackUrl: letterUrls.fallback,
+        paperTextureUrl: getRejectionPaperTextureUrl(),
+      });
+      break;
+    }
+    case 'face-swap-glitch': {
+      const v = pickFaceSwap(theme, answerWord);
+      const faceUrls = getFaceSwapUrls(theme);
+      const durationSec = Math.max(3, answer.length || 5);
+      const tagline = fillTemplate(v.tagline, wrongGuess);
+      replaceActiveEffectForTarget(
+        'face-swap-glitch',
+        target,
+        now + durationSec * 1000,
+        {
+          faceImageUrl: faceUrls.primary,
+          faceImageFallbackUrl: faceUrls.fallback,
+          tagline,
+        }
       );
+      useGameStore.setState({
+        faceSwap: true,
+        faceSwapImageUrl: faceUrls.primary,
+      });
       break;
-    case 'face-swap-glitch':
-      useGameStore.setState({ faceSwap: true });
-      setTimeout(() => useGameStore.setState({ faceSwap: false }), 5000);
-      break;
+    }
     case 'letter-reveal': {
       if (!answer) break;
       const revealed = new Set(Object.keys(state.revealedLetters).map(Number));
@@ -266,6 +379,7 @@ export function applyEffect(cardId: string, target: EffectTarget): void {
       }
       if (unrevealed.length > 0) {
         const pos = unrevealed[Math.floor(Math.random() * unrevealed.length)];
+        useGameStore.getState().revealAnswerLength();
         useGameStore.setState({
           revealedLetters: {
             ...state.revealedLetters,
@@ -279,7 +393,7 @@ export function applyEffect(cardId: string, target: EffectTarget): void {
       const guesses = [...state.myGuesses];
       if (guesses.length > 0) {
         const last = guesses[guesses.length - 1];
-        if (!isGuessCorrect(last.results)) {
+        if (answer && !isSolvedGuess(last.word, answer) && !last.isProbe) {
           guesses.pop();
           useGameStore.setState({ myGuesses: guesses });
         }
@@ -289,15 +403,25 @@ export function applyEffect(cardId: string, target: EffectTarget): void {
     case 'marine-hint': {
       if (!answer) break;
       const count = [...answer].filter((c) => VOWELS.has(c)).length;
-      addHint(`The answer has ${count} vowel${count === 1 ? '' : 's'}.`);
+      useGameStore.getState().revealAnswerLength();
+      addHint(
+        `${hintPrefix(theme, answerWord)} The answer has ${count} vowel${count === 1 ? '' : 's'}.`
+      );
       break;
     }
     case 'tide-whisper': {
       if (!answer) break;
       const revealFirst = Math.random() < 0.5;
-      const letter = revealFirst ? answer[0] : answer[answer.length - 1];
-      const pos = revealFirst ? 'first' : 'last';
-      addHint(`The ${pos} letter is ${letter}.`);
+      const pos = revealFirst ? 0 : answer.length - 1;
+      const edge = revealFirst ? 'start' : 'end';
+      useGameStore.getState().revealAnswerLength();
+      useGameStore.setState({
+        revealedLetters: {
+          ...state.revealedLetters,
+          [pos]: answer[pos],
+        },
+      });
+      addHint(`${hintPrefix(theme, answerWord)} A whisper at the ${edge}…`);
       break;
     }
     case 'forecast': {
@@ -305,59 +429,76 @@ export function applyEffect(cardId: string, target: EffectTarget): void {
       const pos = Math.floor(Math.random() * answer.length);
       const isVowel = VOWELS.has(answer[pos]);
       addHint(
-        `Position ${pos + 1} is a ${isVowel ? 'vowel' : 'consonant'}.`
+        `${hintPrefix(theme, answerWord)} Position ${pos + 1} is a ${isVowel ? 'vowel' : 'consonant'}.`
       );
       break;
     }
     case 'related-current': {
       if (!answer) break;
-      const related = RELATED_HINTS[answer] ?? 'no related word found';
-      addHint(`Related word: ${related}`);
+      const related = getRelatedHint(answer);
+      const catWord = getCategoryRelatedWord(answer);
+      const text =
+        related !== 'coastal vibe' ? related : catWord;
+      addHint(`${hintPrefix(theme, answerWord)} Related word: ${text}`);
       break;
     }
     case 'resume-polish': {
       if (!answer) break;
-      const len = answer.length;
-      const pattern: string[] = Array(len).fill('_');
-      for (const g of state.myGuesses) {
-        g.results.forEach((r, i) => {
-          if (r.state === 'correct' && i < len) pattern[i] = r.letter;
-        });
+      const pattern = buildLetterPattern({
+        answerLength: state.answerLength,
+        revealedLetters: state.revealedLetters,
+        myGuesses: state.myGuesses,
+      });
+      if (!pattern) {
+        addHint('Keep exploring — no pattern yet.');
+        break;
       }
-      for (const [pos, letter] of Object.entries(state.revealedLetters)) {
-        pattern[Number(pos)] = letter;
+      const display = formatLetterPattern(pattern);
+      const suggestion = suggestWordFromPattern(pattern);
+      const label = categoryLabel(getThemeParentCategory(theme));
+      if (suggestion) {
+        addHint(
+          `Try a ${label} word like "${suggestion}" — pattern: ${display}`
+        );
+      } else {
+        addHint(`Pattern (${label}): ${display}`);
       }
-      const known = pattern.filter((c) => c !== '_').join(', ');
-      addHint(
-        known
-          ? `Try a word with these letters: ${pattern.join(', ')}`
-          : 'Keep exploring — no pattern yet.'
-      );
       break;
     }
-    case 'chess-gambit':
+    case 'chess-gambit': {
+      const puzzle = pickRandomChessPuzzle();
       useGameStore.setState({
         inputLocked: true,
         chessPuzzleActive: true,
       });
-      addOverlay('chess-gambit', undefined, undefined, true);
-      break;
-    case 'dice-roll': {
-      if (Math.random() < 0.5) {
-        useGameStore.setState({ pendingDiceRandomize: true });
-        addHint('Dice Roll: next draw will be randomized!');
-      } else {
-        useGameStore.setState({ pendingCardSwap: true });
-        addHint('Dice Roll: next cards will be swapped!');
-      }
+      addOverlay('chess-gambit', undefined, undefined, true, {
+        puzzleId: puzzle.id,
+      });
       break;
     }
+    case 'dice-roll': {
+      if (options?.skipDiceReroll) break;
+      addHint(pickDiceFlavor(theme));
+      const pool = getCardDrawPool().filter((c) => c.id !== 'dice-roll');
+      const newCard = pickFromPool(pool);
+      addHint(`Dice Roll: rerolled to ${newCard.name}!`);
+      useGameStore.setState((s) => ({
+        cardDrawHistory: [
+          newCard,
+          ...s.cardDrawHistory.filter((c) => c.id !== 'dice-roll'),
+        ].slice(0, 5),
+      }));
+      applyEffect(newCard.id, target, { skipDiceReroll: true });
+      showCardDetailOnDraw(newCard);
+      return;
+    }
     case 'beach-playlist':
+      startPlaylistForTheme(theme);
       useGameStore.setState({ musicSwapActive: true });
-      setTimeout(
-        () => useGameStore.setState({ musicSwapActive: false }),
-        30000
-      );
+      setTimeout(() => {
+        stopPlaylist();
+        useGameStore.setState({ musicSwapActive: false });
+      }, 30000);
       break;
     case 'critics-rating':
       useGameStore.setState({ criticsRatingPending: true });
@@ -367,85 +508,151 @@ export function applyEffect(cardId: string, target: EffectTarget): void {
   }
 }
 
+export function submitRejectionProbeWord(overlayId: string, word: string): boolean {
+  const state = useGameStore.getState();
+  const answer = state.answer;
+  if (!answer) return false;
+
+  const normalized = word.toUpperCase().trim();
+  if (!isValidProbeWord(normalized, answer.length)) return false;
+
+  const probeGuess: Guess = {
+    word: normalized,
+    results: evaluateGuess(normalized, answer),
+    submittedAt: Date.now(),
+    isProbe: true,
+  };
+
+  useGameStore.setState({
+    bonusProbeGuess: probeGuess,
+    bonusProbeRowIndex: state.myGuesses.length,
+    bonusProbePending: false,
+    inputLocked: false,
+    overlays: state.overlays.filter((o) => o.id !== overlayId),
+  });
+  addHint(`Probe row: ${normalized} — letter feedback added.`);
+  return true;
+}
+
 export function dismissOverlay(overlayId: string): void {
   const state = useGameStore.getState();
   const overlay = state.overlays.find((o) => o.id === overlayId);
+  if (!overlay || overlay.type === 'recipe-spam' || overlay.dismissable === false) {
+    return;
+  }
   useGameStore.setState({
     overlays: state.overlays.filter((o) => o.id !== overlayId),
   });
-  if (overlay?.type === 'forced-break') {
-    useGameStore.setState({
-      inputLocked: false,
-      cooldownFrozen: false,
-      forcedBreakActive: false,
-    });
-  }
 }
 
-export function solveChessPuzzle(correct: boolean): void {
+const CHESS_WRONG_PENALTY_MS = 5000;
+const CHESS_WRONG_COOLDOWN_BUMP_MS = 4000;
+
+export function answerChessPuzzle(
+  puzzleId: string,
+  chosenIndex: number
+): 'correct' | 'wrong' {
+  const puzzle = getChessPuzzleById(puzzleId);
+  const correct = puzzle !== undefined && chosenIndex === puzzle.correctIndex;
+
   if (correct) {
     useGameStore.setState({
       inputLocked: false,
       chessPuzzleActive: false,
+      chessLockUntil: null,
       overlays: useGameStore
         .getState()
         .overlays.filter((o) => o.type !== 'chess-gambit'),
     });
-  } else {
-    useGameStore.setState({ chessLockUntil: Date.now() + 5000 });
-    setTimeout(() => {
-      const s = useGameStore.getState();
-      if (s.chessLockUntil && Date.now() >= s.chessLockUntil) {
-        useGameStore.setState({
-          inputLocked: false,
-          chessPuzzleActive: false,
-          chessLockUntil: null,
-          overlays: s.overlays.filter((o) => o.type !== 'chess-gambit'),
-        });
-      }
-    }, 5000);
+    return 'correct';
   }
+
+  const state = useGameStore.getState();
+  const penaltyEndsAt = Date.now() + CHESS_WRONG_PENALTY_MS;
+  const cooldownBase = Math.max(state.myCooldownEndsAt ?? 0, Date.now());
+  useGameStore.setState({
+    inputLocked: true,
+    chessLockUntil: penaltyEndsAt,
+    myCooldownEndsAt: cooldownBase + CHESS_WRONG_COOLDOWN_BUMP_MS,
+  });
+
+  window.setTimeout(() => {
+    const s = useGameStore.getState();
+    if (s.chessLockUntil && Date.now() >= s.chessLockUntil) {
+      useGameStore.setState({
+        inputLocked: false,
+        chessPuzzleActive: false,
+        chessLockUntil: null,
+        overlays: s.overlays.filter((o) => o.type !== 'chess-gambit'),
+      });
+    }
+  }, CHESS_WRONG_PENALTY_MS);
+
+  return 'wrong';
 }
 
-export function applyCriticsRatingIfPending(): void {
+export function applyCriticsAtRoundEnd(): {
+  myStars: number;
+  oppStars: number;
+} {
   const state = useGameStore.getState();
-  if (!state.criticsRatingPending) return;
-  const bonus = criticsRatingBonus(state.myGuesses, state.opponentGuesses);
-  useGameStore.setState({
-    roundScore: {
+  const bonus = resolveCriticsRating(
+    state.mode,
+    state.myGuesses,
+    state.opponentGuesses
+  );
+  const updates: Partial<ReturnType<typeof useGameStore.getState>> = {
+    lastCriticsRatings: { me: bonus.myStars, opponent: bonus.oppStars },
+    criticsRatingPending: false,
+  };
+  if (state.criticsRatingPending) {
+    updates.roundScore = {
       me: state.roundScore.me + bonus.me,
       opponent: state.roundScore.opponent + bonus.opponent,
-    },
-    criticsRatingPending: false,
-    lastCriticsRatings: { me: bonus.myStars, opponent: bonus.oppStars },
-  });
+    };
+  }
+  useGameStore.setState(updates);
+  return { myStars: bonus.myStars, oppStars: bonus.oppStars };
 }
 
 export function fireCardAfterGuess(): void {
   const state = useGameStore.getState();
+  if (state.roundOver || state.matchWinner) return;
+
   const card = drawCard();
   const target = getCardTarget(state.mode, card);
+  if (card.id === 'dice-roll') {
+    applyEffect(card.id, target);
+    return;
+  }
   const history = [card, ...state.cardDrawHistory].slice(0, 5);
   useGameStore.setState({ cardDrawHistory: history });
+
   applyEffect(card.id, target);
+  showCardDetailOnDraw(card);
 }
 
 export function applyCardFromSocket(cardId: string, target: EffectTarget): void {
   applyEffect(cardId, target);
 }
 
-// Dev helper
 if (import.meta.env.DEV) {
-  (window as unknown as { __testCard: (id: string) => void }).__testCard = (
-    cardId: string
-  ) => {
+  const w = window as unknown as {
+    __testCard: (id: string) => void;
+    __testCardList: () => string[];
+  };
+  w.__testCard = (cardId: string) => {
     const card = getCardById(cardId);
     if (!card) {
-      console.error('Unknown card:', cardId);
+      console.error('Unknown card:', cardId, 'Available:', CARD_IDS);
       return;
     }
     const state = useGameStore.getState();
     const target = getCardTarget(state.mode, card);
     applyEffect(cardId, target);
+    if (cardId !== 'dice-roll') {
+      showCardDetailOnDraw(card);
+    }
   };
+  w.__testCardList = () => [...CARD_IDS];
 }

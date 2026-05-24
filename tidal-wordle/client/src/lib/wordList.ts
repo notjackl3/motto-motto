@@ -14,6 +14,11 @@ export function getAllWords(): string[] {
 }
 
 export function getRandomWord(): string {
+  if (WORDS.length === 0) {
+    throw new Error(
+      `No beach words between ${MIN_WORD_LENGTH}-${MAX_WORD_LENGTH} letters in beachWords.json`
+    );
+  }
   return WORDS[Math.floor(Math.random() * WORDS.length)];
 }
 

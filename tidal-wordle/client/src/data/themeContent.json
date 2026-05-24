@@ -1,0 +1,1747 @@
+{
+  "version": 1,
+  "themes": {
+    "crustacean": {
+      "hintPrefix": "Crustacean council:",
+      "memeCaptions": [
+        "🦀 Crustacean council: hard no on {wrongGuess}",
+        "{wrongGuess} is not a crustacean word",
+        "🦀 Wrong crustacean: {wrongGuess}",
+        "Crustacean council rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has crustacean energy — wrong energy.",
+        "🦀 My crustacean sources say no.",
+        "Even the crustacean club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🦀 crustacean break — hold up",
+        "Mandatory crustacean timeout"
+      ],
+      "diceFlavor": [
+        "🦀 crustacean dice roll…",
+        "Crustacean council says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🦀 crustacean face-swap: not {wrongGuess}",
+        "Crustacean council glitch — {wrongGuess}"
+      ]
+    },
+    "fish-shark": {
+      "hintPrefix": "Reef ranger:",
+      "memeCaptions": [
+        "🦈 Reef ranger: hard no on {wrongGuess}",
+        "{wrongGuess} is not a fish or shark word",
+        "🦈 Wrong fish or shark: {wrongGuess}",
+        "Reef ranger rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has fish or shark energy — wrong energy.",
+        "🦈 My fish or shark sources say no.",
+        "Even the fish or shark club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🦈 fish or shark break — hold up",
+        "Mandatory fish or shark timeout"
+      ],
+      "diceFlavor": [
+        "🦈 fish or shark dice roll…",
+        "Reef ranger says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🦈 fish or shark face-swap: not {wrongGuess}",
+        "Reef ranger glitch — {wrongGuess}"
+      ]
+    },
+    "seabird": {
+      "hintPrefix": "Seagull tribunal:",
+      "memeCaptions": [
+        "🐦 Seagull tribunal: hard no on {wrongGuess}",
+        "{wrongGuess} is not a seabird word",
+        "🐦 Wrong seabird: {wrongGuess}",
+        "Seagull tribunal rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has seabird energy — wrong energy.",
+        "🐦 My seabird sources say no.",
+        "Even the seabird club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🐦 seabird break — hold up",
+        "Mandatory seabird timeout"
+      ],
+      "diceFlavor": [
+        "🐦 seabird dice roll…",
+        "Seagull tribunal says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🐦 seabird face-swap: not {wrongGuess}",
+        "Seagull tribunal glitch — {wrongGuess}"
+      ]
+    },
+    "marine-mammal": {
+      "hintPrefix": "Marine biologist:",
+      "memeCaptions": [
+        "🦭 Marine biologist: hard no on {wrongGuess}",
+        "{wrongGuess} is not a marine mammal word",
+        "🦭 Wrong marine mammal: {wrongGuess}",
+        "Marine biologist rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has marine mammal energy — wrong energy.",
+        "🦭 My marine mammal sources say no.",
+        "Even the marine mammal club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🦭 marine mammal break — hold up",
+        "Mandatory marine mammal timeout"
+      ],
+      "diceFlavor": [
+        "🦭 marine mammal dice roll…",
+        "Marine biologist says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🦭 marine mammal face-swap: not {wrongGuess}",
+        "Marine biologist glitch — {wrongGuess}"
+      ]
+    },
+    "mollusk": {
+      "hintPrefix": "Shell society:",
+      "memeCaptions": [
+        "🐚 Shell society: hard no on {wrongGuess}",
+        "{wrongGuess} is not a mollusk word",
+        "🐚 Wrong mollusk: {wrongGuess}",
+        "Shell society rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has mollusk energy — wrong energy.",
+        "🐚 My mollusk sources say no.",
+        "Even the mollusk club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🐚 mollusk break — hold up",
+        "Mandatory mollusk timeout"
+      ],
+      "diceFlavor": [
+        "🐚 mollusk dice roll…",
+        "Shell society says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🐚 mollusk face-swap: not {wrongGuess}",
+        "Shell society glitch — {wrongGuess}"
+      ]
+    },
+    "jelly-octopus": {
+      "hintPrefix": "Deep sea desk:",
+      "memeCaptions": [
+        "🪼 Deep sea desk: hard no on {wrongGuess}",
+        "{wrongGuess} is not a jellyfish or cephalopod word",
+        "🪼 Wrong jellyfish or cephalopod: {wrongGuess}",
+        "Deep sea desk rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has jellyfish or cephalopod energy — wrong energy.",
+        "🪼 My jellyfish or cephalopod sources say no.",
+        "Even the jellyfish or cephalopod club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🪼 jellyfish or cephalopod break — hold up",
+        "Mandatory jellyfish or cephalopod timeout"
+      ],
+      "diceFlavor": [
+        "🪼 jellyfish or cephalopod dice roll…",
+        "Deep sea desk says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🪼 jellyfish or cephalopod face-swap: not {wrongGuess}",
+        "Deep sea desk glitch — {wrongGuess}"
+      ]
+    },
+    "starfish-urchin": {
+      "hintPrefix": "Tide pool club:",
+      "memeCaptions": [
+        "⭐ Tide pool club: hard no on {wrongGuess}",
+        "{wrongGuess} is not a echinoderm word",
+        "⭐ Wrong echinoderm: {wrongGuess}",
+        "Tide pool club rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has echinoderm energy — wrong energy.",
+        "⭐ My echinoderm sources say no.",
+        "Even the echinoderm club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "⭐ echinoderm break — hold up",
+        "Mandatory echinoderm timeout"
+      ],
+      "diceFlavor": [
+        "⭐ echinoderm dice roll…",
+        "Tide pool club says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "⭐ echinoderm face-swap: not {wrongGuess}",
+        "Tide pool club glitch — {wrongGuess}"
+      ]
+    },
+    "turtle-reptile": {
+      "hintPrefix": "Slow coast patrol:",
+      "memeCaptions": [
+        "🐢 Slow coast patrol: hard no on {wrongGuess}",
+        "{wrongGuess} is not a turtle word",
+        "🐢 Wrong turtle: {wrongGuess}",
+        "Slow coast patrol rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has turtle energy — wrong energy.",
+        "🐢 My turtle sources say no.",
+        "Even the turtle club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🐢 turtle break — hold up",
+        "Mandatory turtle timeout"
+      ],
+      "diceFlavor": [
+        "🐢 turtle dice roll…",
+        "Slow coast patrol says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🐢 turtle face-swap: not {wrongGuess}",
+        "Slow coast patrol glitch — {wrongGuess}"
+      ]
+    },
+    "coral": {
+      "hintPrefix": "Reef keeper:",
+      "memeCaptions": [
+        "🪸 Reef keeper: hard no on {wrongGuess}",
+        "{wrongGuess} is not a coral reef word",
+        "🪸 Wrong coral reef: {wrongGuess}",
+        "Reef keeper rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has coral reef energy — wrong energy.",
+        "🪸 My coral reef sources say no.",
+        "Even the coral reef club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🪸 coral reef break — hold up",
+        "Mandatory coral reef timeout"
+      ],
+      "diceFlavor": [
+        "🪸 coral reef dice roll…",
+        "Reef keeper says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🪸 coral reef face-swap: not {wrongGuess}",
+        "Reef keeper glitch — {wrongGuess}"
+      ]
+    },
+    "kelp-seaweed": {
+      "hintPrefix": "Kelp forest FM:",
+      "memeCaptions": [
+        "🌿 Kelp forest FM: hard no on {wrongGuess}",
+        "{wrongGuess} is not a kelp or seaweed word",
+        "🌿 Wrong kelp or seaweed: {wrongGuess}",
+        "Kelp forest FM rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has kelp or seaweed energy — wrong energy.",
+        "🌿 My kelp or seaweed sources say no.",
+        "Even the kelp or seaweed club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🌿 kelp or seaweed break — hold up",
+        "Mandatory kelp or seaweed timeout"
+      ],
+      "diceFlavor": [
+        "🌿 kelp or seaweed dice roll…",
+        "Kelp forest FM says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🌿 kelp or seaweed face-swap: not {wrongGuess}",
+        "Kelp forest FM glitch — {wrongGuess}"
+      ]
+    },
+    "mangrove-palm": {
+      "hintPrefix": "Coastal botanist:",
+      "memeCaptions": [
+        "🌴 Coastal botanist: hard no on {wrongGuess}",
+        "{wrongGuess} is not a mangrove or palm word",
+        "🌴 Wrong mangrove or palm: {wrongGuess}",
+        "Coastal botanist rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has mangrove or palm energy — wrong energy.",
+        "🌴 My mangrove or palm sources say no.",
+        "Even the mangrove or palm club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🌴 mangrove or palm break — hold up",
+        "Mandatory mangrove or palm timeout"
+      ],
+      "diceFlavor": [
+        "🌴 mangrove or palm dice roll…",
+        "Coastal botanist says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🌴 mangrove or palm face-swap: not {wrongGuess}",
+        "Coastal botanist glitch — {wrongGuess}"
+      ]
+    },
+    "beach-grass": {
+      "hintPrefix": "Dune ecologist:",
+      "memeCaptions": [
+        "🌾 Dune ecologist: hard no on {wrongGuess}",
+        "{wrongGuess} is not a dune grass word",
+        "🌾 Wrong dune grass: {wrongGuess}",
+        "Dune ecologist rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has dune grass energy — wrong energy.",
+        "🌾 My dune grass sources say no.",
+        "Even the dune grass club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🌾 dune grass break — hold up",
+        "Mandatory dune grass timeout"
+      ],
+      "diceFlavor": [
+        "🌾 dune grass dice roll…",
+        "Dune ecologist says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🌾 dune grass face-swap: not {wrongGuess}",
+        "Dune ecologist glitch — {wrongGuess}"
+      ]
+    },
+    "tide": {
+      "hintPrefix": "Tide table:",
+      "memeCaptions": [
+        "🌊 Tide table: hard no on {wrongGuess}",
+        "{wrongGuess} is not a tide word",
+        "🌊 Wrong tide: {wrongGuess}",
+        "Tide table rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has tide energy — wrong energy.",
+        "🌊 My tide sources say no.",
+        "Even the tide club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🌊 tide break — hold up",
+        "Mandatory tide timeout"
+      ],
+      "diceFlavor": [
+        "🌊 tide dice roll…",
+        "Tide table says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🌊 tide face-swap: not {wrongGuess}",
+        "Tide table glitch — {wrongGuess}"
+      ]
+    },
+    "wave-surf": {
+      "hintPrefix": "Surf report:",
+      "memeCaptions": [
+        "🏄 Surf report: hard no on {wrongGuess}",
+        "{wrongGuess} is not a wave or surf word",
+        "🏄 Wrong wave or surf: {wrongGuess}",
+        "Surf report rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has wave or surf energy — wrong energy.",
+        "🏄 My wave or surf sources say no.",
+        "Even the wave or surf club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🏄 wave or surf break — hold up",
+        "Mandatory wave or surf timeout"
+      ],
+      "diceFlavor": [
+        "🏄 wave or surf dice roll…",
+        "Surf report says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🏄 wave or surf face-swap: not {wrongGuess}",
+        "Surf report glitch — {wrongGuess}"
+      ]
+    },
+    "current-estuary": {
+      "hintPrefix": "Estuary office:",
+      "memeCaptions": [
+        "🌀 Estuary office: hard no on {wrongGuess}",
+        "{wrongGuess} is not a current or estuary word",
+        "🌀 Wrong current or estuary: {wrongGuess}",
+        "Estuary office rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has current or estuary energy — wrong energy.",
+        "🌀 My current or estuary sources say no.",
+        "Even the current or estuary club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🌀 current or estuary break — hold up",
+        "Mandatory current or estuary timeout"
+      ],
+      "diceFlavor": [
+        "🌀 current or estuary dice roll…",
+        "Estuary office says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🌀 current or estuary face-swap: not {wrongGuess}",
+        "Estuary office glitch — {wrongGuess}"
+      ]
+    },
+    "lagoon-marsh": {
+      "hintPrefix": "Wetlands desk:",
+      "memeCaptions": [
+        "🦆 Wetlands desk: hard no on {wrongGuess}",
+        "{wrongGuess} is not a lagoon or marsh word",
+        "🦆 Wrong lagoon or marsh: {wrongGuess}",
+        "Wetlands desk rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has lagoon or marsh energy — wrong energy.",
+        "🦆 My lagoon or marsh sources say no.",
+        "Even the lagoon or marsh club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🦆 lagoon or marsh break — hold up",
+        "Mandatory lagoon or marsh timeout"
+      ],
+      "diceFlavor": [
+        "🦆 lagoon or marsh dice roll…",
+        "Wetlands desk says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🦆 lagoon or marsh face-swap: not {wrongGuess}",
+        "Wetlands desk glitch — {wrongGuess}"
+      ]
+    },
+    "wind-storm": {
+      "hintPrefix": "Storm watch:",
+      "memeCaptions": [
+        "💨 Storm watch: hard no on {wrongGuess}",
+        "{wrongGuess} is not a wind or storm word",
+        "💨 Wrong wind or storm: {wrongGuess}",
+        "Storm watch rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has wind or storm energy — wrong energy.",
+        "💨 My wind or storm sources say no.",
+        "Even the wind or storm club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "💨 wind or storm break — hold up",
+        "Mandatory wind or storm timeout"
+      ],
+      "diceFlavor": [
+        "💨 wind or storm dice roll…",
+        "Storm watch says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "💨 wind or storm face-swap: not {wrongGuess}",
+        "Storm watch glitch — {wrongGuess}"
+      ]
+    },
+    "brackish-salt": {
+      "hintPrefix": "Salinity lab:",
+      "memeCaptions": [
+        "🧂 Salinity lab: hard no on {wrongGuess}",
+        "{wrongGuess} is not a salt water word",
+        "🧂 Wrong salt water: {wrongGuess}",
+        "Salinity lab rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has salt water energy — wrong energy.",
+        "🧂 My salt water sources say no.",
+        "Even the salt water club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🧂 salt water break — hold up",
+        "Mandatory salt water timeout"
+      ],
+      "diceFlavor": [
+        "🧂 salt water dice roll…",
+        "Salinity lab says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🧂 salt water face-swap: not {wrongGuess}",
+        "Salinity lab glitch — {wrongGuess}"
+      ]
+    },
+    "offshore-onshore": {
+      "hintPrefix": "Coastal compass:",
+      "memeCaptions": [
+        "🧭 Coastal compass: hard no on {wrongGuess}",
+        "{wrongGuess} is not a offshore direction word",
+        "🧭 Wrong offshore direction: {wrongGuess}",
+        "Coastal compass rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has offshore direction energy — wrong energy.",
+        "🧭 My offshore direction sources say no.",
+        "Even the offshore direction club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🧭 offshore direction break — hold up",
+        "Mandatory offshore direction timeout"
+      ],
+      "diceFlavor": [
+        "🧭 offshore direction dice roll…",
+        "Coastal compass says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🧭 offshore direction face-swap: not {wrongGuess}",
+        "Coastal compass glitch — {wrongGuess}"
+      ]
+    },
+    "sand-dune": {
+      "hintPrefix": "Dune patrol:",
+      "memeCaptions": [
+        "🏜️ Dune patrol: hard no on {wrongGuess}",
+        "{wrongGuess} is not a sand or dune word",
+        "🏜️ Wrong sand or dune: {wrongGuess}",
+        "Dune patrol rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has sand or dune energy — wrong energy.",
+        "🏜️ My sand or dune sources say no.",
+        "Even the sand or dune club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🏜️ sand or dune break — hold up",
+        "Mandatory sand or dune timeout"
+      ],
+      "diceFlavor": [
+        "🏜️ sand or dune dice roll…",
+        "Dune patrol says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🏜️ sand or dune face-swap: not {wrongGuess}",
+        "Dune patrol glitch — {wrongGuess}"
+      ]
+    },
+    "rock-cliff": {
+      "hintPrefix": "Cliff ranger:",
+      "memeCaptions": [
+        "🪨 Cliff ranger: hard no on {wrongGuess}",
+        "{wrongGuess} is not a rock or cliff word",
+        "🪨 Wrong rock or cliff: {wrongGuess}",
+        "Cliff ranger rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has rock or cliff energy — wrong energy.",
+        "🪨 My rock or cliff sources say no.",
+        "Even the rock or cliff club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🪨 rock or cliff break — hold up",
+        "Mandatory rock or cliff timeout"
+      ],
+      "diceFlavor": [
+        "🪨 rock or cliff dice roll…",
+        "Cliff ranger says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🪨 rock or cliff face-swap: not {wrongGuess}",
+        "Cliff ranger glitch — {wrongGuess}"
+      ]
+    },
+    "pebble-gravel": {
+      "hintPrefix": "Pebble counter:",
+      "memeCaptions": [
+        "⚪ Pebble counter: hard no on {wrongGuess}",
+        "{wrongGuess} is not a pebble or gravel word",
+        "⚪ Wrong pebble or gravel: {wrongGuess}",
+        "Pebble counter rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has pebble or gravel energy — wrong energy.",
+        "⚪ My pebble or gravel sources say no.",
+        "Even the pebble or gravel club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "⚪ pebble or gravel break — hold up",
+        "Mandatory pebble or gravel timeout"
+      ],
+      "diceFlavor": [
+        "⚪ pebble or gravel dice roll…",
+        "Pebble counter says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "⚪ pebble or gravel face-swap: not {wrongGuess}",
+        "Pebble counter glitch — {wrongGuess}"
+      ]
+    },
+    "coast-shore": {
+      "hintPrefix": "Shoreline guide:",
+      "memeCaptions": [
+        "🏖️ Shoreline guide: hard no on {wrongGuess}",
+        "{wrongGuess} is not a coast or shore word",
+        "🏖️ Wrong coast or shore: {wrongGuess}",
+        "Shoreline guide rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has coast or shore energy — wrong energy.",
+        "🏖️ My coast or shore sources say no.",
+        "Even the coast or shore club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🏖️ coast or shore break — hold up",
+        "Mandatory coast or shore timeout"
+      ],
+      "diceFlavor": [
+        "🏖️ coast or shore dice roll…",
+        "Shoreline guide says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🏖️ coast or shore face-swap: not {wrongGuess}",
+        "Shoreline guide glitch — {wrongGuess}"
+      ]
+    },
+    "island-atoll": {
+      "hintPrefix": "Island hopper:",
+      "memeCaptions": [
+        "🏝️ Island hopper: hard no on {wrongGuess}",
+        "{wrongGuess} is not a island or atoll word",
+        "🏝️ Wrong island or atoll: {wrongGuess}",
+        "Island hopper rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has island or atoll energy — wrong energy.",
+        "🏝️ My island or atoll sources say no.",
+        "Even the island or atoll club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🏝️ island or atoll break — hold up",
+        "Mandatory island or atoll timeout"
+      ],
+      "diceFlavor": [
+        "🏝️ island or atoll dice roll…",
+        "Island hopper says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🏝️ island or atoll face-swap: not {wrongGuess}",
+        "Island hopper glitch — {wrongGuess}"
+      ]
+    },
+    "reef-shoal": {
+      "hintPrefix": "Reef map:",
+      "memeCaptions": [
+        "🐠 Reef map: hard no on {wrongGuess}",
+        "{wrongGuess} is not a reef or shoal word",
+        "🐠 Wrong reef or shoal: {wrongGuess}",
+        "Reef map rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has reef or shoal energy — wrong energy.",
+        "🐠 My reef or shoal sources say no.",
+        "Even the reef or shoal club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🐠 reef or shoal break — hold up",
+        "Mandatory reef or shoal timeout"
+      ],
+      "diceFlavor": [
+        "🐠 reef or shoal dice roll…",
+        "Reef map says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🐠 reef or shoal face-swap: not {wrongGuess}",
+        "Reef map glitch — {wrongGuess}"
+      ]
+    },
+    "erosion-sediment": {
+      "hintPrefix": "Geology dept:",
+      "memeCaptions": [
+        "📉 Geology dept: hard no on {wrongGuess}",
+        "{wrongGuess} is not a erosion or sediment word",
+        "📉 Wrong erosion or sediment: {wrongGuess}",
+        "Geology dept rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has erosion or sediment energy — wrong energy.",
+        "📉 My erosion or sediment sources say no.",
+        "Even the erosion or sediment club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "📉 erosion or sediment break — hold up",
+        "Mandatory erosion or sediment timeout"
+      ],
+      "diceFlavor": [
+        "📉 erosion or sediment dice roll…",
+        "Geology dept says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "📉 erosion or sediment face-swap: not {wrongGuess}",
+        "Geology dept glitch — {wrongGuess}"
+      ]
+    },
+    "cave-canyon": {
+      "hintPrefix": "Cave tour:",
+      "memeCaptions": [
+        "🕳️ Cave tour: hard no on {wrongGuess}",
+        "{wrongGuess} is not a cave or canyon word",
+        "🕳️ Wrong cave or canyon: {wrongGuess}",
+        "Cave tour rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has cave or canyon energy — wrong energy.",
+        "🕳️ My cave or canyon sources say no.",
+        "Even the cave or canyon club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🕳️ cave or canyon break — hold up",
+        "Mandatory cave or canyon timeout"
+      ],
+      "diceFlavor": [
+        "🕳️ cave or canyon dice roll…",
+        "Cave tour says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🕳️ cave or canyon face-swap: not {wrongGuess}",
+        "Cave tour glitch — {wrongGuess}"
+      ]
+    },
+    "driftwood-wrack": {
+      "hintPrefix": "Beachcomber:",
+      "memeCaptions": [
+        "🪵 Beachcomber: hard no on {wrongGuess}",
+        "{wrongGuess} is not a driftwood or wrack word",
+        "🪵 Wrong driftwood or wrack: {wrongGuess}",
+        "Beachcomber rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has driftwood or wrack energy — wrong energy.",
+        "🪵 My driftwood or wrack sources say no.",
+        "Even the driftwood or wrack club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🪵 driftwood or wrack break — hold up",
+        "Mandatory driftwood or wrack timeout"
+      ],
+      "diceFlavor": [
+        "🪵 driftwood or wrack dice roll…",
+        "Beachcomber says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🪵 driftwood or wrack face-swap: not {wrongGuess}",
+        "Beachcomber glitch — {wrongGuess}"
+      ]
+    },
+    "treasure-wreck": {
+      "hintPrefix": "Salvage crew:",
+      "memeCaptions": [
+        "💎 Salvage crew: hard no on {wrongGuess}",
+        "{wrongGuess} is not a wreck or treasure word",
+        "💎 Wrong wreck or treasure: {wrongGuess}",
+        "Salvage crew rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has wreck or treasure energy — wrong energy.",
+        "💎 My wreck or treasure sources say no.",
+        "Even the wreck or treasure club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "💎 wreck or treasure break — hold up",
+        "Mandatory wreck or treasure timeout"
+      ],
+      "diceFlavor": [
+        "💎 wreck or treasure dice roll…",
+        "Salvage crew says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "💎 wreck or treasure face-swap: not {wrongGuess}",
+        "Salvage crew glitch — {wrongGuess}"
+      ]
+    },
+    "us-west-coast": {
+      "hintPrefix": "West coast guide:",
+      "memeCaptions": [
+        "🌉 West coast guide: hard no on {wrongGuess}",
+        "{wrongGuess} is not a US west coast word",
+        "🌉 Wrong US west coast: {wrongGuess}",
+        "West coast guide rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has US west coast energy — wrong energy.",
+        "🌉 My US west coast sources say no.",
+        "Even the US west coast club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🌉 US west coast break — hold up",
+        "Mandatory US west coast timeout"
+      ],
+      "diceFlavor": [
+        "🌉 US west coast dice roll…",
+        "West coast guide says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🌉 US west coast face-swap: not {wrongGuess}",
+        "West coast guide glitch — {wrongGuess}"
+      ]
+    },
+    "us-east-gulf": {
+      "hintPrefix": "East coast atlas:",
+      "memeCaptions": [
+        "🌴 East coast atlas: hard no on {wrongGuess}",
+        "{wrongGuess} is not a US east or gulf word",
+        "🌴 Wrong US east or gulf: {wrongGuess}",
+        "East coast atlas rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has US east or gulf energy — wrong energy.",
+        "🌴 My US east or gulf sources say no.",
+        "Even the US east or gulf club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🌴 US east or gulf break — hold up",
+        "Mandatory US east or gulf timeout"
+      ],
+      "diceFlavor": [
+        "🌴 US east or gulf dice roll…",
+        "East coast atlas says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🌴 US east or gulf face-swap: not {wrongGuess}",
+        "East coast atlas glitch — {wrongGuess}"
+      ]
+    },
+    "us-islands": {
+      "hintPrefix": "Island passport:",
+      "memeCaptions": [
+        "🌺 Island passport: hard no on {wrongGuess}",
+        "{wrongGuess} is not a US islands word",
+        "🌺 Wrong US islands: {wrongGuess}",
+        "Island passport rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has US islands energy — wrong energy.",
+        "🌺 My US islands sources say no.",
+        "Even the US islands club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🌺 US islands break — hold up",
+        "Mandatory US islands timeout"
+      ],
+      "diceFlavor": [
+        "🌺 US islands dice roll…",
+        "Island passport says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🌺 US islands face-swap: not {wrongGuess}",
+        "Island passport glitch — {wrongGuess}"
+      ]
+    },
+    "europe-beach": {
+      "hintPrefix": "Euro travel desk:",
+      "memeCaptions": [
+        "🇪🇺 Euro travel desk: hard no on {wrongGuess}",
+        "{wrongGuess} is not a European beach word",
+        "🇪🇺 Wrong European beach: {wrongGuess}",
+        "Euro travel desk rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has European beach energy — wrong energy.",
+        "🇪🇺 My European beach sources say no.",
+        "Even the European beach club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🇪🇺 European beach break — hold up",
+        "Mandatory European beach timeout"
+      ],
+      "diceFlavor": [
+        "🇪🇺 European beach dice roll…",
+        "Euro travel desk says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🇪🇺 European beach face-swap: not {wrongGuess}",
+        "Euro travel desk glitch — {wrongGuess}"
+      ]
+    },
+    "caribbean-latam": {
+      "hintPrefix": "Caribbean brochure:",
+      "memeCaptions": [
+        "🏝️ Caribbean brochure: hard no on {wrongGuess}",
+        "{wrongGuess} is not a Caribbean or Latin America word",
+        "🏝️ Wrong Caribbean or Latin America: {wrongGuess}",
+        "Caribbean brochure rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has Caribbean or Latin America energy — wrong energy.",
+        "🏝️ My Caribbean or Latin America sources say no.",
+        "Even the Caribbean or Latin America club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🏝️ Caribbean or Latin America break — hold up",
+        "Mandatory Caribbean or Latin America timeout"
+      ],
+      "diceFlavor": [
+        "🏝️ Caribbean or Latin America dice roll…",
+        "Caribbean brochure says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🏝️ Caribbean or Latin America face-swap: not {wrongGuess}",
+        "Caribbean brochure glitch — {wrongGuess}"
+      ]
+    },
+    "pacific-islands": {
+      "hintPrefix": "Pacific atlas:",
+      "memeCaptions": [
+        "🌺 Pacific atlas: hard no on {wrongGuess}",
+        "{wrongGuess} is not a Pacific islands word",
+        "🌺 Wrong Pacific islands: {wrongGuess}",
+        "Pacific atlas rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has Pacific islands energy — wrong energy.",
+        "🌺 My Pacific islands sources say no.",
+        "Even the Pacific islands club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🌺 Pacific islands break — hold up",
+        "Mandatory Pacific islands timeout"
+      ],
+      "diceFlavor": [
+        "🌺 Pacific islands dice roll…",
+        "Pacific atlas says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🌺 Pacific islands face-swap: not {wrongGuess}",
+        "Pacific atlas glitch — {wrongGuess}"
+      ]
+    },
+    "australia-nz": {
+      "hintPrefix": "Down under guide:",
+      "memeCaptions": [
+        "🦘 Down under guide: hard no on {wrongGuess}",
+        "{wrongGuess} is not a Australia or NZ word",
+        "🦘 Wrong Australia or NZ: {wrongGuess}",
+        "Down under guide rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has Australia or NZ energy — wrong energy.",
+        "🦘 My Australia or NZ sources say no.",
+        "Even the Australia or NZ club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🦘 Australia or NZ break — hold up",
+        "Mandatory Australia or NZ timeout"
+      ],
+      "diceFlavor": [
+        "🦘 Australia or NZ dice roll…",
+        "Down under guide says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🦘 Australia or NZ face-swap: not {wrongGuess}",
+        "Down under guide glitch — {wrongGuess}"
+      ]
+    },
+    "city-beach-town": {
+      "hintPrefix": "Town welcome sign:",
+      "memeCaptions": [
+        "🏘️ Town welcome sign: hard no on {wrongGuess}",
+        "{wrongGuess} is not a beach town word",
+        "🏘️ Wrong beach town: {wrongGuess}",
+        "Town welcome sign rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has beach town energy — wrong energy.",
+        "🏘️ My beach town sources say no.",
+        "Even the beach town club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🏘️ beach town break — hold up",
+        "Mandatory beach town timeout"
+      ],
+      "diceFlavor": [
+        "🏘️ beach town dice roll…",
+        "Town welcome sign says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🏘️ beach town face-swap: not {wrongGuess}",
+        "Town welcome sign glitch — {wrongGuess}"
+      ]
+    },
+    "famous-resort": {
+      "hintPrefix": "Resort concierge:",
+      "memeCaptions": [
+        "✨ Resort concierge: hard no on {wrongGuess}",
+        "{wrongGuess} is not a resort destination word",
+        "✨ Wrong resort destination: {wrongGuess}",
+        "Resort concierge rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has resort destination energy — wrong energy.",
+        "✨ My resort destination sources say no.",
+        "Even the resort destination club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "✨ resort destination break — hold up",
+        "Mandatory resort destination timeout"
+      ],
+      "diceFlavor": [
+        "✨ resort destination dice roll…",
+        "Resort concierge says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "✨ resort destination face-swap: not {wrongGuess}",
+        "Resort concierge glitch — {wrongGuess}"
+      ]
+    },
+    "generic-place": {
+      "hintPrefix": "Travel guide:",
+      "memeCaptions": [
+        "📍 Travel guide: hard no on {wrongGuess}",
+        "{wrongGuess} is not a place name word",
+        "📍 Wrong place name: {wrongGuess}",
+        "Travel guide rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has place name energy — wrong energy.",
+        "📍 My place name sources say no.",
+        "Even the place name club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "📍 place name break — hold up",
+        "Mandatory place name timeout"
+      ],
+      "diceFlavor": [
+        "📍 place name dice roll…",
+        "Travel guide says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "📍 place name face-swap: not {wrongGuess}",
+        "Travel guide glitch — {wrongGuess}"
+      ]
+    },
+    "sail-yacht": {
+      "hintPrefix": "Sail club:",
+      "memeCaptions": [
+        "⛵ Sail club: hard no on {wrongGuess}",
+        "{wrongGuess} is not a sailboat or yacht word",
+        "⛵ Wrong sailboat or yacht: {wrongGuess}",
+        "Sail club rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has sailboat or yacht energy — wrong energy.",
+        "⛵ My sailboat or yacht sources say no.",
+        "Even the sailboat or yacht club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "⛵ sailboat or yacht break — hold up",
+        "Mandatory sailboat or yacht timeout"
+      ],
+      "diceFlavor": [
+        "⛵ sailboat or yacht dice roll…",
+        "Sail club says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "⛵ sailboat or yacht face-swap: not {wrongGuess}",
+        "Sail club glitch — {wrongGuess}"
+      ]
+    },
+    "motor-ship": {
+      "hintPrefix": "Fleet radio:",
+      "memeCaptions": [
+        "🚢 Fleet radio: hard no on {wrongGuess}",
+        "{wrongGuess} is not a ship or steamer word",
+        "🚢 Wrong ship or steamer: {wrongGuess}",
+        "Fleet radio rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has ship or steamer energy — wrong energy.",
+        "🚢 My ship or steamer sources say no.",
+        "Even the ship or steamer club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🚢 ship or steamer break — hold up",
+        "Mandatory ship or steamer timeout"
+      ],
+      "diceFlavor": [
+        "🚢 ship or steamer dice roll…",
+        "Fleet radio says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🚢 ship or steamer face-swap: not {wrongGuess}",
+        "Fleet radio glitch — {wrongGuess}"
+      ]
+    },
+    "harbor-dock": {
+      "hintPrefix": "Harbor master:",
+      "memeCaptions": [
+        "⚓ Harbor master: hard no on {wrongGuess}",
+        "{wrongGuess} is not a harbor or dock word",
+        "⚓ Wrong harbor or dock: {wrongGuess}",
+        "Harbor master rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has harbor or dock energy — wrong energy.",
+        "⚓ My harbor or dock sources say no.",
+        "Even the harbor or dock club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "⚓ harbor or dock break — hold up",
+        "Mandatory harbor or dock timeout"
+      ],
+      "diceFlavor": [
+        "⚓ harbor or dock dice roll…",
+        "Harbor master says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "⚓ harbor or dock face-swap: not {wrongGuess}",
+        "Harbor master glitch — {wrongGuess}"
+      ]
+    },
+    "lighthouse-beacon": {
+      "hintPrefix": "Beacon keeper:",
+      "memeCaptions": [
+        "🗼 Beacon keeper: hard no on {wrongGuess}",
+        "{wrongGuess} is not a lighthouse or beacon word",
+        "🗼 Wrong lighthouse or beacon: {wrongGuess}",
+        "Beacon keeper rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has lighthouse or beacon energy — wrong energy.",
+        "🗼 My lighthouse or beacon sources say no.",
+        "Even the lighthouse or beacon club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🗼 lighthouse or beacon break — hold up",
+        "Mandatory lighthouse or beacon timeout"
+      ],
+      "diceFlavor": [
+        "🗼 lighthouse or beacon dice roll…",
+        "Beacon keeper says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🗼 lighthouse or beacon face-swap: not {wrongGuess}",
+        "Beacon keeper glitch — {wrongGuess}"
+      ]
+    },
+    "pier-promenade": {
+      "hintPrefix": "Pier attendant:",
+      "memeCaptions": [
+        "🎣 Pier attendant: hard no on {wrongGuess}",
+        "{wrongGuess} is not a pier or promenade word",
+        "🎣 Wrong pier or promenade: {wrongGuess}",
+        "Pier attendant rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has pier or promenade energy — wrong energy.",
+        "🎣 My pier or promenade sources say no.",
+        "Even the pier or promenade club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🎣 pier or promenade break — hold up",
+        "Mandatory pier or promenade timeout"
+      ],
+      "diceFlavor": [
+        "🎣 pier or promenade dice roll…",
+        "Pier attendant says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🎣 pier or promenade face-swap: not {wrongGuess}",
+        "Pier attendant glitch — {wrongGuess}"
+      ]
+    },
+    "kayak-paddle": {
+      "hintPrefix": "Paddle shop:",
+      "memeCaptions": [
+        "🛶 Paddle shop: hard no on {wrongGuess}",
+        "{wrongGuess} is not a kayak or paddle craft word",
+        "🛶 Wrong kayak or paddle craft: {wrongGuess}",
+        "Paddle shop rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has kayak or paddle craft energy — wrong energy.",
+        "🛶 My kayak or paddle craft sources say no.",
+        "Even the kayak or paddle craft club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🛶 kayak or paddle craft break — hold up",
+        "Mandatory kayak or paddle craft timeout"
+      ],
+      "diceFlavor": [
+        "🛶 kayak or paddle craft dice roll…",
+        "Paddle shop says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🛶 kayak or paddle craft face-swap: not {wrongGuess}",
+        "Paddle shop glitch — {wrongGuess}"
+      ]
+    },
+    "surf-sport": {
+      "hintPrefix": "Surf shack:",
+      "memeCaptions": [
+        "🏄 Surf shack: hard no on {wrongGuess}",
+        "{wrongGuess} is not a surf sport word",
+        "🏄 Wrong surf sport: {wrongGuess}",
+        "Surf shack rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has surf sport energy — wrong energy.",
+        "🏄 My surf sport sources say no.",
+        "Even the surf sport club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🏄 surf sport break — hold up",
+        "Mandatory surf sport timeout"
+      ],
+      "diceFlavor": [
+        "🏄 surf sport dice roll…",
+        "Surf shack says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🏄 surf sport face-swap: not {wrongGuess}",
+        "Surf shack glitch — {wrongGuess}"
+      ]
+    },
+    "swim-sun": {
+      "hintPrefix": "Sun deck:",
+      "memeCaptions": [
+        "☀️ Sun deck: hard no on {wrongGuess}",
+        "{wrongGuess} is not a swim or sun word",
+        "☀️ Wrong swim or sun: {wrongGuess}",
+        "Sun deck rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has swim or sun energy — wrong energy.",
+        "☀️ My swim or sun sources say no.",
+        "Even the swim or sun club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "☀️ swim or sun break — hold up",
+        "Mandatory swim or sun timeout"
+      ],
+      "diceFlavor": [
+        "☀️ swim or sun dice roll…",
+        "Sun deck says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "☀️ swim or sun face-swap: not {wrongGuess}",
+        "Sun deck glitch — {wrongGuess}"
+      ]
+    },
+    "beachwear-gear": {
+      "hintPrefix": "Gear rental:",
+      "memeCaptions": [
+        "🩴 Gear rental: hard no on {wrongGuess}",
+        "{wrongGuess} is not a beach gear word",
+        "🩴 Wrong beach gear: {wrongGuess}",
+        "Gear rental rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has beach gear energy — wrong energy.",
+        "🩴 My beach gear sources say no.",
+        "Even the beach gear club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🩴 beach gear break — hold up",
+        "Mandatory beach gear timeout"
+      ],
+      "diceFlavor": [
+        "🩴 beach gear dice roll…",
+        "Gear rental says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🩴 beach gear face-swap: not {wrongGuess}",
+        "Gear rental glitch — {wrongGuess}"
+      ]
+    },
+    "snorkel-dive": {
+      "hintPrefix": "Dive shop:",
+      "memeCaptions": [
+        "🤿 Dive shop: hard no on {wrongGuess}",
+        "{wrongGuess} is not a snorkel or dive word",
+        "🤿 Wrong snorkel or dive: {wrongGuess}",
+        "Dive shop rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has snorkel or dive energy — wrong energy.",
+        "🤿 My snorkel or dive sources say no.",
+        "Even the snorkel or dive club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🤿 snorkel or dive break — hold up",
+        "Mandatory snorkel or dive timeout"
+      ],
+      "diceFlavor": [
+        "🤿 snorkel or dive dice roll…",
+        "Dive shop says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🤿 snorkel or dive face-swap: not {wrongGuess}",
+        "Dive shop glitch — {wrongGuess}"
+      ]
+    },
+    "camp-outdoor": {
+      "hintPrefix": "Camp host:",
+      "memeCaptions": [
+        "⛺ Camp host: hard no on {wrongGuess}",
+        "{wrongGuess} is not a camp or outdoor word",
+        "⛺ Wrong camp or outdoor: {wrongGuess}",
+        "Camp host rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has camp or outdoor energy — wrong energy.",
+        "⛺ My camp or outdoor sources say no.",
+        "Even the camp or outdoor club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "⛺ camp or outdoor break — hold up",
+        "Mandatory camp or outdoor timeout"
+      ],
+      "diceFlavor": [
+        "⛺ camp or outdoor dice roll…",
+        "Camp host says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "⛺ camp or outdoor face-swap: not {wrongGuess}",
+        "Camp host glitch — {wrongGuess}"
+      ]
+    },
+    "boardwalk-social": {
+      "hintPrefix": "Boardwalk buzz:",
+      "memeCaptions": [
+        "🎡 Boardwalk buzz: hard no on {wrongGuess}",
+        "{wrongGuess} is not a boardwalk word",
+        "🎡 Wrong boardwalk: {wrongGuess}",
+        "Boardwalk buzz rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has boardwalk energy — wrong energy.",
+        "🎡 My boardwalk sources say no.",
+        "Even the boardwalk club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🎡 boardwalk break — hold up",
+        "Mandatory boardwalk timeout"
+      ],
+      "diceFlavor": [
+        "🎡 boardwalk dice roll…",
+        "Boardwalk buzz says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🎡 boardwalk face-swap: not {wrongGuess}",
+        "Boardwalk buzz glitch — {wrongGuess}"
+      ]
+    },
+    "lifeguard-safety": {
+      "hintPrefix": "Lifeguard tower:",
+      "memeCaptions": [
+        "🛟 Lifeguard tower: hard no on {wrongGuess}",
+        "{wrongGuess} is not a lifeguard word",
+        "🛟 Wrong lifeguard: {wrongGuess}",
+        "Lifeguard tower rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has lifeguard energy — wrong energy.",
+        "🛟 My lifeguard sources say no.",
+        "Even the lifeguard club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🛟 lifeguard break — hold up",
+        "Mandatory lifeguard timeout"
+      ],
+      "diceFlavor": [
+        "🛟 lifeguard dice roll…",
+        "Lifeguard tower says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🛟 lifeguard face-swap: not {wrongGuess}",
+        "Lifeguard tower glitch — {wrongGuess}"
+      ]
+    },
+    "bbq-bonfire": {
+      "hintPrefix": "Grill master:",
+      "memeCaptions": [
+        "🔥 Grill master: hard no on {wrongGuess}",
+        "{wrongGuess} is not a BBQ or bonfire word",
+        "🔥 Wrong BBQ or bonfire: {wrongGuess}",
+        "Grill master rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has BBQ or bonfire energy — wrong energy.",
+        "🔥 My BBQ or bonfire sources say no.",
+        "Even the BBQ or bonfire club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🔥 BBQ or bonfire break — hold up",
+        "Mandatory BBQ or bonfire timeout"
+      ],
+      "diceFlavor": [
+        "🔥 BBQ or bonfire dice roll…",
+        "Grill master says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🔥 BBQ or bonfire face-swap: not {wrongGuess}",
+        "Grill master glitch — {wrongGuess}"
+      ]
+    },
+    "picnic": {
+      "hintPrefix": "Picnic committee:",
+      "memeCaptions": [
+        "🧺 Picnic committee: hard no on {wrongGuess}",
+        "{wrongGuess} is not a picnic word",
+        "🧺 Wrong picnic: {wrongGuess}",
+        "Picnic committee rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has picnic energy — wrong energy.",
+        "🧺 My picnic sources say no.",
+        "Even the picnic club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🧺 picnic break — hold up",
+        "Mandatory picnic timeout"
+      ],
+      "diceFlavor": [
+        "🧺 picnic dice roll…",
+        "Picnic committee says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🧺 picnic face-swap: not {wrongGuess}",
+        "Picnic committee glitch — {wrongGuess}"
+      ]
+    },
+    "color-hue": {
+      "hintPrefix": "Color wheel:",
+      "memeCaptions": [
+        "🎨 Color wheel: hard no on {wrongGuess}",
+        "{wrongGuess} is not a color word",
+        "🎨 Wrong color: {wrongGuess}",
+        "Color wheel rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has color energy — wrong energy.",
+        "🎨 My color sources say no.",
+        "Even the color club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🎨 color break — hold up",
+        "Mandatory color timeout"
+      ],
+      "diceFlavor": [
+        "🎨 color dice roll…",
+        "Color wheel says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🎨 color face-swap: not {wrongGuess}",
+        "Color wheel glitch — {wrongGuess}"
+      ]
+    },
+    "texture-feel": {
+      "hintPrefix": "Touch test:",
+      "memeCaptions": [
+        "✋ Touch test: hard no on {wrongGuess}",
+        "{wrongGuess} is not a texture word",
+        "✋ Wrong texture: {wrongGuess}",
+        "Touch test rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has texture energy — wrong energy.",
+        "✋ My texture sources say no.",
+        "Even the texture club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "✋ texture break — hold up",
+        "Mandatory texture timeout"
+      ],
+      "diceFlavor": [
+        "✋ texture dice roll…",
+        "Touch test says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "✋ texture face-swap: not {wrongGuess}",
+        "Touch test glitch — {wrongGuess}"
+      ]
+    },
+    "tropical-warm": {
+      "hintPrefix": "Tropical mood:",
+      "memeCaptions": [
+        "🌺 Tropical mood: hard no on {wrongGuess}",
+        "{wrongGuess} is not a tropical vibe word",
+        "🌺 Wrong tropical vibe: {wrongGuess}",
+        "Tropical mood rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has tropical vibe energy — wrong energy.",
+        "🌺 My tropical vibe sources say no.",
+        "Even the tropical vibe club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🌺 tropical vibe break — hold up",
+        "Mandatory tropical vibe timeout"
+      ],
+      "diceFlavor": [
+        "🌺 tropical vibe dice roll…",
+        "Tropical mood says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🌺 tropical vibe face-swap: not {wrongGuess}",
+        "Tropical mood glitch — {wrongGuess}"
+      ]
+    },
+    "deep-ocean": {
+      "hintPrefix": "Deep blue desk:",
+      "memeCaptions": [
+        "🌊 Deep blue desk: hard no on {wrongGuess}",
+        "{wrongGuess} is not a deep blue word",
+        "🌊 Wrong deep blue: {wrongGuess}",
+        "Deep blue desk rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has deep blue energy — wrong energy.",
+        "🌊 My deep blue sources say no.",
+        "Even the deep blue club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🌊 deep blue break — hold up",
+        "Mandatory deep blue timeout"
+      ],
+      "diceFlavor": [
+        "🌊 deep blue dice roll…",
+        "Deep blue desk says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🌊 deep blue face-swap: not {wrongGuess}",
+        "Deep blue desk glitch — {wrongGuess}"
+      ]
+    },
+    "beach-vibe": {
+      "hintPrefix": "Vibe check:",
+      "memeCaptions": [
+        "😎 Vibe check: hard no on {wrongGuess}",
+        "{wrongGuess} is not a beach aesthetic word",
+        "😎 Wrong beach aesthetic: {wrongGuess}",
+        "Vibe check rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has beach aesthetic energy — wrong energy.",
+        "😎 My beach aesthetic sources say no.",
+        "Even the beach aesthetic club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "😎 beach aesthetic break — hold up",
+        "Mandatory beach aesthetic timeout"
+      ],
+      "diceFlavor": [
+        "😎 beach aesthetic dice roll…",
+        "Vibe check says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "😎 beach aesthetic face-swap: not {wrongGuess}",
+        "Vibe check glitch — {wrongGuess}"
+      ]
+    },
+    "hotel-resort": {
+      "hintPrefix": "Front desk:",
+      "memeCaptions": [
+        "🏨 Front desk: hard no on {wrongGuess}",
+        "{wrongGuess} is not a hotel or resort word",
+        "🏨 Wrong hotel or resort: {wrongGuess}",
+        "Front desk rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has hotel or resort energy — wrong energy.",
+        "🏨 My hotel or resort sources say no.",
+        "Even the hotel or resort club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🏨 hotel or resort break — hold up",
+        "Mandatory hotel or resort timeout"
+      ],
+      "diceFlavor": [
+        "🏨 hotel or resort dice roll…",
+        "Front desk says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🏨 hotel or resort face-swap: not {wrongGuess}",
+        "Front desk glitch — {wrongGuess}"
+      ]
+    },
+    "tourism-vacation": {
+      "hintPrefix": "Travel agent:",
+      "memeCaptions": [
+        "🧳 Travel agent: hard no on {wrongGuess}",
+        "{wrongGuess} is not a vacation word",
+        "🧳 Wrong vacation: {wrongGuess}",
+        "Travel agent rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has vacation energy — wrong energy.",
+        "🧳 My vacation sources say no.",
+        "Even the vacation club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🧳 vacation break — hold up",
+        "Mandatory vacation timeout"
+      ],
+      "diceFlavor": [
+        "🧳 vacation dice roll…",
+        "Travel agent says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🧳 vacation face-swap: not {wrongGuess}",
+        "Travel agent glitch — {wrongGuess}"
+      ]
+    },
+    "park-trail": {
+      "hintPrefix": "Park ranger:",
+      "memeCaptions": [
+        "🥾 Park ranger: hard no on {wrongGuess}",
+        "{wrongGuess} is not a park or trail word",
+        "🥾 Wrong park or trail: {wrongGuess}",
+        "Park ranger rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has park or trail energy — wrong energy.",
+        "🥾 My park or trail sources say no.",
+        "Even the park or trail club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🥾 park or trail break — hold up",
+        "Mandatory park or trail timeout"
+      ],
+      "diceFlavor": [
+        "🥾 park or trail dice roll…",
+        "Park ranger says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🥾 park or trail face-swap: not {wrongGuess}",
+        "Park ranger glitch — {wrongGuess}"
+      ]
+    },
+    "shell-pearl": {
+      "hintPrefix": "Shell shop:",
+      "memeCaptions": [
+        "🐚 Shell shop: hard no on {wrongGuess}",
+        "{wrongGuess} is not a shell or pearl word",
+        "🐚 Wrong shell or pearl: {wrongGuess}",
+        "Shell shop rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has shell or pearl energy — wrong energy.",
+        "🐚 My shell or pearl sources say no.",
+        "Even the shell or pearl club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🐚 shell or pearl break — hold up",
+        "Mandatory shell or pearl timeout"
+      ],
+      "diceFlavor": [
+        "🐚 shell or pearl dice roll…",
+        "Shell shop says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🐚 shell or pearl face-swap: not {wrongGuess}",
+        "Shell shop glitch — {wrongGuess}"
+      ]
+    },
+    "sunrise-sunset": {
+      "hintPrefix": "Golden hour:",
+      "memeCaptions": [
+        "🌅 Golden hour: hard no on {wrongGuess}",
+        "{wrongGuess} is not a sunrise or sunset word",
+        "🌅 Wrong sunrise or sunset: {wrongGuess}",
+        "Golden hour rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has sunrise or sunset energy — wrong energy.",
+        "🌅 My sunrise or sunset sources say no.",
+        "Even the sunrise or sunset club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🌅 sunrise or sunset break — hold up",
+        "Mandatory sunrise or sunset timeout"
+      ],
+      "diceFlavor": [
+        "🌅 sunrise or sunset dice roll…",
+        "Golden hour says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🌅 sunrise or sunset face-swap: not {wrongGuess}",
+        "Golden hour glitch — {wrongGuess}"
+      ]
+    },
+    "water-generic": {
+      "hintPrefix": "Hydration station:",
+      "memeCaptions": [
+        "💧 Hydration station: hard no on {wrongGuess}",
+        "{wrongGuess} is not a water word",
+        "💧 Wrong water: {wrongGuess}",
+        "Hydration station rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has water energy — wrong energy.",
+        "💧 My water sources say no.",
+        "Even the water club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "💧 water break — hold up",
+        "Mandatory water timeout"
+      ],
+      "diceFlavor": [
+        "💧 water dice roll…",
+        "Hydration station says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "💧 water face-swap: not {wrongGuess}",
+        "Hydration station glitch — {wrongGuess}"
+      ]
+    },
+    "urban-coastal": {
+      "hintPrefix": "City planner:",
+      "memeCaptions": [
+        "🏙️ City planner: hard no on {wrongGuess}",
+        "{wrongGuess} is not a urban coast word",
+        "🏙️ Wrong urban coast: {wrongGuess}",
+        "City planner rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has urban coast energy — wrong energy.",
+        "🏙️ My urban coast sources say no.",
+        "Even the urban coast club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🏙️ urban coast break — hold up",
+        "Mandatory urban coast timeout"
+      ],
+      "diceFlavor": [
+        "🏙️ urban coast dice roll…",
+        "City planner says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🏙️ urban coast face-swap: not {wrongGuess}",
+        "City planner glitch — {wrongGuess}"
+      ]
+    },
+    "abstract-beach": {
+      "hintPrefix": "Beach Wordle HQ:",
+      "memeCaptions": [
+        "🏖️ Beach Wordle HQ: hard no on {wrongGuess}",
+        "{wrongGuess} is not a beach word",
+        "🏖️ Wrong beach: {wrongGuess}",
+        "Beach Wordle HQ rejects {wrongGuess}"
+      ],
+      "insults": [
+        "That guess has beach energy — wrong energy.",
+        "🏖️ My beach sources say no.",
+        "Even the beach club voted against {wrongGuess}."
+      ],
+      "forcedBreakLabels": [
+        "🏖️ beach break — hold up",
+        "Mandatory beach timeout"
+      ],
+      "diceFlavor": [
+        "🏖️ beach dice roll…",
+        "Beach Wordle HQ says reroll!"
+      ],
+      "faceSwapTaglines": [
+        "🏖️ beach face-swap: not {wrongGuess}",
+        "Beach Wordle HQ glitch — {wrongGuess}"
+      ]
+    }
+  }
+}

@@ -1,20 +1,19 @@
 import type { GameMode } from '../types';
 
-export interface GameStoreSlice {
-  answer: string | null;
-  answerLength: number | null;
-  myGuesses: { word: string }[];
+export interface InputDisabledSlice {
   myCooldownEndsAt: number | null;
   inputLocked: boolean;
   chessPuzzleActive: boolean;
   cooldownFrozen: boolean;
   roundOver: boolean;
   matchWinner: 'me' | 'opponent' | null;
-  mode: GameMode | null;
+  distractionBlocking?: boolean;
+  cardDetailPopupDraw?: boolean;
+  playfulInsultActive?: boolean;
 }
 
 export function selectIsOnCooldown(
-  state: GameStoreSlice,
+  state: InputDisabledSlice,
   now = Date.now()
 ): boolean {
   if (state.cooldownFrozen) return false;
@@ -22,9 +21,12 @@ export function selectIsOnCooldown(
 }
 
 export function selectIsInputDisabled(
-  state: GameStoreSlice,
+  state: InputDisabledSlice,
   now = Date.now()
 ): boolean {
+  if (state.distractionBlocking || state.cardDetailPopupDraw || state.playfulInsultActive) {
+    return true;
+  }
   if (state.inputLocked || state.chessPuzzleActive) return true;
   if (state.roundOver || state.matchWinner !== null) return true;
   return selectIsOnCooldown(state, now);

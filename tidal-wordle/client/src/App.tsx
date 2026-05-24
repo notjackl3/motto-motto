@@ -3,7 +3,7 @@ import MainMenu from './components/ui/MainMenu';
 import Lobby from './components/ui/Lobby';
 import GameLayout from './components/layout/GameLayout';
 import GameOverScreen from './components/ui/GameOverScreen';
-import { useGameStore } from './stores/gameStore';
+import { useGameStore, onMatchEnd } from './stores/gameStore';
 import type { RoutingScreen } from './types';
 
 export default function App() {
@@ -17,6 +17,12 @@ export default function App() {
       setScreen('gameOver');
     }
   }, [matchWinner, screen]);
+
+  useEffect(() => {
+    return onMatchEnd(() => {
+      setScreen('gameOver');
+    });
+  }, []);
 
   function startSolo() {
     startMatch('solo');

@@ -3,10 +3,15 @@ import WordleBoard from '../game/WordleBoard';
 import GuessInput from '../game/GuessInput';
 import CooldownTimer from '../game/CooldownTimer';
 import CardHand from '../game/CardHand';
+import KnowledgePanel from '../game/KnowledgePanel';
 import OpponentBoard from '../game/OpponentBoard';
 import ScorePanel from '../game/ScorePanel';
 import EffectOverlays from '../game/EffectOverlays';
+import RoundBanner from '../game/RoundBanner';
+import CardDetailPopup from '../game/CardDetailPopup';
+import { useEffectExpiry } from '../../hooks/useEffectExpiry';
 import { useGameStore } from '../../stores/gameStore';
+import DevCardFilterPanel from '../dev/DevCardFilterPanel';
 
 interface GameLayoutProps {
   onQuit: () => void;
@@ -14,36 +19,39 @@ interface GameLayoutProps {
 
 export default function GameLayout({ onQuit }: GameLayoutProps) {
   const mode = useGameStore((s) => s.mode);
-  const hints = useGameStore((s) => s.hints);
+  useEffectExpiry();
 
   return (
     <div className="relative h-full w-full overflow-hidden">
       <WaveScene />
       <EffectOverlays />
-      <div className="absolute inset-0 grid grid-cols-12 grid-rows-6 gap-3 p-4 text-white z-10 pointer-events-none">
-        <div className="col-span-3 row-span-2 flex flex-col gap-3 pointer-events-auto">
-          <ScorePanel />
-          <CooldownTimer />
-        </div>
-        <div className="col-span-6 row-span-5 flex flex-col gap-3 pointer-events-auto">
-          <WordleBoard />
-          <GuessInput />
-          {hints.length > 0 && (
-            <div className="text-xs opacity-80 max-h-16 overflow-y-auto">
-              Latest hint: {hints[hints.length - 1]?.text}
+      <CardDetailPopup />
+      <RoundBanner />
+      {import.meta.env.DEV && <DevCardFilterPanel />}
+      <div className="absolute inset-0 z-10 flex flex-col p-4 pb-3 gap-3 text-white pointer-events-none">
+        <div className="flex-1 min-h-0 grid grid-cols-12 gap-3">
+          <div className="col-span-3 flex flex-col gap-3 pointer-events-auto min-h-0 overflow-hidden">
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <ScorePanel />
             </div>
-          )}
-        </div>
-        <div className="col-span-3 row-span-2 pointer-events-auto">
-          {mode === 'multiplayer' ? (
-            <OpponentBoard />
-          ) : (
-            <div className="bg-black/30 rounded-lg p-3 text-sm opacity-60">
-              Solo mode — attack cards hit your own board
+            <CooldownTimer />
+          </div>
+          <div className="col-span-6 relative flex flex-col gap-3 pointer-events-auto min-h-0 overflow-hidden">
+            <WordleBoard boardTarget="self" />
+            <GuessInput />
+          </div>
+          <div className="col-span-3 flex flex-col gap-3 pointer-events-auto min-h-0 overflow-hidden">
+            {mode === 'multiplayer' && (
+              <div className="shrink-0 max-h-[40%] min-h-0 overflow-auto">
+                <OpponentBoard />
+              </div>
+            )}
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <KnowledgePanel />
             </div>
-          )}
+          </div>
         </div>
-        <div className="col-span-12 row-span-1 pointer-events-auto">
+        <div className="shrink-0 pointer-events-auto">
           <CardHand />
         </div>
         <button

@@ -1,0 +1,148 @@
+{
+  "version": 1,
+  "description": "Optional per-word overrides for flagship answers. Text-only unless memeHeroPath is set.",
+  "overrides": {
+    "shark": {
+      "memeCaption": "Jaws declined: {wrongGuess}",
+      "insult": "That's a fish story, not the answer.",
+      "faceSwapTagline": "Shark cam says {wrongGuess} is bait"
+    },
+    "crab": {
+      "memeCaption": "Pinch rejected: {wrongGuess}",
+      "insult": "Sideways logic — still wrong."
+    },
+    "lobster": {
+      "memeCaption": "Butter denied for {wrongGuess}",
+      "recipeTitle": "Luxury Lobster Roll (Not Your Guess)"
+    },
+    "whale": {
+      "memeCaption": "Moby said no to {wrongGuess}",
+      "faceSwapTagline": "Whale song translation: not {wrongGuess}"
+    },
+    "dolphin": {
+      "memeCaption": "Dolphin IQ > {wrongGuess}",
+      "insult": "Smart mammal, dumb guess."
+    },
+    "california": {
+      "memeCaption": "West coast says leave {wrongGuess}",
+      "insult": "That's a state, not it."
+    },
+    "florida": {
+      "memeCaption": "Florida Man rejects {wrongGuess}",
+      "insult": "Wrong peninsula energy."
+    },
+    "hawaii": {
+      "memeCaption": "Aloha means goodbye to {wrongGuess}",
+      "insult": "Wrong island vibe."
+    },
+    "beach": {
+      "memeCaption": "Too on the nose: {wrongGuess}",
+      "insult": "You're warm but not hot."
+    },
+    "sand": {
+      "memeCaption": "Sandcastle union vetoed {wrongGuess}",
+      "forcedBreakLabel": "Sand settling — wait"
+    },
+    "surf": {
+      "memeCaption": "Wipeout: {wrongGuess}",
+      "faceSwapTagline": "Surfer face for {wrongGuess}"
+    },
+    "surfboard": {
+      "memeCaption": "Board meeting denied {wrongGuess}"
+    },
+    "tide": {
+      "memeCaption": "Tide goes out on {wrongGuess}",
+      "hintPrefix": "Moon whispers:"
+    },
+    "wave": {
+      "memeCaption": "Catch this L, not {wrongGuess}"
+    },
+    "barbecue": {
+      "memeCaption": "Grill master spit out {wrongGuess}",
+      "recipeTitle": "Smoked Wrong Guess ({wrongGuess}) — DO NOT SERVE"
+    },
+    "bonfire": {
+      "memeCaption": "{wrongGuess} burned on the bonfire"
+    },
+    "lighthouse": {
+      "memeCaption": "Beacon blinks NO at {wrongGuess}",
+      "faceSwapTagline": "Lighthouse glare: not {wrongGuess}"
+    },
+    "yacht": {
+      "memeCaption": "Harbor declined {wrongGuess}",
+      "insult": "Too bougie, still wrong."
+    },
+    "seashell": {
+      "memeCaption": "Shell phone says: not {wrongGuess}"
+    },
+    "sunset": {
+      "memeCaption": "Golden hour rejects {wrongGuess}",
+      "forcedBreakLabel": "Sunset pause — breathe"
+    },
+    "sunrise": {
+      "memeCaption": "Dawn patrol skipped {wrongGuess}"
+    },
+    "paradise": {
+      "memeCaption": "Paradise lost: {wrongGuess}",
+      "insult": "So close to heaven, so far from correct."
+    },
+    "miami": {
+      "memeCaption": "South Beach bounced {wrongGuess}"
+    },
+    "texas": {
+      "memeCaption": "Everything's bigger except {wrongGuess}'s chances"
+    },
+    "australia": {
+      "memeCaption": "Down under says nah to {wrongGuess}"
+    },
+    "paris": {
+      "memeCaption": "Parisian shrug at {wrongGuess}"
+    },
+    "bikini": {
+      "memeCaption": "Beach fashion police: not {wrongGuess}"
+    },
+    "jellyfish": {
+      "memeCaption": "Stung by wrong: {wrongGuess}",
+      "faceSwapTagline": "Jelly face for {wrongGuess}"
+    },
+    "starfish": {
+      "memeCaption": "Five arms point away from {wrongGuess}"
+    },
+    "coral": {
+      "memeCaption": "Reef fact-check failed: {wrongGuess}"
+    },
+    "kelp": {
+      "memeCaption": "Kelp tangle for {wrongGuess}"
+    },
+    "albatross": {
+      "memeCaption": "Bad luck bird carries {wrongGuess} away"
+    },
+    "shipwreck": {
+      "memeCaption": "{wrongGuess} sank on arrival"
+    },
+    "treasure": {
+      "memeCaption": "X marks NOT {wrongGuess}"
+    },
+    "campfire": {
+      "memeCaption": "S'more wrong: {wrongGuess}"
+    },
+    "picnic": {
+      "memeCaption": "Ants stole {wrongGuess} — good riddance"
+    },
+    "boardwalk": {
+      "memeCaption": "Arcade high score: rejecting {wrongGuess}"
+    },
+    "lifeguard": {
+      "memeCaption": "Lifeguard whistle: {wrongGuess} out of bounds"
+    },
+    "snorkel": {
+      "memeCaption": "Snorkel fogged on {wrongGuess}"
+    },
+    "hammock": {
+      "memeCaption": "Nap denied until you drop {wrongGuess}"
+    },
+    "flipflop": {
+      "memeCaption": "Flip-flop flopped on {wrongGuess}"
+    }
+  }
+}

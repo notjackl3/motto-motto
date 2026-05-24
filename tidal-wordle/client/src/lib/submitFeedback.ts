@@ -7,9 +7,9 @@ export function getSubmitFeedbackMessage(
   if (result.ok) return null;
   switch (result.reason) {
     case 'length':
-      return 'Wrong word length for this round.';
+      return 'Enter at least 2 letters, or a valid probe word (see hint).';
     case 'not_in_list':
-      return 'Not in the beach word list.';
+      return 'Invalid guess.';
     case 'locked':
       return onCooldown ? 'Cooldown — wait a moment.' : 'Input locked (card effect).';
     case 'round_over':

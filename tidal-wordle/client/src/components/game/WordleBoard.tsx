@@ -1,7 +1,20 @@
+import { useEffect, useState } from 'react';
 import { useGameStore } from '../../stores/gameStore';
 import type { LetterState } from '../../types';
-
-const MAX_ROWS = 6;
+import {
+  areGuessColorsRevealed,
+  displayLetterState,
+  isHalfMasked,
+  mergeBoardRowsWithProbe,
+} from '../../lib/boardDisplay';
+import StickerImage from '../cards/StickerImage';
+import type { BrainrotSticker } from '../../lib/cardContent/brainrotStickers';
+import { getBrainrotStickerUrl } from '../../lib/cardContent/stickerAssets';
+import type { WordTheme } from '../../lib/wordMeta';
+import RecipeSpamBoardOverlay from './RecipeSpamBoardOverlay';
+import MemeCannonBoardOverlay from './MemeCannonBoardOverlay';
+import FaceSwapBoardOverlay from './FaceSwapBoardOverlay';
+import PlayfulInsultBoardOverlay from './PlayfulInsultBoardOverlay';
 
 const STATE_CLASSES: Record<LetterState, string> = {
   correct: 'bg-emerald-600 border-emerald-400 text-white',
@@ -13,61 +26,262 @@ const STATE_CLASSES: Record<LetterState, string> = {
 function isTileCovered(
   row: number,
   col: number,
-  effects: ReturnType<typeof useGameStore.getState>['activeEffects']
-): boolean {
-  return effects.some(
+  effects: ReturnType<typeof useGameStore.getState>['activeEffects'],
+  boardTarget: 'self' | 'opponent'
+): {
+  covered: boolean;
+  dogEmoji: string;
+  dogImageUrl?: string;
+  dogImageFallbackUrl?: string;
+  expiresAt?: number;
+} {
+  const effect = effects.find(
     (e) =>
       e.cardId === 'status-dog' &&
+      e.target === boardTarget &&
       e.payload &&
       (e.payload as { row: number; col: number }).row === row &&
       (e.payload as { row: number; col: number }).col === col
   );
+  if (!effect) return { covered: false, dogEmoji: '🐕' };
+  return {
+    covered: true,
+    dogEmoji: (effect.payload?.dogEmoji as string) ?? '🐕',
+    dogImageUrl: effect.payload?.dogImageUrl as string | undefined,
+    dogImageFallbackUrl: effect.payload?.dogImageFallbackUrl as string | undefined,
+    expiresAt: effect.expiresAt,
+  };
 }
 
-export default function WordleBoard() {
-  const guesses = useGameStore((s) => s.myGuesses);
-  const answerLength = useGameStore((s) => s.answerLength);
+function getMemeCannonEffect(
+  effects: ReturnType<typeof useGameStore.getState>['activeEffects'],
+  boardTarget: 'self' | 'opponent'
+) {
+  return effects.find(
+    (e) => e.cardId === 'meme-cannon' && e.target === boardTarget
+  );
+}
+
+function getFaceSwapEffect(
+  effects: ReturnType<typeof useGameStore.getState>['activeEffects'],
+  boardTarget: 'self' | 'opponent'
+) {
+  return effects.find(
+    (e) => e.cardId === 'face-swap-glitch' && e.target === boardTarget
+  );
+}
+
+function getBrainrotEffect(
+  effects: ReturnType<typeof useGameStore.getState>['activeEffects'],
+  boardTarget: 'self' | 'opponent'
+) {
+  return effects.find(
+    (e) => e.cardId === 'brainrot-glitch' && e.target === boardTarget
+  );
+}
+
+function getBrainrotStickersForBoard(
+  effect: ReturnType<typeof getBrainrotEffect>
+): BrainrotSticker[] {
+  if (!effect?.payload?.stickers) return [];
+  return effect.payload.stickers as BrainrotSticker[];
+}
+
+function getBrainrotTheme(
+  effect: ReturnType<typeof getBrainrotEffect>
+): WordTheme | undefined {
+  return effect?.payload?.theme as WordTheme | undefined;
+}
+
+interface WordleBoardProps {
+  boardTarget?: 'self' | 'opponent';
+}
+
+export default function WordleBoard({ boardTarget = 'self' }: WordleBoardProps) {
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 100);
+    return () => clearInterval(t);
+  }, []);
+
+  const guesses =
+    boardTarget === 'self'
+      ? useGameStore((s) => s.myGuesses)
+      : useGameStore((s) => s.opponentGuesses);
+  const bonusProbeGuess = useGameStore((s) =>
+    boardTarget === 'self' ? s.bonusProbeGuess : null
+  );
+  const bonusProbeRowIndex = useGameStore((s) =>
+    boardTarget === 'self' ? s.bonusProbeRowIndex : null
+  );
   const glitchActive = useGameStore((s) => s.glitchActive);
   const activeEffects = useGameStore((s) => s.activeEffects);
-  const revealedLetters = useGameStore((s) => s.revealedLetters);
+  const halfGuessMask = useGameStore((s) => s.halfGuessMask);
+  const playfulInsultOverlay = useGameStore((s) =>
+    s.overlays.find(
+      (o) =>
+        o.type === 'playful-insult' &&
+        ((o.meta?.target as string | undefined) ?? 'self') === boardTarget
+    )
+  );
 
-  const firstGuessLen = guesses[0]?.word.length ?? 5;
-  const cols = answerLength ?? firstGuessLen;
-  const isGlitching = glitchActive === 'self';
+  const isGlitching = glitchActive === boardTarget;
+  const brainrotEffect = getBrainrotEffect(activeEffects, boardTarget);
+  const brainrotStickers = getBrainrotStickersForBoard(brainrotEffect);
+  const brainrotTheme = getBrainrotTheme(brainrotEffect);
+  const memeEffect = getMemeCannonEffect(activeEffects, boardTarget);
+  const memePayload = memeEffect?.payload;
+  const faceSwapEffect = getFaceSwapEffect(activeEffects, boardTarget);
+  const faceSwapPayload = faceSwapEffect?.payload;
+  const faceSwapSeconds =
+    faceSwapEffect?.expiresAt
+      ? Math.ceil(Math.max(0, faceSwapEffect.expiresAt - now) / 1000)
+      : 0;
+  const allRows = mergeBoardRowsWithProbe(
+    guesses,
+    bonusProbeGuess,
+    bonusProbeRowIndex
+  );
 
   return (
     <div
-      className={`bg-black/40 rounded-lg p-3 relative ${isGlitching ? 'glitch-board' : ''}`}
+      className="bg-black/40 rounded-lg p-3 relative flex-1 min-h-0 overflow-y-auto"
       data-testid="wordle-board"
+      aria-label={boardTarget === 'self' ? 'Your board' : 'Opponent board'}
     >
-      <div className="grid gap-1">
-        {Array.from({ length: MAX_ROWS }).map((_, r) => (
-          <div key={r} className="flex gap-1 justify-center">
-            {Array.from({ length: cols }).map((_, c) => {
-              const result = guesses[r]?.results[c];
-              const letter = result?.letter ?? '';
-              const state: LetterState = result?.state ?? 'empty';
-              const covered = isTileCovered(r, c, activeEffects);
+      <RecipeSpamBoardOverlay />
+      <div className="flex flex-col gap-1 relative z-0">
+        {allRows.length === 0 && (
+          <p className="text-xs text-center opacity-50 py-4">
+            Make your first guess — check Intel for hints
+          </p>
+        )}
+        {allRows.map((guess, r) => {
+          const isProbe = guess.isProbe === true;
+          const colorsRevealed = areGuessColorsRevealed(guess, now);
+          return (
+            <div
+              key={`${guess.submittedAt}-${r}`}
+              className={`flex gap-1 justify-center relative ${isProbe ? 'opacity-90 ring-1 ring-amber-400/50 rounded' : ''}`}
+            >
+              {guess.results.map((result, c) => {
+                const colCount = guess.results.length;
+                const masked = isHalfMasked(
+                  c,
+                  colCount,
+                  halfGuessMask,
+                  boardTarget
+                );
+                const displayState = displayLetterState(result, masked, colorsRevealed);
+                const { covered, dogEmoji, dogImageUrl, dogImageFallbackUrl, expiresAt } =
+                  isTileCovered(r, c, activeEffects, boardTarget);
+                const coverSeconds =
+                  covered && expiresAt
+                    ? Math.ceil(Math.max(0, expiresAt - now) / 1000)
+                    : 0;
+                const showLetter =
+                  !covered && !masked && (displayState !== 'empty' || !colorsRevealed);
+                const tileStateClass = isGlitching
+                  ? 'glitch-tile'
+                  : covered
+                    ? 'status-dog-tile text-slate-800'
+                    : STATE_CLASSES[displayState];
 
-              return (
-                <div
-                  key={c}
-                  className={`w-10 h-10 border-2 flex items-center justify-center font-bold uppercase text-sm transition-colors ${STATE_CLASSES[state]} ${covered ? 'status-dog-tile' : ''}`}
-                >
-                  {covered ? '🐕' : letter}
-                </div>
-              );
-            })}
-          </div>
-        ))}
+                const brainrotSticker = brainrotStickers.find(
+                  (s) => s.row === r && s.col === c
+                );
+                const brainrotUrls = brainrotSticker
+                  ? getBrainrotStickerUrl(brainrotSticker.state, brainrotTheme)
+                  : null;
+
+                return (
+                  <div
+                    key={c}
+                    className={`relative w-10 h-10 shrink-0 border-2 flex items-center justify-center font-bold uppercase text-sm ${isGlitching ? '' : 'transition-colors'} ${tileStateClass} ${masked && !isGlitching ? 'half-masked-tile' : ''}`}
+                    aria-label={
+                      isGlitching
+                        ? covered
+                          ? 'covered by status dog'
+                          : showLetter
+                            ? `${result.letter}, color glitched`
+                            : 'color glitched'
+                        : covered
+                          ? 'covered by status dog'
+                          : masked
+                            ? 'hidden'
+                            : `${result.letter} ${displayState}`
+                    }
+                  >
+                    {covered ? (
+                      <>
+                        {dogImageUrl ? (
+                          <StickerImage
+                            src={dogImageUrl}
+                            fallbackSrc={dogImageFallbackUrl}
+                            alt=""
+                            size="sm"
+                            className="w-9 h-9"
+                          />
+                        ) : (
+                          dogEmoji
+                        )}
+                        {coverSeconds > 0 && (
+                          <span
+                            className="absolute top-0 right-0 min-w-[1.1rem] rounded-bl bg-black/70 px-0.5 text-[9px] font-bold leading-tight text-amber-100 tabular-nums"
+                            aria-hidden
+                          >
+                            {coverSeconds}s
+                          </span>
+                        )}
+                      </>
+                    ) : showLetter ? (
+                      result.letter
+                    ) : masked ? (
+                      '·'
+                    ) : (
+                      ''
+                    )}
+                    {brainrotUrls && !covered && (
+                      <StickerImage
+                        src={brainrotUrls.primary}
+                        fallbackSrc={brainrotUrls.fallback}
+                        alt=""
+                        size="sm"
+                        className="absolute inset-0 m-auto w-9 h-9 z-10 pointer-events-none"
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
       </div>
-      {Object.keys(revealedLetters).length > 0 && (
-        <div className="mt-2 text-xs opacity-70">
-          Revealed:{' '}
-          {Object.entries(revealedLetters)
-            .map(([pos, l]) => `${Number(pos) + 1}=${l}`)
-            .join(', ')}
-        </div>
+      {memePayload && (
+        <MemeCannonBoardOverlay
+          caption={(memePayload.caption as string) ?? ''}
+          borderClass={(memePayload.borderClass as string) ?? 'border-black'}
+          memeHeroUrl={memePayload.memeHeroUrl as string | undefined}
+          memeHeroFallbackUrl={memePayload.memeHeroFallbackUrl as string | undefined}
+          stickerUrl={memePayload.stickerUrl as string | undefined}
+          stickerFallbackUrl={memePayload.stickerFallbackUrl as string | undefined}
+          stickerEmoji={(memePayload.stickerEmoji as string) ?? '🖼️'}
+        />
+      )}
+      {faceSwapPayload && faceSwapSeconds > 0 && (
+        <FaceSwapBoardOverlay
+          faceImageUrl={(faceSwapPayload.faceImageUrl as string) ?? ''}
+          faceImageFallbackUrl={faceSwapPayload.faceImageFallbackUrl as string | undefined}
+          tagline={(faceSwapPayload.tagline as string) ?? 'Face swap glitch'}
+          secondsLeft={faceSwapSeconds}
+        />
+      )}
+      {playfulInsultOverlay && (
+        <PlayfulInsultBoardOverlay
+          overlayId={playfulInsultOverlay.id}
+          message={playfulInsultOverlay.message ?? '…'}
+        />
       )}
     </div>
   );
