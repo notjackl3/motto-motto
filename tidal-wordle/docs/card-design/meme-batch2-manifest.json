@@ -1,0 +1,339 @@
+{
+  "version": 2,
+  "project": "tidal-wordle",
+  "batch": "meme-cannon-batch-2",
+  "generatedAt": "2026-05-24",
+  "importedAt": "2026-05-24",
+  "assets": [
+    {
+      "path": "public/assets/cards/meme-cannon/meme-jelly-octopus.png",
+      "theme": "jelly-octopus",
+      "parentCategory": "marine-animal",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Compass_Jellyfish_(Chrysaora_hysoscella).jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Compass_Jellyfish_(Chrysaora_hysoscella).jpg",
+      "license": "CC BY-SA 3.0",
+      "attribution": "\"Compass Jellyfish (Chrysaora hysoscella).jpg\" by Alexander Vasenin, CC BY-SA 3.0, via Wikimedia Commons"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-starfish-urchin.png",
+      "theme": "starfish-urchin",
+      "parentCategory": "marine-animal",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Fromia_monilis_(Seastar).jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Fromia_monilis_(Seastar).jpg",
+      "license": "CC BY-SA 3.0",
+      "attribution": "\"Fromia monilis (Seastar).jpg\" by Nhobgood Nick Hobgood, CC BY-SA 3.0, via Wikimedia Commons"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-coral.png",
+      "theme": "coral",
+      "parentCategory": "marine-flora",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Coral_reef_at_palmyra.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Coral_reef_at_palmyra.jpg",
+      "license": "Public domain",
+      "attribution": null
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-kelp-seaweed.png",
+      "theme": "kelp-seaweed",
+      "parentCategory": "marine-flora",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Kelp_forest.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Kelp_forest.jpg",
+      "license": "Public domain",
+      "attribution": null
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-wind-storm.png",
+      "theme": "wind-storm",
+      "parentCategory": "water-weather",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Hurricane_Isabel_from_ISS.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Hurricane_Isabel_from_ISS.jpg",
+      "license": "Public domain",
+      "attribution": null
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-brackish-salt.png",
+      "theme": "brackish-salt",
+      "parentCategory": "water-weather",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Salt_evaporation_pond.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Salt_evaporation_pond.jpg",
+      "license": "CC BY-SA 3.0",
+      "attribution": "\"Salt evaporation pond.jpg\" by Doc Searls, CC BY-SA 3.0, via Wikimedia Commons"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-reef-shoal.png",
+      "theme": "reef-shoal",
+      "parentCategory": "shore-geology",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Coral_reef.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Coral_reef.jpg",
+      "license": "Public domain",
+      "attribution": null
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-pacific-islands.png",
+      "theme": "pacific-islands",
+      "parentCategory": "places-geography",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Bora_Bora_-_Mt_Otemanu.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bora_Bora_-_Mt_Otemanu.jpg",
+      "license": "CC BY 2.0",
+      "attribution": "\"Bora Bora - Mt Otemanu.jpg\" by Tim McCune, CC BY 2.0, via Wikimedia Commons"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-city-beach-town.png",
+      "theme": "city-beach-town",
+      "parentCategory": "places-geography",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Brighton_Pier_at_sunset.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Brighton_Pier_at_sunset.jpg",
+      "license": "CC BY-SA 3.0",
+      "attribution": "\"Brighton Pier at sunset.jpg\" by Diliff, CC BY-SA 3.0, via Wikimedia Commons"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-motor-ship.png",
+      "theme": "motor-ship",
+      "parentCategory": "boats-nautical",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Container_ship.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Container_ship.jpg",
+      "license": "Public domain",
+      "attribution": null
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-snorkel-dive.png",
+      "theme": "snorkel-dive",
+      "parentCategory": "beach-gear-activity",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Snorkeling.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Snorkeling.jpg",
+      "license": "Public domain",
+      "attribution": null
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-texture-feel.png",
+      "theme": "texture-feel",
+      "parentCategory": "sensory-descriptive",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Sand_texture.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sand_texture.jpg",
+      "license": "Public domain",
+      "attribution": null
+    }
+  ],
+  "missing": [
+    {
+      "theme": "seabird",
+      "path": "public/assets/cards/meme-cannon/meme-seabird.png",
+      "reason": "Command failed: curl -fsSL -A \"TidalWordleAssetBot/1.0 (motto-motto; commons api import)\" -L \"https://upload.wikimedia.org/wikipedia/commons/1/1d/Sea_Gull_hotel_ve%C4%8Der_-_panoramio.jpg\" -o \"/Users/benzhou/motto-motto/tidal-wordle/.tmp-meme-import/seabird-raw\"\ncurl: (56) The requested URL returned error: 429\n",
+      "source": "https://commons.wikimedia.org/wiki/File%3ASea_Gull_hotel_ve%C4%8Der_-_panoramio.jpg"
+    },
+    {
+      "theme": "marine-mammal",
+      "path": "public/assets/cards/meme-cannon/meme-marine-mammal.png",
+      "reason": "Command failed: curl -fsSL -A \"TidalWordleAssetBot/1.0 (motto-motto; commons api import)\" -L \"https://upload.wikimedia.org/wikipedia/commons/f/f8/Sea-otter-morro-bay_13.jpg\" -o \"/Users/benzhou/motto-motto/tidal-wordle/.tmp-meme-import/marine-mammal-raw\"\ncurl: (56) The requested URL returned error: 429\n",
+      "source": "https://commons.wikimedia.org/wiki/File%3ASea-otter-morro-bay_13.jpg"
+    },
+    {
+      "theme": "mollusk",
+      "path": "public/assets/cards/meme-cannon/meme-mollusk.png",
+      "reason": "Command failed: curl -fsSL -A \"TidalWordleAssetBot/1.0 (motto-motto; commons api import)\" -L \"https://upload.wikimedia.org/wikipedia/commons/e/e9/Oyster_shells_on_Whitstable_beach.jpg\" -o \"/Users/benzhou/motto-motto/tidal-wordle/.tmp-meme-import/mollusk-raw\"\ncurl: (56) The requested URL returned error: 429\n",
+      "source": "https://commons.wikimedia.org/wiki/File%3AOyster_shells_on_Whitstable_beach.jpg"
+    },
+    {
+      "theme": "turtle-reptile",
+      "path": "public/assets/cards/meme-cannon/meme-turtle-reptile.png",
+      "reason": "Command failed: curl -fsSL -A \"TidalWordleAssetBot/1.0 (motto-motto; commons api import)\" -L \"https://upload.wikimedia.org/wikipedia/commons/b/bb/Hawaii_turtle_2.JPG\" -o \"/Users/benzhou/motto-motto/tidal-wordle/.tmp-meme-import/turtle-reptile-raw\"\ncurl: (56) The requested URL returned error: 429\n",
+      "source": "https://commons.wikimedia.org/wiki/File%3AHawaii_turtle_2.JPG"
+    },
+    {
+      "theme": "mangrove-palm",
+      "path": "public/assets/cards/meme-cannon/meme-mangrove-palm.png",
+      "reason": "Command failed: curl -fsSL -A \"TidalWordleAssetBot/1.0 (motto-motto; commons api import)\" -L \"https://upload.wikimedia.org/wikipedia/commons/c/c3/Mangrove_community_Currumbin_Creek_Gold_Coast_IMGP0043.jpg\" -o \"/Users/benzhou/motto-motto/tidal-wordle/.tmp-meme-import/mangrove-palm-raw\"\ncurl: (56) The requested URL returned error: 429\n",
+      "source": "https://commons.wikimedia.org/wiki/File%3AMangrove_community_Currumbin_Creek_Gold_Coast_IMGP0043.jpg"
+    },
+    {
+      "theme": "beach-grass",
+      "path": "public/assets/cards/meme-cannon/meme-beach-grass.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "tide",
+      "path": "public/assets/cards/meme-cannon/meme-tide.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "current-estuary",
+      "path": "public/assets/cards/meme-cannon/meme-current-estuary.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "lagoon-marsh",
+      "path": "public/assets/cards/meme-cannon/meme-lagoon-marsh.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "offshore-onshore",
+      "path": "public/assets/cards/meme-cannon/meme-offshore-onshore.png",
+      "reason": "Command failed: curl -fsSL -A \"TidalWordleAssetBot/1.0 (motto-motto; commons api import)\" -L \"https://upload.wikimedia.org/wikipedia/commons/f/f9/Oil_spill_from_Montara_offshore_oil_platform_in_the_Timor_Sea_-_radar_image_by_TerraSAR-X.jpg\" -o \"/Users/benzhou/motto-motto/tidal-wordle/.tmp-meme-import/offshore-onshore-raw\"\ncurl: (56) The requested URL returned error: 429\n",
+      "source": "https://commons.wikimedia.org/wiki/File%3AOil_spill_from_Montara_offshore_oil_platform_in_the_Timor_Sea_-_radar_image_by_TerraSAR-X.jpg"
+    },
+    {
+      "theme": "rock-cliff",
+      "path": "public/assets/cards/meme-cannon/meme-rock-cliff.png",
+      "reason": "Command failed: curl -fsSL -A \"TidalWordleAssetBot/1.0 (motto-motto; commons api import)\" -L \"https://upload.wikimedia.org/wikipedia/commons/3/3b/Sydney_%28AU%29%2C_Coast%2C_Australian_Fur_Seals_--_2019_--_3489.jpg\" -o \"/Users/benzhou/motto-motto/tidal-wordle/.tmp-meme-import/rock-cliff-raw\"\ncurl: (56) The requested URL returned error: 429\n",
+      "source": "https://commons.wikimedia.org/wiki/File%3ASydney_(AU)%2C_Coast%2C_Australian_Fur_Seals_--_2019_--_3489.jpg"
+    },
+    {
+      "theme": "pebble-gravel",
+      "path": "public/assets/cards/meme-cannon/meme-pebble-gravel.png",
+      "reason": "Command failed: curl -fsSL -A \"TidalWordleAssetBot/1.0 (motto-motto; commons api import)\" -L \"https://upload.wikimedia.org/wikipedia/commons/e/e9/Quadrat_on_pebble_beach.jpg\" -o \"/Users/benzhou/motto-motto/tidal-wordle/.tmp-meme-import/pebble-gravel-raw\"\ncurl: (56) The requested URL returned error: 429\n",
+      "source": "https://commons.wikimedia.org/wiki/File%3AQuadrat_on_pebble_beach.jpg"
+    },
+    {
+      "theme": "island-atoll",
+      "path": "public/assets/cards/meme-cannon/meme-island-atoll.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "cave-canyon",
+      "path": "public/assets/cards/meme-cannon/meme-cave-canyon.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "driftwood-wrack",
+      "path": "public/assets/cards/meme-cannon/meme-driftwood-wrack.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "treasure-wreck",
+      "path": "public/assets/cards/meme-cannon/meme-treasure-wreck.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "us-east-gulf",
+      "path": "public/assets/cards/meme-cannon/meme-us-east-gulf.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "us-islands",
+      "path": "public/assets/cards/meme-cannon/meme-us-islands.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "caribbean-latam",
+      "path": "public/assets/cards/meme-cannon/meme-caribbean-latam.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "australia-nz",
+      "path": "public/assets/cards/meme-cannon/meme-australia-nz.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "famous-resort",
+      "path": "public/assets/cards/meme-cannon/meme-famous-resort.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "sail-yacht",
+      "path": "public/assets/cards/meme-cannon/meme-sail-yacht.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "lighthouse-beacon",
+      "path": "public/assets/cards/meme-cannon/meme-lighthouse-beacon.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "pier-promenade",
+      "path": "public/assets/cards/meme-cannon/meme-pier-promenade.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "kayak-paddle",
+      "path": "public/assets/cards/meme-cannon/meme-kayak-paddle.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "swim-sun",
+      "path": "public/assets/cards/meme-cannon/meme-swim-sun.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "camp-outdoor",
+      "path": "public/assets/cards/meme-cannon/meme-camp-outdoor.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "boardwalk-social",
+      "path": "public/assets/cards/meme-cannon/meme-boardwalk-social.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "lifeguard-safety",
+      "path": "public/assets/cards/meme-cannon/meme-lifeguard-safety.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "picnic",
+      "path": "public/assets/cards/meme-cannon/meme-picnic.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "color-hue",
+      "path": "public/assets/cards/meme-cannon/meme-color-hue.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "tropical-warm",
+      "path": "public/assets/cards/meme-cannon/meme-tropical-warm.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "deep-ocean",
+      "path": "public/assets/cards/meme-cannon/meme-deep-ocean.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "beach-vibe",
+      "path": "public/assets/cards/meme-cannon/meme-beach-vibe.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "hotel-resort",
+      "path": "public/assets/cards/meme-cannon/meme-hotel-resort.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "tourism-vacation",
+      "path": "public/assets/cards/meme-cannon/meme-tourism-vacation.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "park-trail",
+      "path": "public/assets/cards/meme-cannon/meme-park-trail.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "shell-pearl",
+      "path": "public/assets/cards/meme-cannon/meme-shell-pearl.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "sunrise-sunset",
+      "path": "public/assets/cards/meme-cannon/meme-sunrise-sunset.png",
+      "reason": "No suitable CC/PD image found"
+    },
+    {
+      "theme": "water-generic",
+      "path": "public/assets/cards/meme-cannon/meme-water-generic.png",
+      "reason": "No suitable CC/PD image found"
+    }
+  ]
+}

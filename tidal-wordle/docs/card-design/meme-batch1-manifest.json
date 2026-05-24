@@ -1,0 +1,186 @@
+{
+  "version": 2,
+  "project": "tidal-wordle",
+  "batch": "meme-cannon-batch-1",
+  "generatedAt": "2026-05-24",
+  "importedAt": "2026-05-24",
+  "assets": [
+    {
+      "path": "public/assets/cards/meme-cannon/meme-sand-dune.png",
+      "theme": "sand-dune",
+      "parentCategory": "shore-geology",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Footprints-4347,_Dingle_Peninsula,_Co._Kerry,_Ireland.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Footprints-4347,%20Dingle%20Peninsula,%20Co.%20Kerry,%20Ireland.jpg",
+      "license": "CC BY-SA 4.0",
+      "attribution": "\"Footprints-4347, Dingle Peninsula, Co. Kerry, Ireland.jpg\" by Maoileann, CC BY-SA 4.0, via Wikimedia Commons"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-coast-shore.png",
+      "theme": "coast-shore",
+      "parentCategory": "shore-geology",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Beach_closed.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Beach%20closed.jpg",
+      "license": "CC BY-SA 4.0",
+      "attribution": "\"Beach closed.jpg\" by Twentyfirstidentity, CC BY-SA 4.0, via Wikimedia Commons"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-crustacean.png",
+      "theme": "crustacean",
+      "parentCategory": "marine-animal",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Ghost_crab_-_Ocypode_gaudichaudii.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Ghost%20crab%20-%20Ocypode%20gaudichaudii.jpg",
+      "license": "CC BY 2.0",
+      "attribution": "\"Ghost crab - Ocypode gaudichaudii.jpg\" by Hanumann, CC BY 2.0, via Wikimedia Commons"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-fish-shark.png",
+      "theme": "fish-shark",
+      "parentCategory": "marine-animal",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Great_White_Shark_(14730719119).jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Great%20White%20Shark%20%2814730719119%29.jpg",
+      "license": "CC BY 2.0",
+      "attribution": "\"Great White Shark (14730719119).jpg\" by Elias Levy, CC BY 2.0, via Wikimedia Commons"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-wave-surf.png",
+      "theme": "wave-surf",
+      "parentCategory": "water-weather",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:A_surfer_in_the_air.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/A%20surfer%20in%20the%20air.jpg",
+      "license": "CC BY-SA 3.0",
+      "attribution": "\"A surfer in the air.jpg\" by Brocken Inaglory, CC BY-SA 3.0, via Wikimedia Commons"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-generic-place.png",
+      "theme": "generic-place",
+      "parentCategory": "places-geography",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:WrongWaySign.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/WrongWaySign.jpg",
+      "license": "Public Domain",
+      "attribution": null
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-urban-coastal.png",
+      "theme": "urban-coastal",
+      "parentCategory": "abstract-generic",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Miami_skyline_from_the_ocean.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Miami%20skyline%20from%20the%20ocean.jpg",
+      "license": "CC BY-SA 4.0",
+      "attribution": "\"Miami skyline from the ocean.jpg\" by Matthew T Rader, https://matthewtrader.com, CC BY-SA 4.0, via Wikimedia Commons"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-harbor-dock.png",
+      "theme": "harbor-dock",
+      "parentCategory": "boats-nautical",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Boat_dock_in_Diamond_Harbour,_New_Zealand.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Boat%20dock%20in%20Diamond%20Harbour,%20New%20Zealand.jpg",
+      "license": "CC BY-SA 4.0",
+      "attribution": "\"Boat dock in Diamond Harbour, New Zealand.jpg\" by Michal Klajban, CC BY-SA 4.0, via Wikimedia Commons"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-surf-sport.png",
+      "theme": "surf-sport",
+      "parentCategory": "beach-gear-activity",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Abandoned_Surfboard.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Abandoned%20Surfboard.jpg",
+      "license": "CC BY-SA 3.0",
+      "attribution": "\"Abandoned Surfboard.jpg\" by Barry haynes, CC BY-SA 3.0, via Wikimedia Commons"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-us-west-coast.png",
+      "theme": "us-west-coast",
+      "parentCategory": "places-geography",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Rip_current_warning_signs_at_Mission_Beach.JPG",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Rip%20current%20warning%20signs%20at%20Mission%20Beach.JPG",
+      "license": "CC BY-SA 4.0",
+      "attribution": "\"Rip current warning signs at Mission Beach.JPG\" by Invertzoo, CC BY-SA 4.0, via Wikimedia Commons"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-erosion-sediment.png",
+      "theme": "erosion-sediment",
+      "parentCategory": "shore-geology",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Coastal-erosion-inland.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Coastal-erosion-inland.jpg",
+      "license": "CC BY-SA 4.0",
+      "attribution": "\"Coastal-erosion-inland.jpg\" by Tristan Loper, CC BY-SA 4.0, via Wikimedia Commons"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-europe-beach.png",
+      "theme": "europe-beach",
+      "parentCategory": "places-geography",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Beaches_of_Barcelona,_Spain_(51226454918).jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Beaches%20of%20Barcelona,%20Spain%20%2851226454918%29.jpg",
+      "license": "CC BY 2.0",
+      "attribution": "\"Beaches of Barcelona, Spain (51226454918).jpg\" by dronepicr, CC BY 2.0, via Wikimedia Commons"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-beachwear-gear.png",
+      "theme": "beachwear-gear",
+      "parentCategory": "beach-gear-activity",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:A_Two_Black_Flip_Flops_and_leather_sandals_on_the_beach.jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/A%20Two%20Black%20Flip%20Flops%20and%20leather%20sandals%20on%20the%20beach.jpg",
+      "license": "CC BY-SA 4.0",
+      "attribution": "\"A Two Black Flip Flops and leather sandals on the beach.jpg\" by Peachyeung316, CC BY-SA 4.0, via Wikimedia Commons"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-abstract-beach.png",
+      "theme": "abstract-beach",
+      "parentCategory": "abstract-generic",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Beach_ball_(5363521217).jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Beach_ball_(5363521217).jpg",
+      "license": "CC BY-SA 2.0",
+      "attribution": "\"Beach ball (5363521217).jpg\" by Ankur Panchbudhe, CC BY-SA 2.0, via Wikimedia Commons"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-bbq-bonfire.png",
+      "theme": "bbq-bonfire",
+      "parentCategory": "beach-social-food",
+      "type": "image/png",
+      "source": "https://commons.wikimedia.org/wiki/File:Bonfire_at_beach_(487714994).jpg",
+      "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bonfire_at_beach_(487714994).jpg",
+      "license": "CC BY 2.0",
+      "attribution": "\"Bonfire at beach (487714994).jpg\" by Carlos Ebert, CC BY 2.0, via Wikimedia Commons"
+    }
+  ],
+  "missing": [],
+  "rejected": [
+    {
+      "url": "https://tenor.com/view/shark-reaction-gif-8243733638205383897",
+      "reason": "Tenor/GIF platform, not an explicit asset license for game use"
+    },
+    {
+      "url": "https://www.pinterest.com/pin/funny-beach-signs--118501033929147978/",
+      "reason": "Pinterest/repost source; license unclear"
+    },
+    {
+      "url": "https://www.freepik.com/vectors/crab-meme",
+      "reason": "Stock/vector source and terms not clear enough for this game asset workflow"
+    },
+    {
+      "url": "https://www.shutterstock.com/search/flip-flops-on-beach",
+      "reason": "Paid stock/watermarked previews, not a free explicit CC source"
+    },
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:Sunscreen_required_(50335591487).jpg",
+      "reason": "Commons page flags visible watermark/credit issue"
+    },
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:Coastal_Erosion_Hunstanton_Cliffs.jpg",
+      "reason": "Portrait orientation below landscape fit requested"
+    }
+  ]
+}
