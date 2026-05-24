@@ -500,30 +500,116 @@ function Mannequin({
 
 function Legs({ shorts, skin }: { shorts: ShortsOption; skin: string }) {
   const isLong = shorts.id === 'black-wetsuit' || shorts.id === 'storm-wetsuit';
-  const legHeight = isLong ? 1.3 : 0.85;
-  const legY = isLong ? -0.85 : -0.6;
+
+  // Geometry plan (mannequin-local, scale = 2):
+  //   Turntable top:  y = -1.0  (matches MANNEQUIN_Y math)
+  //   Foot box top:   y = -0.92
+  //   Foot box bottom: y = -1.0  (resting on turntable)
+  //   Lower leg (calf / wetsuit cuff) ends at y = -0.92  (sits in foot)
+  //   Hips/waistband:  y ≈ -0.16
+  //
+  // For boardshorts/trunks the pants cover the upper thigh only, then the
+  // calf is skin. For wetsuits a single neoprene cylinder runs all the way.
+
+  const FOOT_TOP_Y = -0.92;
+
+  // Pants vs full-length wetsuit dimensions, both ending at FOOT_TOP_Y.
+  const pantsTopY = -0.16;
+  const pantsBottomY = isLong ? FOOT_TOP_Y : -0.58;
+  const pantsHeight = pantsTopY - pantsBottomY;
+  const pantsCenterY = (pantsTopY + pantsBottomY) / 2;
+
+  // Calf is only visible for shorts (skips for wetsuits).
+  const calfTopY = pantsBottomY;
+  const calfBottomY = FOOT_TOP_Y;
+  const calfHeight = calfTopY - calfBottomY;
+  const calfCenterY = (calfTopY + calfBottomY) / 2;
+
   return (
     <group>
       {[-1, 1].map((sign) => (
         <group key={sign}>
-          <mesh position={[sign * 0.18, legY, 0]} castShadow>
-            <cylinderGeometry args={[0.13, 0.13, legHeight, 12]} />
+          {/* Pants / wetsuit */}
+          <mesh position={[sign * 0.18, pantsCenterY, 0]} castShadow>
+            <cylinderGeometry args={[0.13, 0.13, pantsHeight, 12]} />
             <meshStandardMaterial color={shorts.color} flatShading />
           </mesh>
-          {!isLong && (
-            <mesh position={[sign * 0.18, legY - 0.7, 0]} castShadow>
-              <cylinderGeometry args={[0.115, 0.115, 0.6, 12]} />
+
+          {/* Calf (only when wearing short pants) */}
+          {!isLong && calfHeight > 0 && (
+            <mesh position={[sign * 0.18, calfCenterY, 0]} castShadow>
+              <cylinderGeometry args={[0.115, 0.115, calfHeight, 12]} />
               <meshStandardMaterial color={skin} flatShading />
             </mesh>
           )}
+
+          <Foot
+            sign={sign as 1 | -1}
+            topY={FOOT_TOP_Y}
+            skin={skin}
+            isLong={isLong}
+            shorts={shorts}
+          />
+
           <ShortsAccent
             shorts={shorts}
             sign={sign as 1 | -1}
-            legY={legY}
-            legHeight={legHeight}
+            legY={pantsCenterY}
+            legHeight={pantsHeight}
           />
         </group>
       ))}
+    </group>
+  );
+}
+
+function Foot({
+  sign,
+  topY,
+  skin,
+  isLong,
+  shorts,
+}: {
+  sign: 1 | -1;
+  topY: number;
+  skin: string;
+  isLong: boolean;
+  shorts: ShortsOption;
+}) {
+  // Foot rests ON top of the turntable (turntable top = -1.0). The box's
+  // center sits 0.04 below topY so its top edge touches topY.
+  const footThickness = 0.08;
+  const footY = topY - footThickness / 2;
+  const footLength = 0.34;
+  const footWidth = 0.2;
+  const x = sign * 0.18;
+
+  // Foot color: skin (barefoot) unless the wetsuit goes all the way down,
+  // in which case the foot reads as a neoprene bootie matching the suit.
+  const mainColor = isLong ? shorts.color : skin;
+  const toeColor = isLong ? shorts.accent : '#caa078';
+
+  return (
+    <group>
+      {/* Main foot box, slightly forward so toes peek out beyond the calf. */}
+      <mesh position={[x, footY, 0.07]} castShadow receiveShadow>
+        <boxGeometry args={[footWidth, footThickness, footLength]} />
+        <meshStandardMaterial color={mainColor} flatShading />
+      </mesh>
+      {/* Toe cap — thinner darker strip at the very front edge. */}
+      <mesh
+        position={[x, footY + 0.002, 0.07 + footLength / 2 - 0.025]}
+        castShadow
+      >
+        <boxGeometry args={[footWidth + 0.01, footThickness * 0.7, 0.05]} />
+        <meshStandardMaterial color={toeColor} flatShading />
+      </mesh>
+      {/* Ankle cuff — short ring at the top so the calf/wetsuit blends into
+          the foot rather than ending abruptly. */}
+      <mesh position={[x, topY + 0.015, 0]}>
+        <cylinderGeometry args={[0.12, 0.12, 0.04, 14]} />
+        <meshStandardMaterial color={mainColor} flatShading />
+      </mesh>
     </group>
   );
 }

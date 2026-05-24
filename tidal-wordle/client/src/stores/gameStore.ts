@@ -91,6 +91,9 @@ interface GameStoreState {
   roundsWon: { me: number; opponent: number };
   roundsToWin: number;
   matchWinner: MatchWinner;
+  /** Wall-clock timestamp when the current match started (Date.now()). Solo
+   *  end-of-match leaderboard reads this to display total time taken. */
+  matchStartedAt: number | null;
   revealedLetters: Record<number, string>;
   hints: Hint[];
   cardDrawHistory: import('../types').Card[];
@@ -214,6 +217,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   roundsWon: { me: 0, opponent: 0 },
   roundsToWin: 2,
   matchWinner: null,
+  matchStartedAt: null,
   roundHistory: [],
   cardDetailPopup: null,
   cardDrawHistory: [],
@@ -245,6 +249,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       mode,
       roundsWon: { me: 0, opponent: 0 },
       matchWinner: null,
+      matchStartedAt: Date.now(),
       roundHistory: [],
       cardDetailPopup: null,
       cardDrawHistory: [],
@@ -468,6 +473,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       mode: null,
       roundsWon: { me: 0, opponent: 0 },
       matchWinner: null,
+      matchStartedAt: null,
       roundHistory: [],
       cardDetailPopup: null,
       cardDrawHistory: [],

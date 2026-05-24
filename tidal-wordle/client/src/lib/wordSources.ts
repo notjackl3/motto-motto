@@ -14,23 +14,10 @@
  */
 import { MAX_WORD_LENGTH, MIN_WORD_LENGTH } from './wordList';
 
-export const DEFAULT_TOPICS = [
-  'beach',
-  'ocean',
-  'surf',
-  'summer',
-  'island',
-  'animal',
-  'food',
-  'sport',
-  'music',
-  'travel',
-  'forest',
-  'mountain',
-  'city',
-  'space',
-  'weather',
-] as const;
+// Locked to beach only. The project is Tidal Wordle — all solo answers
+// must be related-to-beach words, sourced from relatedwords.io/beach via
+// the same `/api/words?term=beach` proxy used in dev.
+export const DEFAULT_TOPICS = ['beach'] as const;
 
 export type Topic = string;
 

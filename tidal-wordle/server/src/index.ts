@@ -95,8 +95,8 @@ app.get('/api/hint', async (req, res) => {
 // pop from a local list instead of round-tripping each time.
 app.get('/api/hints', async (req, res) => {
   const word = (req.query.word as string | undefined)?.trim();
-  const countRaw = Number((req.query.count as string | undefined) ?? '4');
-  const count = Number.isFinite(countRaw) ? Math.max(1, Math.min(8, countRaw)) : 4;
+  const countRaw = Number((req.query.count as string | undefined) ?? '8');
+  const count = Number.isFinite(countRaw) ? Math.max(1, Math.min(12, countRaw)) : 8;
   if (!word || word.length < 2 || word.length > 12 || !/^[a-zA-Z]+$/.test(word)) {
     res.status(400).json({ error: 'Invalid word' });
     return;

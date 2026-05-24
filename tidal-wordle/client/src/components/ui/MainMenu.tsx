@@ -16,6 +16,7 @@ import {
   type ShortsOption,
 } from '../../stores/appearanceStore';
 import { useGameStore } from '../../stores/gameStore';
+import TideMarquee from './TideMarquee';
 
 interface MainMenuProps {
   onSolo: () => void;
@@ -206,8 +207,8 @@ export default function MainMenu({ onSolo, onMultiplayer }: MainMenuProps) {
         </WoodPanel>
       </div>
 
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-[10px] text-white/80 italic select-none pointer-events-none">
-        Tide data: NOAA CO-OPS · La Jolla #9410230
+      <div className="absolute bottom-4 right-4 z-20">
+        <TideMarquee />
       </div>
     </div>
   );
@@ -226,43 +227,43 @@ function WoodenTitleSign({
 }) {
   return (
     <div
-      className="relative w-72 px-5 py-3 mb-1"
+      className="relative w-[28rem] px-8 py-6 mb-3"
       style={{
         backgroundColor: '#d6b07a',
-        border: '4px solid #7a4d24',
-        borderRadius: '8px',
+        border: '6px solid #7a4d24',
+        borderRadius: '12px',
         boxShadow:
-          '0 10px 22px rgba(0,0,0,0.4), inset 0 0 0 2px #f4e1c1, inset 0 -3px 0 rgba(122,77,36,0.5)',
+          '0 14px 30px rgba(0,0,0,0.45), inset 0 0 0 3px #f4e1c1, inset 0 -5px 0 rgba(122,77,36,0.5)',
         textAlign: 'center',
       }}
     >
       <div
-        className="absolute -top-6 left-4 w-1.5 h-6"
+        className="absolute -top-9 left-6 w-2 h-9"
         style={{
           background:
-            'repeating-linear-gradient(0deg, #caa078 0 4px, #8a5a2a 4px 8px)',
+            'repeating-linear-gradient(0deg, #caa078 0 5px, #8a5a2a 5px 10px)',
         }}
       />
       <div
-        className="absolute -top-6 right-4 w-1.5 h-6"
+        className="absolute -top-9 right-6 w-2 h-9"
         style={{
           background:
-            'repeating-linear-gradient(0deg, #caa078 0 4px, #8a5a2a 4px 8px)',
+            'repeating-linear-gradient(0deg, #caa078 0 5px, #8a5a2a 5px 10px)',
         }}
       />
-      <div className="absolute top-1.5 left-2 w-2 h-2 rounded-full bg-[#2a2a2a]" />
-      <div className="absolute top-1.5 right-2 w-2 h-2 rounded-full bg-[#2a2a2a]" />
-      <div className="absolute bottom-1.5 left-2 w-2 h-2 rounded-full bg-[#2a2a2a]" />
-      <div className="absolute bottom-1.5 right-2 w-2 h-2 rounded-full bg-[#2a2a2a]" />
+      <div className="absolute top-2.5 left-3 w-3 h-3 rounded-full bg-[#2a2a2a]" />
+      <div className="absolute top-2.5 right-3 w-3 h-3 rounded-full bg-[#2a2a2a]" />
+      <div className="absolute bottom-2.5 left-3 w-3 h-3 rounded-full bg-[#2a2a2a]" />
+      <div className="absolute bottom-2.5 right-3 w-3 h-3 rounded-full bg-[#2a2a2a]" />
       <div
         style={{
           color: '#2a1a0a',
           fontFamily: 'Georgia, serif',
           fontWeight: 800,
-          fontSize: '28px',
+          fontSize: '46px',
           letterSpacing: '0.18em',
-          textShadow: '0 2px 0 #f4e1c1',
-          lineHeight: 1,
+          textShadow: '0 3px 0 #f4e1c1',
+          lineHeight: 1.05,
         }}
       >
         {label}
@@ -270,12 +271,12 @@ function WoodenTitleSign({
       {subtitle && (
         <div
           style={{
-            marginTop: '4px',
+            marginTop: '8px',
             color: '#5a3a1a',
             fontFamily: 'Georgia, serif',
             fontStyle: 'italic',
-            fontSize: '12px',
-            letterSpacing: '0.06em',
+            fontSize: '20px',
+            letterSpacing: '0.08em',
           }}
         >
           {subtitle}
@@ -295,30 +296,31 @@ function WoodenButton({
   return (
     <button
       onClick={onClick}
-      className="relative block w-60 px-5 py-3 font-extrabold tracking-[0.18em] text-base transition hover:scale-[1.04] hover:brightness-[1.08] active:scale-[0.97]"
+      className="relative block w-96 px-8 py-5 font-extrabold tracking-[0.2em] transition hover:scale-[1.04] hover:brightness-[1.08] active:scale-[0.97]"
       style={{
         color: '#3a2a14',
         fontFamily: 'Georgia, serif',
         backgroundColor: '#c08a52',
-        border: '4px solid #7a4d24',
-        borderRadius: '8px',
-        textShadow: '0 2px 0 #f4e1c1',
+        border: '6px solid #7a4d24',
+        borderRadius: '12px',
+        textShadow: '0 3px 0 #f4e1c1',
+        fontSize: '30px',
         boxShadow:
-          '0 8px 18px rgba(0,0,0,0.4), inset 0 0 0 2px #d6b07a, inset 0 -3px 0 rgba(58,42,20,0.35)',
+          '0 10px 22px rgba(0,0,0,0.4), inset 0 0 0 3px #d6b07a, inset 0 -5px 0 rgba(58,42,20,0.35)',
         textAlign: 'center',
       }}
     >
       <div
-        className="absolute -top-4 left-1/2 -translate-x-1/2 w-1.5 h-4"
+        className="absolute -top-6 left-1/2 -translate-x-1/2 w-2 h-6"
         style={{
           background:
-            'repeating-linear-gradient(0deg, #caa078 0 4px, #8a5a2a 4px 8px)',
+            'repeating-linear-gradient(0deg, #caa078 0 5px, #8a5a2a 5px 10px)',
         }}
       />
-      <div className="absolute top-1.5 left-1.5 w-2 h-2 rounded-full bg-[#2a2a2a]" />
-      <div className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#2a2a2a]" />
-      <div className="absolute bottom-1.5 left-1.5 w-2 h-2 rounded-full bg-[#2a2a2a]" />
-      <div className="absolute bottom-1.5 right-1.5 w-2 h-2 rounded-full bg-[#2a2a2a]" />
+      <div className="absolute top-2 left-2 w-3 h-3 rounded-full bg-[#2a2a2a]" />
+      <div className="absolute top-2 right-2 w-3 h-3 rounded-full bg-[#2a2a2a]" />
+      <div className="absolute bottom-2 left-2 w-3 h-3 rounded-full bg-[#2a2a2a]" />
+      <div className="absolute bottom-2 right-2 w-3 h-3 rounded-full bg-[#2a2a2a]" />
       {label}
     </button>
   );

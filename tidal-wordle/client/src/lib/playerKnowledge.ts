@@ -55,14 +55,29 @@ export function formatLetterPattern(pattern: string[]): string {
   return pattern.join(', ');
 }
 
+/** When the player doesn't know the answer length yet, append an "…" to the
+ *  rendered pattern so they don't misread "_, E" as "two-letter word ending
+ *  in E". The ellipsis hints that more positions exist that are still
+ *  unknown. */
+function withUnknownTail(displayed: string): string {
+  return `${displayed}, …`;
+}
+
 export function selectPlayerKnowledge(input: PlayerKnowledgeInput) {
   const pattern = buildLetterPattern(input);
   const hints = input.hints;
+  const lengthUnknown = input.answerLength === null;
+
+  const patternDisplay = pattern
+    ? lengthUnknown
+      ? withUnknownTail(formatLetterPattern(pattern))
+      : formatLetterPattern(pattern)
+    : null;
 
   return {
     answerLength: input.answerLength,
     pattern,
-    patternDisplay: pattern ? formatLetterPattern(pattern) : null,
+    patternDisplay,
     hints,
     hasContent:
       input.answerLength !== null || pattern !== null || hints.length > 0,

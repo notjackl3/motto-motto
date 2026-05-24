@@ -81,7 +81,17 @@ interface Props {
   lookMode: boolean;
 }
 
-const HINTS_PER_ROUND = 4;
+const HINTS_PER_ROUND = 8;
+
+function normalizeHint(text: string): string {
+  return text.toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+function collectedHintTexts(): Set<string> {
+  return new Set(
+    useGameStore.getState().hints.map((h) => normalizeHint(h.text)),
+  );
+}
 
 export default function MysteryBoxes({ lookMode }: Props) {
   const meshRefs = useRef<THREE.Group[]>([]);
@@ -232,22 +242,45 @@ export default function MysteryBoxes({ lookMode }: Props) {
     playSfx('cardDraw');
     useViewStore.getState().triggerRainbowFlash();
 
-    // Fast path: pop a pre-generated hint instantly. Each round's pool is
-    // populated by the useEffect above when the answer changes.
-    const pooled = hintPool.current.shift();
-    if (pooled) {
-      useGameStore.getState().addHint(pooled);
-      useViewStore.getState().pushHintToast(pooled);
-      setTimeout(() => {
-        inflightHint.current = false;
-      }, 400);
-      return;
+    // Fast path: pop a pre-generated hint instantly. Pool is keyed by
+    // answer via prefetchedForWord — verify it still matches the current
+    // answer before applying so a stale hint never lands in the new round.
+    // Skip any pool entry the player has already collected this round
+    // (addHint dedupes silently; without this skip the toast would fire
+    // while the Intel panel showed nothing new).
+    if (prefetchedForWord.current === answerNow) {
+      const collected = collectedHintTexts();
+      let pooled: string | undefined;
+      while (hintPool.current.length > 0) {
+        const candidate = hintPool.current.shift()!;
+        if (!collected.has(normalizeHint(candidate))) {
+          pooled = candidate;
+          break;
+        }
+      }
+      if (pooled) {
+        useGameStore.getState().addHint(pooled);
+        useViewStore.getState().pushHintToast(pooled);
+        setTimeout(() => {
+          inflightHint.current = false;
+        }, 400);
+        return;
+      }
     }
 
-    // Fallback: pool empty (prefetch failed or already drained). Hit the
-    // single-hint endpoint so the player still gets something.
+    // Fallback: pool empty (prefetch failed or fully drained). Hit the
+    // single-hint endpoint; discard if the round rolled over before the
+    // response arrives, or if it's a duplicate of one already collected.
     fetchHint(answerNow)
       .then((hint) => {
+        const currentAnswer = useGameStore.getState().answer;
+        if (currentAnswer !== answerNow) {
+          console.warn(
+            '[mystery] hint discarded — round changed before fetch resolved',
+          );
+          return;
+        }
+        if (collectedHintTexts().has(normalizeHint(hint))) return;
         useGameStore.getState().addHint(hint);
         useViewStore.getState().pushHintToast(hint);
       })
