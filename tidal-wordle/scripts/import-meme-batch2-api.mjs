@@ -3,10 +3,12 @@
  * Phase 2: download resolved -> meme-{theme}.png
  *
  * Run phase 1: node scripts/import-meme-batch2-api.mjs resolve
- * Run phase 2: node scripts/import-meme-batch2-api.mjs download
+ * Run phase 2: node scripts/import-meme-batch2-api.mjs download [--missing]
  * Run both:    node scripts/import-meme-batch2-api.mjs all
+ * --missing: skip themes that already have a real (non-parent-copy) PNG
  */
 import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'fs';
+import { createHash } from 'crypto';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
@@ -25,11 +27,11 @@ const BATCH1 = new Set([
 ]);
 
 const SEARCH = {
-  seabird: 'gull seabird',
+  seabird: 'seagull flying ocean beach',
   'marine-mammal': 'sea otter morro bay',
   mollusk: 'oyster beach shell',
   'turtle-reptile': 'green sea turtle hawaii',
-  'mangrove-palm': 'mangrove forest coast',
+  'mangrove-palm': 'mangrove trees coastal photo',
   'beach-grass': 'ammophila dune grass beach',
   tide: 'tidal pool starfish',
   'current-estuary': 'estuary aerial coast',
@@ -41,7 +43,7 @@ const SEARCH = {
   'cave-canyon': 'blue grotto sea cave',
   'driftwood-wrack': 'driftwood sand beach',
   'treasure-wreck': 'shipwreck coast',
-  'us-east-gulf': 'miami beach florida',
+  'us-east-gulf': 'myrtle beach south carolina',
   'us-islands': 'hawaii lanikai beach',
   'caribbean-latam': 'caribbean beach palm',
   'australia-nz': 'bondi beach sydney',
@@ -50,7 +52,7 @@ const SEARCH = {
   'lighthouse-beacon': 'lighthouse pacific coast',
   'pier-promenade': 'santa monica pier',
   'kayak-paddle': 'sea kayak paddling',
-  'swim-sun': 'sunbather beach towel',
+  'swim-sun': 'beach umbrella chair family',
   'camp-outdoor': 'tent camping beach',
   'boardwalk-social': 'atlantic city boardwalk',
   'lifeguard-safety': 'lifeguard stand beach',
@@ -75,6 +77,18 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+function fileHash(path) {
+  return createHash('md5').update(readFileSync(path)).digest('hex');
+}
+
+function isProvisionalTheme(theme) {
+  const out = join(DEST, `meme-${theme}.png`);
+  const parent = categories.themeParent[theme];
+  const src = join(DEST, `meme-${parent}.png`);
+  if (!existsSync(out) || !existsSync(src)) return true;
+  return fileHash(out) === fileHash(src);
+}
+
 function okLicense(license) {
   const l = license.toLowerCase();
   return (
@@ -90,10 +104,17 @@ function stripHtml(s) {
   return s?.replace(/<[^>]+>/g, '')?.replace(/\s+/g, ' ')?.trim() ?? '';
 }
 
-async function api(params) {
+async function api(params, attempt = 0) {
   const res = await fetch(`https://commons.wikimedia.org/w/api.php?${params}`, {
     headers: { 'User-Agent': UA },
   });
+  if (res.status === 429 && attempt < 6) {
+    const retryAfter = Number(res.headers.get('retry-after')) || 0;
+    const waitMs = Math.max(retryAfter * 1000, 15000 * 2 ** attempt);
+    console.log(`  rate limited, waiting ${Math.round(waitMs / 1000)}s ...`);
+    await sleep(waitMs);
+    return api(params, attempt + 1);
+  }
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
@@ -111,7 +132,7 @@ async function resolveTheme(theme, query) {
     })
   );
   for (const hit of search.query?.search ?? []) {
-    await sleep(800);
+    await sleep(1500);
     const meta = await api(
       new URLSearchParams({
         action: 'query',
@@ -176,11 +197,9 @@ async function resolveAll() {
   const have = new Set(resolved.map((r) => r.theme));
   for (const theme of themes) {
     if (have.has(theme)) continue;
-    const out = join(DEST, `meme-${theme}.png`);
-    if (existsSync(out)) continue;
     const query = SEARCH[theme] ?? theme.replace(/-/g, ' ');
     console.log(`resolve ${theme} ...`);
-    await sleep(5000);
+    await sleep(8000);
     try {
       const r = await resolveTheme(theme, query);
       if (r) {
@@ -197,7 +216,20 @@ async function resolveAll() {
   }
 }
 
-async function downloadAll() {
+async function curlDownload(url, dest, attempt = 0) {
+  try {
+    execSync(`curl -fsSL -A "${UA}" -L "${url}" -o "${dest}"`, { stdio: 'pipe', timeout: 120000 });
+    return true;
+  } catch {
+    if (attempt >= 5) return false;
+    const waitMs = 20000 * 2 ** attempt;
+    console.log(`  retry in ${Math.round(waitMs / 1000)}s ...`);
+    await sleep(waitMs);
+    return curlDownload(url, dest, attempt + 1);
+  }
+}
+
+async function downloadAll(onlyMissing = false) {
   if (!existsSync(RESOLVED_PATH)) {
     console.error('Run resolve first');
     process.exit(1);
@@ -208,34 +240,27 @@ async function downloadAll() {
   const assets = [];
 
   for (const entry of resolved) {
-    const out = join(DEST, `meme-${entry.theme}.png`);
-    if (existsSync(out)) {
-      assets.push({
-        path: `public/assets/cards/meme-cannon/meme-${entry.theme}.png`,
-        theme: entry.theme,
-        parentCategory: entry.parentCategory,
-        type: 'image/png',
-        source: entry.source,
-        downloadUrl: entry.downloadUrl,
-        license: entry.license,
-        attribution: attribution(entry),
-      });
+    if (onlyMissing && !isProvisionalTheme(entry.theme)) {
+      console.log(`download ${entry.theme} ... skip (already real)`);
       continue;
     }
+    const out = join(DEST, `meme-${entry.theme}.png`);
     const raw = join(TMP, `${entry.theme}-raw`);
     console.log(`download ${entry.theme} ...`);
-    await sleep(12000);
-    const urls = [entry.thumbUrl, entry.downloadUrl];
+    await sleep(20000);
+    const filePath = `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(entry.fileName.replace(/ /g, '_'))}`;
+    const urls = [filePath, entry.thumbUrl, entry.downloadUrl];
     let ok = false;
     for (const url of urls) {
-      try {
-        execSync(`curl -fsSL -A "${UA}" -L "${url}" -o "${raw}"`, { stdio: 'pipe' });
-        processImage(raw, out);
-        console.log(`  ok`);
-        ok = true;
-        break;
-      } catch {
-        await sleep(5000);
+      if (await curlDownload(url, raw)) {
+        try {
+          processImage(raw, out);
+          console.log(`  ok`);
+          ok = true;
+          break;
+        } catch (e) {
+          console.log(`  process error: ${e.message}`);
+        }
       }
     }
     if (ok) {
@@ -248,6 +273,7 @@ async function downloadAll() {
         downloadUrl: entry.downloadUrl,
         license: entry.license,
         attribution: attribution(entry),
+        batch: 'meme-cannon-batch-2',
       });
     } else {
       console.log(`  FAIL`);
@@ -279,9 +305,10 @@ async function downloadAll() {
 }
 
 const mode = process.argv[2] ?? 'all';
+const onlyMissing = process.argv.includes('--missing');
 if (mode === 'resolve') await resolveAll();
-else if (mode === 'download') await downloadAll();
+else if (mode === 'download') await downloadAll(onlyMissing);
 else {
   await resolveAll();
-  await downloadAll();
+  await downloadAll(onlyMissing);
 }

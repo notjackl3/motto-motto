@@ -2,9 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useGameStore } from '../../stores/gameStore';
 import StickerImage from '../cards/StickerImage';
 
-export default function CooldownTimer() {
-  const endsAt = useGameStore((s) => s.myCooldownEndsAt);
-  const cooldownFrozen = useGameStore((s) => s.cooldownFrozen);
+/** Card-driven timers (forced break color reveal, Status Dog) — not guess cooldown. */
+export default function ActiveEffectTimers() {
   const forcedBreakLabel = useGameStore((s) => s.forcedBreakLabel);
   const forcedBreakIconUrl = useGameStore((s) => s.forcedBreakIconUrl);
   const forcedBreakIconFallbackUrl = useGameStore((s) => s.forcedBreakIconFallbackUrl);
@@ -21,10 +20,6 @@ export default function CooldownTimer() {
     const t = setInterval(() => setNow(Date.now()), 250);
     return () => clearInterval(t);
   }, []);
-
-  const guessCooldownRemaining =
-    endsAt && !cooldownFrozen ? Math.max(0, endsAt - now) : 0;
-  const guessSeconds = Math.ceil(guessCooldownRemaining / 1000);
 
   const colorRevealEndsAt = useMemo(() => {
     let latest: number | null = null;
@@ -52,16 +47,12 @@ export default function CooldownTimer() {
     : 0;
   const statusDogSeconds = Math.ceil(statusDogRemaining / 1000);
 
+  if (!showColorReveal && statusDogSeconds <= 0) return null;
+
   return (
-    <div className="bg-black/40 rounded-lg p-3 text-center space-y-3">
-      <div>
-        <div className="text-xs uppercase opacity-70">Guess cooldown</div>
-        <div className="text-2xl font-bold">
-          {cooldownFrozen ? 'Paused' : guessSeconds > 0 ? `${guessSeconds}s` : 'Ready'}
-        </div>
-      </div>
+    <div className="bg-black/40 rounded-lg p-3 text-center space-y-3 w-full">
       {showColorReveal && (
-        <div className="border-t border-white/10 pt-2">
+        <div>
           <div className="text-xs uppercase opacity-70">Color reveal</div>
           <div className="text-xl font-bold text-seafoam">
             {forcedBreakPending && colorRevealSeconds === 0
@@ -85,7 +76,7 @@ export default function CooldownTimer() {
         </div>
       )}
       {statusDogSeconds > 0 && (
-        <div className="border-t border-white/10 pt-2">
+        <div className={showColorReveal ? 'border-t border-white/10 pt-2' : ''}>
           <div className="text-xs uppercase opacity-70">Status Dog</div>
           <div className="text-xl font-bold text-amber-300">{statusDogSeconds}s</div>
           <p className="text-xs mt-1 text-amber-200/80 leading-snug">

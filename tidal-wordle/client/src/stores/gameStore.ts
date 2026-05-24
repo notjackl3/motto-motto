@@ -1,6 +1,6 @@
 /**
  * gameStore seam (Dev A / Dev B):
- * - Dev B owns: mode (sync), opponentGuesses (write via socket), opponentCooldownEndsAt,
+ * - Dev B owns: mode (sync), opponentGuesses (write via socket),
  *   tide fields, and reads musicSwapActive + faceSwap from scene.
  * - Dev A owns: answer, guesses (my), scoring, cards, hints, overlays, inputLocked,
  *   glitchActive, halfGuessMask, bonusProbe*, forcedBreak*, distractionBlocking.
@@ -29,33 +29,22 @@ import { stopPlaylist } from '../lib/cardAudio';
 import { evaluateGuess, isSolvedGuess } from '../lib/guessEvaluator';
 import { getRandomWord, normalizeWord } from '../lib/wordList';
 import {
-  DEFAULT_COOLDOWN_MS,
   MIN_GUESS_LENGTH,
-  ROUND_START_SCORE,
-  applyRoundToMatch,
-  computeRoundScoreAfterGuess,
   resolveCriticsRating,
   isMatchOver,
 } from '../lib/scoring';
 
 function applyCriticsAtRoundEnd(): void {
   const state = useGameStore.getState();
-  const bonus = resolveCriticsRating(
+  const stars = resolveCriticsRating(
     state.mode,
     state.myGuesses,
     state.opponentGuesses
   );
-  const updates: Partial<ReturnType<typeof useGameStore.getState>> = {
-    lastCriticsRatings: { me: bonus.myStars, opponent: bonus.oppStars },
+  useGameStore.setState({
+    lastCriticsRatings: { me: stars.myStars, opponent: stars.oppStars },
     criticsRatingPending: false,
-  };
-  if (state.criticsRatingPending) {
-    updates.roundScore = {
-      me: state.roundScore.me + bonus.me,
-      opponent: state.roundScore.opponent + bonus.opponent,
-    };
-  }
-  useGameStore.setState(updates);
+  });
 }
 
 function triggerCardDrawAfterGuess(): void {
@@ -93,14 +82,8 @@ interface GameStoreState {
   answerLength: number | null;
   myGuesses: Guess[];
   opponentGuesses: Guess[];
-  myCooldownEndsAt: number | null;
-  opponentCooldownEndsAt: number | null;
-  /** Dev B: set true when server emits opponent:left; UI shows a 30s modal. */
-  opponentLeft: boolean;
   myHand: import('../types').Card[];
   activeEffects: ActiveEffect[];
-  roundScore: { me: number; opponent: number };
-  matchScore: { me: number; opponent: number };
   roundsWon: { me: number; opponent: number };
   roundsToWin: number;
   matchWinner: MatchWinner;
@@ -111,9 +94,11 @@ interface GameStoreState {
   glitchActive: EffectTarget | null;
   glitchUntilNextGuess: boolean;
   overlays: OverlayState[];
-  cooldownFrozen: boolean;
   chessPuzzleActive: boolean;
+  /** @deprecated Blunder no longer uses input freeze; cleared on dismiss. */
   chessLockUntil: number | null;
+  /** Solo chess blunder: applied to the next submitted guess row. */
+  chessWordleTaxPending: import('../types').HalfGuessSide | null;
   criticsRatingPending: boolean;
   lastCriticsRatings: { me: number; opponent: number } | null;
   roundOver: boolean;
@@ -145,6 +130,11 @@ interface GameStoreState {
   musicMuted: boolean;
   /** Multiplayer room code (kept for UI compatibility; multiplayer flow stubbed). */
   roomCode: string | null;
+  /** Multiplayer bridge — written by useSocketBridge from server events. */
+  myCooldownEndsAt: number | null;
+  opponentCooldownEndsAt: number | null;
+  /** True when server emits opponent:left; UI may show a notice. */
+  opponentLeft: boolean;
 
   setMode: (mode: GameMode | null) => void;
   setMusicMuted: (muted: boolean) => void;
@@ -162,28 +152,18 @@ interface GameStoreState {
   dismissCardDetailPopup: () => void;
   resetRound: () => void;
   resetMatch: () => void;
-  setMyCooldownEndsAt: (at: number | null) => void;
   clearDistractionBlock: () => void;
 
-  // ---- Dev B: multiplayer bridge surface ----
-  /** Append a server-evaluated opponent guess. */
+  // ---- Multiplayer bridge surface (called from useSocketBridge) ----
   addOpponentGuess: (guess: Guess) => void;
-  /** Append a server-evaluated self guess; idempotent on word. */
   addMyGuess: (guess: Guess) => void;
-  /** Server-authoritative opponent cooldown end timestamp. */
+  setMyCooldownEndsAt: (at: number | null) => void;
   setOpponentCooldownEndsAt: (at: number | null) => void;
   setAnswerLengthFromServer: (length: number) => void;
   setOpponentLeft: (left: boolean) => void;
-  /**
-   * Pre-check + emit path used by multiplayer. Returns the same shape as
-   * submitGuess but skips local evaluation entirely — server is authoritative.
-   * The actual socket emit happens in useSocket; this just gates on local
-   * cooldown / lock / round-over state.
-   */
+  /** Server-authoritative submit: pre-check locally, then let server evaluate. */
   multiplayerSubmitGuess: (word: string) => SubmitGuessResult;
-  /** Called from the multiplayer bridge when the server signals round end. */
   applyRemoteRoundEnd: (winner: 'me' | 'opponent', answer: string) => void;
-  /** Called from the multiplayer bridge when server signals next round. */
   applyRemoteNextRound: (roundNumber: number) => void;
 }
 
@@ -192,19 +172,16 @@ const initialRoundState = {
   answerLength: null as number | null,
   myGuesses: [] as Guess[],
   opponentGuesses: [] as Guess[],
-  myCooldownEndsAt: null as number | null,
-  opponentCooldownEndsAt: null as number | null,
   activeEffects: [] as ActiveEffect[],
-  roundScore: { me: ROUND_START_SCORE, opponent: ROUND_START_SCORE },
   revealedLetters: {} as Record<number, string>,
   hints: [] as Hint[],
   inputLocked: false,
   glitchActive: null as EffectTarget | null,
   glitchUntilNextGuess: false,
   overlays: [] as OverlayState[],
-  cooldownFrozen: false,
   chessPuzzleActive: false,
   chessLockUntil: null as number | null,
+  chessWordleTaxPending: null as import('../types').HalfGuessSide | null,
   criticsRatingPending: false,
   lastCriticsRatings: null as { me: number; opponent: number } | null,
   roundOver: false,
@@ -218,13 +195,14 @@ const initialRoundState = {
   forcedBreakIconUrl: null as string | null,
   forcedBreakIconFallbackUrl: null as string | null,
   distractionBlocking: false,
+  myCooldownEndsAt: null as number | null,
+  opponentCooldownEndsAt: null as number | null,
 };
 
 export const useGameStore = create<GameStoreState>((set, get) => ({
   mode: null,
   ...initialRoundState,
   myHand: [],
-  matchScore: { me: 0, opponent: 0 },
   roundsWon: { me: 0, opponent: 0 },
   roundsToWin: 2,
   matchWinner: null,
@@ -256,7 +234,6 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   startMatch: (mode) => {
     set({
       mode,
-      matchScore: { me: 0, opponent: 0 },
       roundsWon: { me: 0, opponent: 0 },
       matchWinner: null,
       roundHistory: [],
@@ -264,7 +241,6 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       cardDrawHistory: [],
       myHand: [],
       ...initialRoundState,
-      roundScore: { me: ROUND_START_SCORE, opponent: ROUND_START_SCORE },
     });
     get().startRound();
   },
@@ -275,7 +251,6 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       ...initialRoundState,
       answer: word,
       answerLength: null,
-      roundScore: { me: ROUND_START_SCORE, opponent: ROUND_START_SCORE },
       roundOver: false,
       roundBanner: null,
       cardDrawHistory: [],
@@ -322,30 +297,21 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       return { ok: true, solved: false };
     }
 
-    if (
-      state.myCooldownEndsAt &&
-      Date.now() < state.myCooldownEndsAt &&
-      !state.cooldownFrozen
-    ) {
-      return { ok: false, reason: 'locked' };
-    }
     const results = evaluateGuess(word, state.answer);
     const solved = isSolvedGuess(word, state.answer);
     const guess: Guess = { word, results, submittedAt: Date.now() };
+    if (state.chessWordleTaxPending) {
+      guess.halfMaskSide = state.chessWordleTaxPending;
+    }
 
     if (state.forcedBreakPending) {
       guess.colorsRevealAt = Date.now() + answerLen * 1000;
     }
 
-    let newRoundScore = state.roundScore.me;
-    if (!solved) {
-      newRoundScore = computeRoundScoreAfterGuess(state.roundScore.me, false);
-    }
-
     const updates: Partial<GameStoreState> = {
       myGuesses: [...state.myGuesses, guess],
-      roundScore: { ...state.roundScore, me: newRoundScore },
       ...clearRecipeSpamState(state.overlays),
+      ...(state.chessWordleTaxPending ? { chessWordleTaxPending: null } : {}),
     };
 
     if (state.forcedBreakPending) {
@@ -372,10 +338,6 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     }
 
     set(updates);
-
-    if (!state.cooldownFrozen) {
-      set({ myCooldownEndsAt: Date.now() + DEFAULT_COOLDOWN_MS });
-    }
 
     if (!solved) {
       triggerCardDrawAfterGuess();
@@ -409,16 +371,6 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     applyCriticsAtRoundEnd();
     const afterCritics = get();
 
-    const winnerScore =
-      winner === 'me'
-        ? afterCritics.roundScore.me
-        : afterCritics.roundScore.opponent;
-
-    const newMatchScore = applyRoundToMatch(
-      afterCritics.matchScore,
-      winner,
-      winnerScore
-    );
     const newRoundsWon = {
       me: afterCritics.roundsWon.me + (winner === 'me' ? 1 : 0),
       opponent:
@@ -439,8 +391,6 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       roundIndex: roundNumber,
       answer: afterCritics.answer ?? '????',
       winner,
-      pointsBanked: winnerScore,
-      myFinalRoundScore: afterCritics.roundScore.me,
       myGuessCount: afterCritics.myGuesses.length,
       opponentGuessCount: afterCritics.opponentGuesses.length,
       winningGuess,
@@ -448,7 +398,6 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
 
     set({
       roundOver: true,
-      matchScore: newMatchScore,
       roundsWon: newRoundsWon,
       matchWinner,
       roundHistory: [...afterCritics.roundHistory, historyEntry],
@@ -456,7 +405,6 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         ? null
         : {
             winner,
-            points: winnerScore,
             roundNumber,
             criticsStars: afterCritics.lastCriticsRatings ?? undefined,
           },
@@ -469,9 +417,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
 
     setTimeout(() => {
       const s = get();
-      // Dev B note: in multiplayer the server picks the next word and we
-      // wait for GAME_NEXT_ROUND to reset — don't auto-restart locally.
-      if (!s.matchWinner && s.roundBanner && s.mode !== 'multiplayer') {
+      if (!s.matchWinner && s.roundBanner) {
         get().dismissRoundBanner();
         get().startRound();
       }
@@ -481,10 +427,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   dismissRoundBanner: () => set({ roundBanner: null }),
 
   resetRound: () => {
-    set({
-      ...initialRoundState,
-      roundScore: { me: ROUND_START_SCORE, opponent: ROUND_START_SCORE },
-    });
+    set({ ...initialRoundState });
     get().startRound();
   },
 
@@ -492,7 +435,6 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     stopPlaylist();
     set({
       mode: null,
-      matchScore: { me: 0, opponent: 0 },
       roundsWon: { me: 0, opponent: 0 },
       matchWinner: null,
       roundHistory: [],
@@ -503,82 +445,87 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       faceSwap: false,
   faceSwapImageUrl: null as string | null,
       ...initialRoundState,
-      roundScore: { me: ROUND_START_SCORE, opponent: ROUND_START_SCORE },
     });
   },
-
-  setMyCooldownEndsAt: (at) => set({ myCooldownEndsAt: at }),
 
   clearDistractionBlock: () =>
     set({ distractionBlocking: false, inputLocked: false }),
 
-  // ---------- Dev B: multiplayer bridge surface ----------
+  // ─────────────────────────────────────────────────────────────────
+  // Multiplayer bridge (called from useSocketBridge in useSocket.ts).
+  // Server is authoritative for evaluations, cooldowns, round/match
+  // outcomes; these methods just project server payloads into the
+  // local store so the existing solo UI keeps working in MP mode.
+  // ─────────────────────────────────────────────────────────────────
 
-  addOpponentGuess: (guess) =>
-    set((state) => ({ opponentGuesses: [...state.opponentGuesses, guess] })),
-
-  addMyGuess: (guess) =>
-    set((state) => {
-      if (state.myGuesses.some((g) => g.word === guess.word)) return state;
-      return { myGuesses: [...state.myGuesses, guess] };
-    }),
-
+  setMyCooldownEndsAt: (at) => set({ myCooldownEndsAt: at }),
   setOpponentCooldownEndsAt: (at) => set({ opponentCooldownEndsAt: at }),
-
-  setAnswerLengthFromServer: (length) =>
-    set((state) =>
-      state.answerLength === null ? { answerLength: length } : state,
-    ),
-
   setOpponentLeft: (left) => set({ opponentLeft: left }),
+  setAnswerLengthFromServer: (length) => {
+    if (get().answerLength !== length) set({ answerLength: length });
+  },
 
-  multiplayerSubmitGuess: (rawWord: string): SubmitGuessResult => {
+  addMyGuess: (guess) => {
+    const existing = get().myGuesses;
+    if (existing.some((g) => g.word === guess.word)) return;
+    set({ myGuesses: [...existing, guess] });
+  },
+
+  addOpponentGuess: (guess) => {
+    const existing = get().opponentGuesses;
+    if (existing.some((g) => g.word === guess.word)) return;
+    set({ opponentGuesses: [...existing, guess] });
+  },
+
+  multiplayerSubmitGuess: (word) => {
+    // Local pre-check only; server runs the real evaluator. We reject
+    // empty input and obvious locks; everything else is "send it".
     const state = get();
-    if (state.roundOver || state.matchWinner) {
+    const trimmed = word.trim().toLowerCase();
+    if (!trimmed) return { ok: false, reason: 'length' };
+    if (state.matchWinner !== null || state.roundOver) {
       return { ok: false, reason: 'round_over' };
     }
-    if (
-      state.inputLocked ||
-      state.chessPuzzleActive ||
-      state.distractionBlocking
-    ) {
+    if (state.inputLocked || state.chessPuzzleActive || state.distractionBlocking) {
       return { ok: false, reason: 'locked' };
     }
-    const word = normalizeWord(rawWord);
-    if (!word || word.length < MIN_GUESS_LENGTH) {
-      return { ok: false, reason: 'length' };
-    }
-    if (state.answerLength && word.length !== state.answerLength) {
-      return { ok: false, reason: 'length' };
-    }
-    if (
-      state.myCooldownEndsAt &&
-      Date.now() < state.myCooldownEndsAt &&
-      !state.cooldownFrozen
-    ) {
+    const cooldownEnd = state.myCooldownEndsAt;
+    if (cooldownEnd !== null && Date.now() < cooldownEnd) {
+      // No `cooldown` variant in SubmitGuessResult; treat as locked.
       return { ok: false, reason: 'locked' };
     }
-    return { ok: true, solved: false };
+    if (state.answerLength !== null && trimmed.length !== state.answerLength) {
+      return { ok: false, reason: 'length' };
+    }
+    return { ok: true } as SubmitGuessResult;
   },
 
   applyRemoteRoundEnd: (winner, answer) => {
     const state = get();
-    if (state.roundOver) return;
-    set({ answer });
-    get().endRound(winner);
+    const nextRoundsWon = {
+      me: state.roundsWon.me + (winner === 'me' ? 1 : 0),
+      opponent: state.roundsWon.opponent + (winner === 'opponent' ? 1 : 0),
+    };
+    const matchWinner: MatchWinner =
+      nextRoundsWon.me >= state.roundsToWin
+        ? 'me'
+        : nextRoundsWon.opponent >= state.roundsToWin
+          ? 'opponent'
+          : null;
+
+    set({
+      roundOver: true,
+      answer,
+      roundsWon: nextRoundsWon,
+      matchWinner,
+    });
+    if (matchWinner !== null) notifyMatchEnd(matchWinner);
   },
 
   applyRemoteNextRound: (_roundNumber) => {
-    // Multiplayer: server picks the word; client just resets visible round
-    // state. We don't call Dev A's startRound (which would pick a local
-    // getRandomWord) — the answer stays null on the client until round end.
     set({
       ...initialRoundState,
-      answer: null,
-      answerLength: null,
-      roundScore: { me: ROUND_START_SCORE, opponent: ROUND_START_SCORE },
-      cardDrawHistory: [],
-      opponentLeft: false,
+      matchWinner: null,
     });
   },
 }));

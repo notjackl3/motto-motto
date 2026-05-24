@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useGameStore } from '../../stores/gameStore';
 import type { LetterState } from '../../types';
 import {
   areGuessColorsRevealed,
   displayLetterState,
+  isGuessRowHalfMasked,
   isHalfMasked,
   mergeBoardRowsWithProbe,
 } from '../../lib/boardDisplay';
+import { boardRowLayout } from '../../lib/boardTileSize';
 import StickerImage from '../cards/StickerImage';
 import type { BrainrotSticker } from '../../lib/cardContent/brainrotStickers';
 import { getBrainrotStickerUrl } from '../../lib/cardContent/stickerAssets';
@@ -118,6 +120,7 @@ export default function WordleBoard({ boardTarget = 'self' }: WordleBoardProps) 
   const glitchActive = useGameStore((s) => s.glitchActive);
   const activeEffects = useGameStore((s) => s.activeEffects);
   const halfGuessMask = useGameStore((s) => s.halfGuessMask);
+  const answerLength = useGameStore((s) => s.answerLength);
   const playfulInsultOverlay = useGameStore((s) =>
     s.overlays.find(
       (o) =>
@@ -144,14 +147,22 @@ export default function WordleBoard({ boardTarget = 'self' }: WordleBoardProps) 
     bonusProbeRowIndex
   );
 
+  const maxCols = useMemo(() => {
+    const fromRows = allRows.reduce(
+      (max, row) => Math.max(max, row.results.length),
+      0
+    );
+    return Math.max(fromRows, answerLength ?? 5);
+  }, [allRows, answerLength]);
+
   return (
     <div
-      className="bg-black/40 rounded-lg p-3 relative flex-1 min-h-0 overflow-y-auto"
+      className="bg-black/40 rounded-lg p-2 sm:p-3 relative w-full max-w-full min-h-0 overflow-y-auto overflow-x-hidden"
       data-testid="wordle-board"
       aria-label={boardTarget === 'self' ? 'Your board' : 'Opponent board'}
     >
       <RecipeSpamBoardOverlay />
-      <div className="flex flex-col gap-1 relative z-0">
+      <div className="flex flex-col gap-1 relative z-0 w-full items-center">
         {allRows.length === 0 && (
           <p className="text-xs text-center opacity-50 py-4">
             Make your first guess — check Intel for hints
@@ -160,19 +171,23 @@ export default function WordleBoard({ boardTarget = 'self' }: WordleBoardProps) 
         {allRows.map((guess, r) => {
           const isProbe = guess.isProbe === true;
           const colorsRevealed = areGuessColorsRevealed(guess, now);
+          const colCount = guess.results.length;
+          const sizing = boardRowLayout(maxCols);
           return (
             <div
               key={`${guess.submittedAt}-${r}`}
-              className={`flex gap-1 justify-center relative ${isProbe ? 'opacity-90 ring-1 ring-amber-400/50 rounded' : ''}`}
+              className={`relative w-full mx-auto ${sizing.gapClass} ${isProbe ? 'opacity-90 ring-1 ring-amber-400/50 rounded p-0.5' : ''}`}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: `repeat(${colCount}, minmax(0, 1fr))`,
+                width: '100%',
+                maxWidth: sizing.maxWidthPx,
+              }}
             >
               {guess.results.map((result, c) => {
-                const colCount = guess.results.length;
-                const masked = isHalfMasked(
-                  c,
-                  colCount,
-                  halfGuessMask,
-                  boardTarget
-                );
+                const masked =
+                  isGuessRowHalfMasked(c, colCount, guess) ||
+                  isHalfMasked(c, colCount, halfGuessMask, boardTarget);
                 const displayState = displayLetterState(result, masked, colorsRevealed);
                 const { covered, dogEmoji, dogImageUrl, dogImageFallbackUrl, expiresAt } =
                   isTileCovered(r, c, activeEffects, boardTarget);
@@ -198,7 +213,7 @@ export default function WordleBoard({ boardTarget = 'self' }: WordleBoardProps) 
                 return (
                   <div
                     key={c}
-                    className={`relative w-10 h-10 shrink-0 border-2 flex items-center justify-center font-bold uppercase text-sm ${isGlitching ? '' : 'transition-colors'} ${tileStateClass} ${masked && !isGlitching ? 'half-masked-tile' : ''}`}
+                    className={`relative aspect-square min-w-0 w-full border-2 flex items-center justify-center font-bold uppercase ${sizing.fontClass} ${isGlitching ? '' : 'transition-colors'} ${tileStateClass} ${masked && !isGlitching ? 'half-masked-tile' : ''}`}
                     aria-label={
                       isGlitching
                         ? covered
@@ -221,7 +236,7 @@ export default function WordleBoard({ boardTarget = 'self' }: WordleBoardProps) 
                             fallbackSrc={dogImageFallbackUrl}
                             alt=""
                             size="sm"
-                            className="w-9 h-9"
+                            className="w-[85%] h-[85%] max-w-full max-h-full"
                           />
                         ) : (
                           dogEmoji
@@ -248,7 +263,7 @@ export default function WordleBoard({ boardTarget = 'self' }: WordleBoardProps) 
                         fallbackSrc={brainrotUrls.fallback}
                         alt=""
                         size="sm"
-                        className="absolute inset-0 m-auto w-9 h-9 z-10 pointer-events-none"
+                        className="absolute inset-0 m-auto w-[85%] h-[85%] z-10 pointer-events-none"
                       />
                     )}
                   </div>

@@ -38,7 +38,13 @@ body,
     inset 0 -40px 80px rgba(0, 0, 0, 0.5),
     inset 0 40px 80px rgba(154, 212, 214, 0.08);
   position: relative;
-  overflow: hidden;
+  overflow: clip;
+}
+
+/* Inner layout regions can opt into visible overflow (card hand popups). */
+.ipad-tablet > * {
+  position: relative;
+  z-index: 2;
 }
 
 /* Scanline veil — barely-there, gives the panel a "screen" feel. */

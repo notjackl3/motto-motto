@@ -27,6 +27,8 @@ export const Events = {
   GAME_NEXT_ROUND: 'game:nextRound',
   GAME_MATCH_END: 'game:matchEnd',
   OPPONENT_LEFT: 'opponent:left',
+  /** Chess Gambit blunder: leaker's client emits; opponent applies revealed letter. */
+  GAME_CHESS_BLUNDER_INFO_LEAK: 'game:chessBlunderInfoLeak',
 } as const;
 
 export type EventName = (typeof Events)[keyof typeof Events];
@@ -47,6 +49,7 @@ export const SocketEvents = {
   GameRoundEnd: Events.GAME_ROUND_END,
   GameMatchEnd: Events.GAME_MATCH_END,
   OpponentLeft: Events.OPPONENT_LEFT,
+  GameChessBlunderInfoLeak: Events.GAME_CHESS_BLUNDER_INFO_LEAK,
 } as const;
 
 // ----- Tuning constants -----

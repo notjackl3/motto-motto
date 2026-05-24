@@ -3,7 +3,6 @@ import PlayScene from '../scene/PlayScene';
 import IpadUI from './IpadUI';
 import EffectOverlays from '../game/EffectOverlays';
 import RoundBanner from '../game/RoundBanner';
-import CardDetailPopup from '../game/CardDetailPopup';
 import DevCardFilterPanel from '../dev/DevCardFilterPanel';
 import { useEffectExpiry } from '../../hooks/useEffectExpiry';
 import { useGameStore } from '../../stores/gameStore';
@@ -16,7 +15,7 @@ interface GameLayoutProps {
 type ControlMode = 'ipad' | 'look';
 
 export default function GameLayout({ onQuit }: GameLayoutProps) {
-  const matchScore = useGameStore((s) => s.matchScore);
+  const roundsWon = useGameStore((s) => s.roundsWon);
   const myGuessCount = useGameStore((s) => s.myGuesses.length);
   const opponentGuessCount = useGameStore((s) => s.opponentGuesses.length);
 
@@ -24,7 +23,7 @@ export default function GameLayout({ onQuit }: GameLayoutProps) {
 
   const [controlMode, setControlMode] = useState<ControlMode>('ipad');
   const [crashKey, setCrashKey] = useState<number | null>(null);
-  const prevMatchScoreRef = useRef(matchScore);
+  const prevRoundsWonRef = useRef(roundsWon);
   const prevMyGuessRef = useRef(myGuessCount);
   const prevOppGuessRef = useRef(opponentGuessCount);
 
@@ -53,14 +52,14 @@ export default function GameLayout({ onQuit }: GameLayoutProps) {
   }, []);
 
   useEffect(() => {
-    const prev = prevMatchScoreRef.current;
-    if (prev.me !== matchScore.me || prev.opponent !== matchScore.opponent) {
+    const prev = prevRoundsWonRef.current;
+    if (prev.me !== roundsWon.me || prev.opponent !== roundsWon.opponent) {
       setCrashKey(Date.now());
-      if (matchScore.me > prev.me) playSfx('correct');
-      else if (matchScore.opponent > prev.opponent) playSfx('lose');
+      if (roundsWon.me > prev.me) playSfx('correct');
+      else if (roundsWon.opponent > prev.opponent) playSfx('lose');
     }
-    prevMatchScoreRef.current = matchScore;
-  }, [matchScore]);
+    prevRoundsWonRef.current = roundsWon;
+  }, [roundsWon]);
 
   useEffect(() => {
     if (myGuessCount > prevMyGuessRef.current) playSfx('guessSubmit');
@@ -85,12 +84,19 @@ export default function GameLayout({ onQuit }: GameLayoutProps) {
     >
       <PlayScene lookMode={controlMode === 'look'} />
 
+      <button
+        type="button"
+        onClick={handleQuit}
+        className="absolute top-3 right-3 z-30 pointer-events-auto font-mono text-[10px] tracking-[0.18em] uppercase text-white/55 hover:text-coral transition-colors px-2.5 py-1.5 border border-white/10 hover:border-coral/60 rounded backdrop-blur-sm bg-black/40"
+      >
+        Quit
+      </button>
+
       {/* Gameplay UI projected onto the iPad screen face. */}
-      <IpadOverlay controlMode={controlMode} onQuit={handleQuit} />
+      <IpadOverlay controlMode={controlMode} />
 
       {/* Screen-level gameplay overlays (card effects, popups, round banner) */}
       <EffectOverlays />
-      <CardDetailPopup />
       <RoundBanner />
       {import.meta.env.DEV && <DevCardFilterPanel />}
 
@@ -160,13 +166,7 @@ function useWindowAspect() {
   return aspect;
 }
 
-function IpadOverlay({
-  controlMode,
-  onQuit,
-}: {
-  controlMode: ControlMode;
-  onQuit: () => void;
-}) {
+function IpadOverlay({ controlMode }: { controlMode: ControlMode }) {
   const aspect = useWindowAspect();
   const isLook = controlMode === 'look';
 
@@ -202,7 +202,7 @@ function IpadOverlay({
         visibility: isLook ? 'hidden' : 'visible',
       }}
     >
-      <IpadUI onQuit={onQuit} />
+      <IpadUI />
     </div>
   );
 }

@@ -59,7 +59,7 @@ export default function CardDetailPopup() {
 
   return (
     <div
-      className="fixed bottom-24 left-1/2 z-[65] w-[min(100%,20rem)] -translate-x-1/2 px-4 pointer-events-auto"
+      className="absolute bottom-full left-1/2 z-[65] w-[min(100%,18rem)] -translate-x-1/2 mb-2 px-1 pointer-events-auto"
       role="dialog"
       aria-labelledby="card-detail-title"
     >

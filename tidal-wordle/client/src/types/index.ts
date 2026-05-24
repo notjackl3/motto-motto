@@ -17,6 +17,8 @@ export interface Guess {
   isProbe?: boolean;
   /** Forced-break: green/yellow/grey tile colors stay hidden until this timestamp. */
   colorsRevealAt?: number;
+  /** Chess Gambit solo blunder: hide left or right half of this row's tiles. */
+  halfMaskSide?: HalfGuessSide;
 }
 
 export type CardType = 'attack' | 'buff' | 'wildcard';
@@ -70,16 +72,8 @@ export interface PlayerState {
   id: string;
   name: string;
   guesses: Guess[];
-  cooldownEndsAt: number | null;
   hand: Card[];
   activeEffects: ActiveEffect[];
-  roundScore: number;
-  matchScore: number;
-}
-
-export interface RoundScore {
-  me: number;
-  opponent: number;
 }
 
 export type MatchWinner = 'me' | 'opponent' | null;
@@ -93,7 +87,6 @@ export type SubmitGuessResult =
 
 export interface RoundBannerState {
   winner: 'me' | 'opponent';
-  points: number;
   roundNumber: number;
   criticsStars?: { me: number; opponent: number };
 }
@@ -110,9 +103,6 @@ export interface CompletedRoundRecord {
   roundIndex: number;
   answer: string;
   winner: 'me' | 'opponent';
-  /** Points the winner banked toward match score. */
-  pointsBanked: number;
-  myFinalRoundScore: number;
   myGuessCount: number;
   opponentGuessCount: number;
   winningGuess?: string;

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   getChessPuzzleById,
+  getChessPuzzleCount,
   parseFenBoard,
   pickRandomChessPuzzle,
   shuffleOptionOrder,
@@ -30,5 +31,9 @@ describe('chess puzzle catalog', () => {
 
   it('picks from the catalog', () => {
     expect(getChessPuzzleById(pickRandomChessPuzzle().id)).toBeDefined();
+  });
+
+  it('loads the offline Lichess-derived catalog', () => {
+    expect(getChessPuzzleCount()).toBeGreaterThanOrEqual(100);
   });
 });

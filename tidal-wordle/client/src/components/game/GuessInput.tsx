@@ -22,7 +22,6 @@ export default function GuessInput() {
   const roundOver = useGameStore((s) => s.roundOver);
   const matchWinner = useGameStore((s) => s.matchWinner);
   const chessPuzzleActive = useGameStore((s) => s.chessPuzzleActive);
-  const cooldownFrozen = useGameStore((s) => s.cooldownFrozen);
   const distractionBlocking = useGameStore((s) => s.distractionBlocking);
   const cardDetailPopupDraw = useGameStore(
     (s) => s.cardDetailPopup?.source === 'draw'
@@ -35,22 +34,19 @@ export default function GuessInput() {
     return () => clearInterval(t);
   }, []);
 
-  const disabled = selectIsInputDisabled(
-    {
-      myCooldownEndsAt,
-      inputLocked,
-      chessPuzzleActive,
-      cooldownFrozen,
-      roundOver,
-      matchWinner,
-      distractionBlocking,
-      cardDetailPopupDraw,
-      playfulInsultActive,
-    },
-    now
-  );
+  const disabled = selectIsInputDisabled({
+    inputLocked,
+    chessPuzzleActive,
+    roundOver,
+    matchWinner,
+    distractionBlocking,
+    cardDetailPopupDraw,
+    playfulInsultActive,
+  });
   const onCooldown =
-    myCooldownEndsAt !== null && now < myCooldownEndsAt && !cooldownFrozen;
+    myCooldownEndsAt !== null && now < myCooldownEndsAt;
+  // Cooldown gates submission inside (multiplayer)submitGuess, not the input.
+  void onCooldown;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -59,7 +55,7 @@ export default function GuessInput() {
         ? multiplayerSubmitGuess(value)
         : submitGuess(value);
     if (!result.ok) {
-      setFeedback(getSubmitFeedbackMessage(result, onCooldown));
+      setFeedback(getSubmitFeedbackMessage(result));
       if (result.reason === 'length') {
         setShake(true);
         setTimeout(() => setShake(false), 500);
