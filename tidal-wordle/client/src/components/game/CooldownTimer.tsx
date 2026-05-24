@@ -3,6 +3,7 @@ import { useGameStore } from '../../stores/gameStore';
 
 export default function CooldownTimer() {
   const endsAt = useGameStore((s) => s.myCooldownEndsAt);
+  const cooldownFrozen = useGameStore((s) => s.cooldownFrozen);
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
@@ -10,13 +11,16 @@ export default function CooldownTimer() {
     return () => clearInterval(t);
   }, []);
 
-  const remaining = endsAt ? Math.max(0, endsAt - now) : 0;
+  const remaining =
+    endsAt && !cooldownFrozen ? Math.max(0, endsAt - now) : 0;
   const seconds = Math.ceil(remaining / 1000);
 
   return (
     <div className="bg-black/40 rounded-lg p-3 text-center">
       <div className="text-xs uppercase opacity-70">Cooldown</div>
-      <div className="text-2xl font-bold">{seconds > 0 ? `${seconds}s` : 'Ready'}</div>
+      <div className="text-2xl font-bold">
+        {cooldownFrozen ? 'Paused' : seconds > 0 ? `${seconds}s` : 'Ready'}
+      </div>
     </div>
   );
 }

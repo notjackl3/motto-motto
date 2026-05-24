@@ -9,3 +9,30 @@ body,
   margin: 0;
   font-family: ui-sans-serif, system-ui, sans-serif;
 }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes glitchTile {
+  0% { transform: translate(0); filter: hue-rotate(0deg); }
+  25% { transform: translate(-2px, 1px); filter: hue-rotate(90deg); }
+  50% { transform: translate(2px, -1px); filter: hue-rotate(180deg); }
+  75% { transform: translate(-1px, 2px); filter: hue-rotate(270deg); }
+  100% { transform: translate(0); filter: hue-rotate(0deg); }
+}
+
+.glitch-board > div > div > div {
+  animation: glitchTile 0.3s infinite;
+}
+
+.status-dog-tile {
+  background: #fef3c7 !important;
+  border-color: #f59e0b !important;
+}
