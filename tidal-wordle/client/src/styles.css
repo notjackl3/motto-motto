@@ -198,6 +198,65 @@ body,
   animation: wave-crash-sweep 1.2s ease-out forwards;
 }
 
+/* Rainbow flash: fires when a mystery box hint is collected. Conic gradient
+   sweeps the screen + a brief overlay tint so the moment reads as juicy. */
+@keyframes rainbow-flash-sweep {
+  0% {
+    opacity: 0;
+    filter: hue-rotate(0deg);
+  }
+  15% {
+    opacity: 0.55;
+  }
+  60% {
+    opacity: 0.4;
+    filter: hue-rotate(220deg);
+  }
+  100% {
+    opacity: 0;
+    filter: hue-rotate(360deg);
+  }
+}
+.rainbow-flash {
+  background: conic-gradient(
+    from 0deg,
+    #ff3b3b,
+    #ffae3b,
+    #fff03b,
+    #4cff3b,
+    #3bcfff,
+    #6e3bff,
+    #ff3bd1,
+    #ff3b3b
+  );
+  mix-blend-mode: screen;
+  animation: rainbow-flash-sweep 1.2s ease-out forwards;
+}
+
+/* Hint toast: drops in, holds, then floats up + fades. Total ~4.5s — must
+   match DURATION_MS in HintToast.tsx. */
+@keyframes hint-toast-pop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -16px) scale(0.92);
+  }
+  10% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -12px) scale(0.97);
+  }
+}
+.hint-toast {
+  animation: hint-toast-pop 4.5s ease-out forwards;
+}
+
 /* Confetti pieces fall + tumble. */
 @keyframes confetti-fall {
   0% {
@@ -243,6 +302,28 @@ body,
 
 .animate-shake {
   animation: shake 0.4s ease-in-out;
+}
+
+/* Fullscreen attack-hit overlay — fades in fast, panel shakes once. */
+@keyframes attack-hit-fade-in {
+  0% { opacity: 0; backdrop-filter: blur(0px); }
+  100% { opacity: 1; backdrop-filter: blur(4px); }
+}
+.attack-hit-fade-in {
+  animation: attack-hit-fade-in 220ms ease-out both;
+}
+
+@keyframes attack-hit-shake {
+  0% { transform: scale(0.85) rotate(-2deg); opacity: 0; }
+  25% { transform: scale(1.05) rotate(1.2deg); opacity: 1; }
+  40% { transform: translateX(-8px) scale(1.02) rotate(-1deg); }
+  55% { transform: translateX(8px) scale(1.02) rotate(1deg); }
+  70% { transform: translateX(-4px) scale(1) rotate(0deg); }
+  85% { transform: translateX(2px) scale(1) rotate(0deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.attack-hit-shake {
+  animation: attack-hit-shake 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* Brainrot Glitch — all tiles cycle the same colors in sync (masks green/orange/gray) */
@@ -341,4 +422,152 @@ body,
 
 .face-swap-glitch-overlay {
   animation: shake 0.35s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   NYT Wordle palette — applied only inside `.wordle-nyt-theme` so the
+   3D scene / multiplayer iPad layout keep their dark instrument look.
+   Overrides the per-state Tailwind tile classes on `.wordle-tile`
+   without touching WordleBoard's component logic.
+   ───────────────────────────────────────────────────────────────────── */
+.wordle-nyt-theme .wordle-tile {
+  border-radius: 3px;
+  border-width: 2px !important;
+  font-family: 'Unbounded', ui-sans-serif, sans-serif;
+}
+.wordle-nyt-theme .wordle-tile[data-state='empty'] {
+  background: #ffffff !important;
+  border-color: #d3d6da !important;
+  color: #1a1a1b !important;
+}
+.wordle-nyt-theme .wordle-tile[data-state='correct'] {
+  background: #6aaa64 !important;
+  border-color: #6aaa64 !important;
+  color: #ffffff !important;
+}
+.wordle-nyt-theme .wordle-tile[data-state='present'] {
+  background: #c9b458 !important;
+  border-color: #c9b458 !important;
+  color: #ffffff !important;
+}
+.wordle-nyt-theme .wordle-tile[data-state='absent'] {
+  background: #787c7e !important;
+  border-color: #787c7e !important;
+  color: #ffffff !important;
+}
+
+/* Guess input — restyle the dark seafoam form to a light NYT-style row. */
+.wordle-nyt-theme form {
+  background: #ffffff !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  border: 1px solid #d3d6da;
+  border-radius: 6px;
+}
+.wordle-nyt-theme form input {
+  color: #1a1a1b !important;
+  caret-color: #1a1a1b !important;
+}
+.wordle-nyt-theme form input::placeholder {
+  color: rgba(0, 0, 0, 0.4) !important;
+}
+.wordle-nyt-theme form span {
+  color: #6aaa64 !important;
+}
+.wordle-nyt-theme form button[type='submit'] {
+  background: #1a1a1b !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+.wordle-nyt-theme form button[type='submit']:hover:not(:disabled) {
+  background: #538d4e !important;
+  color: #ffffff !important;
+}
+
+/* Keep the iPad bezel (box-shadow gives the dark frame + brass trim) but
+   swap the dark gradient interior for a Wordle-white screen. The
+   scanline overlay is dropped on white; the brass hairline ::after is
+   kept since it sits like a screen-edge highlight. */
+.wordle-nyt-theme.ipad-tablet {
+  background: #ffffff !important;
+  background-image: none !important;
+  animation: none !important;
+  color: #1a1a1b !important;
+}
+.wordle-nyt-theme.ipad-tablet::before {
+  display: none !important;
+}
+
+/* Card history strip — make it sit cleanly on white. */
+.wordle-nyt-theme .bg-black\/50,
+.wordle-nyt-theme .bg-black\/40,
+.wordle-nyt-theme .bg-black\/30 {
+  background: #f6f7f8 !important;
+  border-color: #d3d6da !important;
+  color: #1a1a1b !important;
+}
+.wordle-nyt-theme .text-white\/70,
+.wordle-nyt-theme .text-white\/60,
+.wordle-nyt-theme .text-white\/55,
+.wordle-nyt-theme .text-white\/50,
+.wordle-nyt-theme .text-white\/35 {
+  color: rgba(0, 0, 0, 0.55) !important;
+}
+.wordle-nyt-theme .opacity-70,
+.wordle-nyt-theme .opacity-60,
+.wordle-nyt-theme .opacity-50 {
+  color: rgba(0, 0, 0, 0.55) !important;
+}
+
+/* Opponent board — recolour the colour-only tiles to NYT palette. */
+.wordle-nyt-theme .bg-emerald-700\/80 {
+  background: #6aaa64 !important;
+}
+.wordle-nyt-theme .bg-amber-600\/80 {
+  background: #c9b458 !important;
+}
+.wordle-nyt-theme .bg-slate-700\/80 {
+  background: #787c7e !important;
+}
+.wordle-nyt-theme .bg-white\/5 {
+  background: #ffffff !important;
+  border-color: #d3d6da !important;
+}
+.wordle-nyt-theme .border-white\/20,
+.wordle-nyt-theme .border-white\/10,
+.wordle-nyt-theme .border-white\/5 {
+  border-color: #d3d6da !important;
+}
+
+/* Intel / KnowledgePanel — readable text on white.
+   The panel uses dark-theme palette classes (text-white, text-seafoam/90,
+   text-emerald-200) that disappear on the wordle-nyt-theme background.
+   Scope overrides so the same component reads cleanly here. */
+.wordle-nyt-theme .text-white {
+  color: #1a1a1b !important;
+}
+.wordle-nyt-theme .text-seafoam\/90,
+.wordle-nyt-theme .text-seafoam\/80,
+.wordle-nyt-theme .text-seafoam {
+  color: #1a6f4c !important;
+}
+.wordle-nyt-theme .text-emerald-200,
+.wordle-nyt-theme .text-emerald-100 {
+  color: #15803d !important;
+}
+.wordle-nyt-theme .opacity-40 {
+  color: rgba(0, 0, 0, 0.55) !important;
+}
+
+/* Hint cards inside Intel: keep the dark-green chip background so the
+   white hint text stays high-contrast — but make sure it sits cleanly
+   on a white panel. (Tailwind ships these as `bg-emerald-900/50` etc.) */
+.wordle-nyt-theme .bg-emerald-900\/50 {
+  background: #166534 !important;
+  border-color: #15803d !important;
+}
+.wordle-nyt-theme .bg-emerald-900\/50,
+.wordle-nyt-theme .bg-emerald-900\/50 * {
+  color: #ffffff !important;
 }

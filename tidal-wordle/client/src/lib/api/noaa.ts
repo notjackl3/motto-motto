@@ -19,6 +19,12 @@ export interface TideSnapshot {
   recent: TideReading[];
   stationId: string;
   fetchedAt: number;
+  // Real significant wave height (meters) from a nearby NDBC buoy. Optional
+  // — if NDBC fetch failed or all recent rows had no reading, the client
+  // falls back to deriving wave height from the tide level.
+  waveHeightMeters?: number;
+  dominantPeriodSec?: number;
+  buoyId?: string;
 }
 
 export const DEFAULT_STATION_ID = '9410230'; // La Jolla, CA

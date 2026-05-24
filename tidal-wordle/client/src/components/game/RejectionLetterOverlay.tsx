@@ -33,6 +33,9 @@ export default function RejectionLetterOverlay({
               src={letterheadImageUrl}
               alt=""
               className="h-10 w-10 object-contain rounded bg-white/10 p-1 shrink-0"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
             />
           ) : (
             <span className="text-2xl shrink-0" aria-hidden>

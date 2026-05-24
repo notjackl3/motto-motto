@@ -55,6 +55,9 @@ export default function RecipeSpamBoardOverlay() {
           src={headerImageUrl}
           alt=""
           className="h-14 w-full shrink-0 object-cover"
+          onError={(e) => {
+            e.currentTarget.style.display = 'none';
+          }}
         />
       )}
       <div className="shrink-0 border-b border-amber-200 px-3 py-2 font-serif text-sm font-bold leading-snug">

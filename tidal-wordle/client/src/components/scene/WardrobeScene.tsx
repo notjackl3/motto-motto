@@ -499,7 +499,7 @@ function Mannequin({
 }
 
 function Legs({ shorts, skin }: { shorts: ShortsOption; skin: string }) {
-  const isLong = shorts.id === 'black-wetsuit';
+  const isLong = shorts.id === 'black-wetsuit' || shorts.id === 'storm-wetsuit';
   const legHeight = isLong ? 1.3 : 0.85;
   const legY = isLong ? -0.85 : -0.6;
   return (
@@ -516,8 +516,112 @@ function Legs({ shorts, skin }: { shorts: ShortsOption; skin: string }) {
               <meshStandardMaterial color={skin} flatShading />
             </mesh>
           )}
+          <ShortsAccent
+            shorts={shorts}
+            sign={sign as 1 | -1}
+            legY={legY}
+            legHeight={legHeight}
+          />
         </group>
       ))}
+    </group>
+  );
+}
+
+function ShortsAccent({
+  shorts,
+  sign,
+  legY,
+  legHeight,
+}: {
+  shorts: ShortsOption;
+  sign: 1 | -1;
+  legY: number;
+  legHeight: number;
+}) {
+  const x = sign * 0.18;
+  if (shorts.pattern === 'solid') return null;
+  if (shorts.pattern === 'stripes-side') {
+    // Thin vertical stripe down the outside of each leg.
+    return (
+      <mesh position={[x + sign * 0.131, legY, 0]} castShadow>
+        <boxGeometry args={[0.012, legHeight * 0.92, 0.08]} />
+        <meshStandardMaterial color={shorts.accent} flatShading />
+      </mesh>
+    );
+  }
+  if (shorts.pattern === 'stripes-h') {
+    // Band wrapping around the thigh near the waistband.
+    return (
+      <mesh position={[x, legY + legHeight / 2 - 0.06, 0]} castShadow>
+        <cylinderGeometry args={[0.135, 0.135, 0.05, 14]} />
+        <meshStandardMaterial color={shorts.accent} flatShading />
+      </mesh>
+    );
+  }
+  if (shorts.pattern === 'spots') {
+    // Small dots on the front face of each leg.
+    const ys = [legHeight * 0.25, 0, -legHeight * 0.25];
+    return (
+      <group>
+        {ys.map((dy, i) => (
+          <mesh
+            key={i}
+            position={[x + (i % 2 === 0 ? -0.05 : 0.05), legY + dy, 0.131]}
+            castShadow
+          >
+            <sphereGeometry args={[0.034, 8, 8]} />
+            <meshStandardMaterial color={shorts.accent} flatShading />
+          </mesh>
+        ))}
+      </group>
+    );
+  }
+  if (shorts.pattern === 'floral') {
+    // 5-petal blossoms scattered on the front of the leg.
+    const ys = [legHeight * 0.3, legHeight * 0.05, -legHeight * 0.15];
+    return (
+      <group>
+        {ys.map((dy, i) => (
+          <Blossom
+            key={i}
+            position={[x + (i % 2 === 0 ? -0.04 : 0.04), legY + dy, 0.135]}
+            color={shorts.accent}
+          />
+        ))}
+      </group>
+    );
+  }
+  return null;
+}
+
+function Blossom({
+  position,
+  color,
+}: {
+  position: [number, number, number];
+  color: string;
+}) {
+  // Five small petals around a tiny center, lying flat on the leg's front.
+  return (
+    <group position={position}>
+      <mesh castShadow>
+        <sphereGeometry args={[0.018, 6, 6]} />
+        <meshStandardMaterial color="#3a2a14" flatShading />
+      </mesh>
+      {Array.from({ length: 5 }).map((_, i) => {
+        const a = (i / 5) * Math.PI * 2;
+        return (
+          <mesh
+            key={i}
+            position={[Math.cos(a) * 0.032, Math.sin(a) * 0.032, 0]}
+            castShadow
+          >
+            <sphereGeometry args={[0.022, 6, 6]} />
+            <meshStandardMaterial color={color} flatShading />
+          </mesh>
+        );
+      })}
     </group>
   );
 }
@@ -709,61 +813,290 @@ function Limb({
 
 function Hat({ hat }: { hat: HatOption }) {
   if (hat.style === 'none' || hat.color === null) return null;
+  const c = hat.color;
+  const a = hat.accent ?? c;
+
+  // Head sphere is at local y=0.92, radius 0.23, so head TOP sits at y=1.15.
+  // All hats anchor near y=1.15 and rise from there.
+
   if (hat.style === 'straw') {
+    return (
+      <group position={[0, 1.13, 0]}>
+        {/* Wide flat brim */}
+        <mesh castShadow>
+          <cylinderGeometry args={[0.5, 0.5, 0.04, 24]} />
+          <meshStandardMaterial color={c} flatShading />
+        </mesh>
+        {/* Crown */}
+        <mesh position={[0, 0.1, 0]} castShadow>
+          <cylinderGeometry args={[0.22, 0.24, 0.18, 18]} />
+          <meshStandardMaterial color={c} flatShading />
+        </mesh>
+        {/* Ribbon */}
+        <mesh position={[0, 0.04, 0]}>
+          <cylinderGeometry args={[0.245, 0.245, 0.03, 18]} />
+          <meshStandardMaterial color={a} flatShading />
+        </mesh>
+      </group>
+    );
+  }
+
+  if (hat.style === 'bucket') {
     return (
       <group position={[0, 1.1, 0]}>
         <mesh castShadow>
-          <cylinderGeometry args={[0.5, 0.5, 0.04, 24]} />
-          <meshStandardMaterial color={hat.color} flatShading />
-        </mesh>
-        <mesh position={[0, 0.1, 0]} castShadow>
-          <cylinderGeometry args={[0.22, 0.24, 0.18, 18]} />
-          <meshStandardMaterial color={hat.color} flatShading />
-        </mesh>
-        {hat.accent && (
-          <mesh position={[0, 0.04, 0]}>
-            <cylinderGeometry args={[0.245, 0.245, 0.03, 18]} />
-            <meshStandardMaterial color={hat.accent} flatShading />
-          </mesh>
-        )}
-      </group>
-    );
-  }
-  if (hat.style === 'bucket') {
-    return (
-      <group position={[0, 1.08, 0]}>
-        <mesh castShadow>
           <cylinderGeometry args={[0.34, 0.34, 0.05, 22]} />
-          <meshStandardMaterial color={hat.color} flatShading />
+          <meshStandardMaterial color={c} flatShading />
         </mesh>
         <mesh position={[0, 0.1, 0]} castShadow>
           <cylinderGeometry args={[0.26, 0.27, 0.22, 22]} />
-          <meshStandardMaterial color={hat.color} flatShading />
+          <meshStandardMaterial color={c} flatShading />
+        </mesh>
+        <mesh position={[0, 0.21, 0]}>
+          <cylinderGeometry args={[0.262, 0.262, 0.03, 22]} />
+          <meshStandardMaterial color={a} flatShading />
         </mesh>
       </group>
     );
   }
+
   if (hat.style === 'snapback') {
+    // Crown sits ON the head (anchored at head top y=1.15), brim sticks out
+    // the FRONT (positive Z). Tuned for the head radius 0.23.
     return (
-      <group position={[0, 1.06, 0]}>
-        <mesh position={[0, 0.06, 0]} castShadow>
-          <sphereGeometry args={[0.25, 16, 14, 0, Math.PI * 2, 0, Math.PI / 2]} />
-          <meshStandardMaterial color={hat.color} flatShading />
+      <group position={[0, 1.13, 0]}>
+        {/* Crown — half-sphere covering the top of the head */}
+        <mesh castShadow>
+          <sphereGeometry
+            args={[0.265, 18, 12, 0, Math.PI * 2, 0, Math.PI / 2]}
+          />
+          <meshStandardMaterial color={c} flatShading />
         </mesh>
-        <mesh position={[0, 0.02, -0.32]} castShadow>
-          <boxGeometry args={[0.5, 0.04, 0.3]} />
-          <meshStandardMaterial color={hat.color} flatShading />
+        {/* Sweatband around the bottom of the crown */}
+        <mesh position={[0, 0.005, 0]}>
+          <cylinderGeometry args={[0.27, 0.27, 0.04, 22]} />
+          <meshStandardMaterial color={a} flatShading />
+        </mesh>
+        {/* Brim — slightly curved peak sticking out the front */}
+        <mesh
+          position={[0, -0.01, 0.28]}
+          rotation={[-0.18, 0, 0]}
+          castShadow
+        >
+          <boxGeometry args={[0.5, 0.03, 0.3]} />
+          <meshStandardMaterial color={c} flatShading />
+        </mesh>
+        {/* Emblem on the front of the crown */}
+        <mesh position={[0, 0.13, 0.252]}>
+          <boxGeometry args={[0.1, 0.06, 0.02]} />
+          <meshStandardMaterial color={a} flatShading />
         </mesh>
       </group>
     );
   }
-  // visor
+
+  if (hat.style === 'visor') {
+    // Just a band + a forward-sticking brim. No closed top.
+    return (
+      <group position={[0, 1.12, 0]}>
+        <mesh rotation={[Math.PI / 2, 0, 0]} castShadow>
+          <torusGeometry args={[0.24, 0.025, 6, 22]} />
+          <meshStandardMaterial color={c} flatShading />
+        </mesh>
+        <mesh
+          position={[0, -0.005, 0.32]}
+          rotation={[-0.18, 0, 0]}
+          castShadow
+        >
+          <boxGeometry args={[0.5, 0.03, 0.25]} />
+          <meshStandardMaterial color={a} flatShading />
+        </mesh>
+      </group>
+    );
+  }
+
+  if (hat.style === 'beanie') {
+    return (
+      <group position={[0, 1.1, 0]}>
+        {/* Knit dome — half sphere covering the head */}
+        <mesh castShadow>
+          <sphereGeometry
+            args={[0.27, 18, 14, 0, Math.PI * 2, 0, Math.PI / 1.7]}
+          />
+          <meshStandardMaterial color={c} flatShading />
+        </mesh>
+        {/* Folded brim — thicker ring at the bottom edge */}
+        <mesh position={[0, 0, 0]}>
+          <cylinderGeometry args={[0.28, 0.28, 0.08, 22]} />
+          <meshStandardMaterial color={a} flatShading />
+        </mesh>
+        {/* Pom on top */}
+        <mesh position={[0, 0.35, 0]} castShadow>
+          <sphereGeometry args={[0.07, 12, 10]} />
+          <meshStandardMaterial color={a} flatShading />
+        </mesh>
+      </group>
+    );
+  }
+
+  if (hat.style === 'cowboy') {
+    return (
+      <group position={[0, 1.14, 0]}>
+        {/* Wide oval brim — slightly thicker at front/back via two layers */}
+        <mesh castShadow>
+          <cylinderGeometry args={[0.5, 0.5, 0.05, 26]} />
+          <meshStandardMaterial color={c} flatShading />
+        </mesh>
+        {/* Tall crown */}
+        <mesh position={[0, 0.2, 0]} castShadow>
+          <cylinderGeometry args={[0.21, 0.24, 0.36, 18]} />
+          <meshStandardMaterial color={c} flatShading />
+        </mesh>
+        {/* Hatband */}
+        <mesh position={[0, 0.06, 0]}>
+          <cylinderGeometry args={[0.245, 0.245, 0.04, 18]} />
+          <meshStandardMaterial color={a} flatShading />
+        </mesh>
+        {/* Pinched dome on top */}
+        <mesh position={[0, 0.4, 0]} castShadow>
+          <sphereGeometry args={[0.16, 14, 10, 0, Math.PI * 2, 0, Math.PI / 2]} />
+          <meshStandardMaterial color={c} flatShading />
+        </mesh>
+      </group>
+    );
+  }
+
+  if (hat.style === 'fedora') {
+    return (
+      <group position={[0, 1.13, 0]}>
+        <mesh castShadow>
+          <cylinderGeometry args={[0.36, 0.4, 0.035, 24]} />
+          <meshStandardMaterial color={c} flatShading />
+        </mesh>
+        <mesh position={[0, 0.13, 0]} castShadow>
+          <cylinderGeometry args={[0.21, 0.23, 0.22, 18]} />
+          <meshStandardMaterial color={c} flatShading />
+        </mesh>
+        <mesh position={[0, 0.04, 0]}>
+          <cylinderGeometry args={[0.235, 0.235, 0.04, 18]} />
+          <meshStandardMaterial color={a} flatShading />
+        </mesh>
+      </group>
+    );
+  }
+
+  if (hat.style === 'top-hat') {
+    return (
+      <group position={[0, 1.13, 0]}>
+        <mesh castShadow>
+          <cylinderGeometry args={[0.38, 0.38, 0.035, 26]} />
+          <meshStandardMaterial color={c} flatShading />
+        </mesh>
+        <mesh position={[0, 0.27, 0]} castShadow>
+          <cylinderGeometry args={[0.21, 0.23, 0.5, 20]} />
+          <meshStandardMaterial color={c} flatShading />
+        </mesh>
+        <mesh position={[0, 0.05, 0]}>
+          <cylinderGeometry args={[0.235, 0.235, 0.04, 20]} />
+          <meshStandardMaterial color={a} flatShading />
+        </mesh>
+      </group>
+    );
+  }
+
+  if (hat.style === 'headband') {
+    // Simple thin band around the head — sits on the hairline.
+    return (
+      <group position={[0, 1.0, 0]}>
+        <mesh rotation={[Math.PI / 2, 0, 0]} castShadow>
+          <torusGeometry args={[0.235, 0.035, 6, 22]} />
+          <meshStandardMaterial color={c} flatShading />
+        </mesh>
+        {/* Knot at the back */}
+        <mesh position={[0, 0, -0.24]} castShadow>
+          <sphereGeometry args={[0.06, 10, 10]} />
+          <meshStandardMaterial color={a} flatShading />
+        </mesh>
+      </group>
+    );
+  }
+
+  if (hat.style === 'sombrero') {
+    return (
+      <group position={[0, 1.14, 0]}>
+        {/* Extra-wide brim */}
+        <mesh castShadow>
+          <cylinderGeometry args={[0.7, 0.7, 0.04, 28]} />
+          <meshStandardMaterial color={c} flatShading />
+        </mesh>
+        {/* Tall pointed crown */}
+        <mesh position={[0, 0.24, 0]} castShadow>
+          <coneGeometry args={[0.22, 0.5, 20]} />
+          <meshStandardMaterial color={c} flatShading />
+        </mesh>
+        {/* Trim ring on the brim */}
+        <mesh position={[0, 0.025, 0]}>
+          <torusGeometry args={[0.66, 0.022, 4, 28]} />
+          <meshStandardMaterial color={a} flatShading />
+        </mesh>
+      </group>
+    );
+  }
+
+  if (hat.style === 'propeller') {
+    return <PropellerHat color={c} accent={a} />;
+  }
+
+  return null;
+}
+
+// Animated propeller-on-a-beanie. Spins around its Y axis.
+function PropellerHat({ color, accent }: { color: string; accent: string }) {
+  const propRef = useRef<THREE.Group>(null);
+  useFrame((state) => {
+    if (propRef.current) {
+      propRef.current.rotation.y = state.clock.elapsedTime * 8;
+    }
+  });
   return (
-    <group position={[0, 1.05, 0]}>
+    <group position={[0, 1.1, 0]}>
+      {/* Beanie crown */}
       <mesh castShadow>
-        <torusGeometry args={[0.24, 0.04, 8, 18]} />
-        <meshStandardMaterial color={hat.color} flatShading />
+        <sphereGeometry
+          args={[0.27, 18, 14, 0, Math.PI * 2, 0, Math.PI / 1.7]}
+        />
+        <meshStandardMaterial color={color} flatShading />
       </mesh>
+      <mesh position={[0, 0, 0]}>
+        <cylinderGeometry args={[0.28, 0.28, 0.08, 22]} />
+        <meshStandardMaterial color={accent} flatShading />
+      </mesh>
+      {/* Stem on top */}
+      <mesh position={[0, 0.38, 0]}>
+        <cylinderGeometry args={[0.02, 0.02, 0.1, 6]} />
+        <meshStandardMaterial color="#3a2a14" flatShading />
+      </mesh>
+      {/* Propeller — three blades around the stem */}
+      <group ref={propRef} position={[0, 0.46, 0]}>
+        {Array.from({ length: 3 }).map((_, i) => {
+          const angle = (i / 3) * Math.PI * 2;
+          return (
+            <mesh
+              key={i}
+              position={[Math.cos(angle) * 0.12, 0, Math.sin(angle) * 0.12]}
+              rotation={[0, -angle, 0.2]}
+              castShadow
+            >
+              <boxGeometry args={[0.22, 0.015, 0.05]} />
+              <meshStandardMaterial color={accent} flatShading />
+            </mesh>
+          );
+        })}
+        <mesh castShadow>
+          <sphereGeometry args={[0.035, 10, 10]} />
+          <meshStandardMaterial color="#3a2a14" flatShading />
+        </mesh>
+      </group>
     </group>
   );
 }

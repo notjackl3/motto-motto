@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import PlayScene from '../scene/PlayScene';
 import IpadUI from './IpadUI';
+import RainbowFlash from '../scene/RainbowFlash';
+import HintToast from '../scene/HintToast';
 import EffectOverlays from '../game/EffectOverlays';
 import RoundBanner from '../game/RoundBanner';
 import DevCardFilterPanel from '../dev/DevCardFilterPanel';
@@ -98,6 +100,8 @@ export default function GameLayout({ onQuit }: GameLayoutProps) {
       {/* Screen-level gameplay overlays (card effects, popups, round banner) */}
       <EffectOverlays />
       <RoundBanner />
+      <RainbowFlash />
+      <HintToast />
       {import.meta.env.DEV && <DevCardFilterPanel />}
 
       {/* Wave-crash transition between rounds */}

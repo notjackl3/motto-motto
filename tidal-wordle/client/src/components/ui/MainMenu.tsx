@@ -68,7 +68,7 @@ export default function MainMenu({ onSolo, onMultiplayer }: MainMenuProps) {
 
       {/* LEFT: wooden sign menu — sits over the 3D sign post. */}
       <div className="absolute left-[5%] top-[14%] z-10 flex flex-col gap-3 items-start pointer-events-auto">
-        <WoodenTitleSign label="TIDAL WORDLE" subtitle="ride the swell" />
+        <WoodenTitleSign label="MOTTO MOTTO" subtitle="ride the swell" />
         <WoodenButton label="PLAY SOLO" onClick={onSolo} />
         <WoodenButton label="MULTIPLAYER" onClick={onMultiplayer} />
         <WoodenButton
@@ -865,44 +865,277 @@ function HatShapePreview({ hat }: { hat: HatOption }) {
             className="absolute -bottom-1.5"
             style={{
               backgroundColor: color,
-              left: '-6px',
-              right: '12px',
+              left: '4px',
+              right: '-8px',
               height: '5px',
               border: '1.5px solid #3a2a14',
-              borderRadius: '0 0 4px 4px',
+              borderRadius: '0 4px 4px 0',
             }}
           />
         </div>
       </div>
     );
   }
-  // visor
-  return (
-    <div className="absolute inset-0 flex items-center justify-center">
-      <div className="relative">
+  if (hat.style === 'visor') {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="relative">
+          <div
+            style={{
+              backgroundColor: color,
+              width: '24px',
+              height: '4px',
+              border: '1.5px solid #3a2a14',
+              borderRadius: '6px',
+            }}
+          />
+          <div
+            className="absolute"
+            style={{
+              backgroundColor: hat.accent ?? '#fff',
+              top: '4px',
+              left: '-4px',
+              right: '-4px',
+              height: '8px',
+              border: '1.5px solid #3a2a14',
+              borderRadius: '0 0 12px 12px',
+              borderTop: 'none',
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (hat.style === 'beanie') {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="relative">
+          <div
+            style={{
+              backgroundColor: color,
+              width: '26px',
+              height: '20px',
+              border: '1.5px solid #3a2a14',
+              borderTopLeftRadius: '13px',
+              borderTopRightRadius: '13px',
+            }}
+          />
+          <div
+            className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full"
+            style={{
+              backgroundColor: hat.accent ?? '#fff',
+              width: '8px',
+              height: '8px',
+              border: '1.5px solid #3a2a14',
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (hat.style === 'cowboy') {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="relative">
+          <div
+            style={{
+              backgroundColor: color,
+              width: '38px',
+              height: '6px',
+              border: '1.5px solid #3a2a14',
+              borderRadius: '14px / 50%',
+            }}
+          />
+          <div
+            className="absolute"
+            style={{
+              backgroundColor: color,
+              width: '16px',
+              height: '16px',
+              top: '-14px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              border: '1.5px solid #3a2a14',
+              borderTopLeftRadius: '50%',
+              borderTopRightRadius: '50%',
+              borderBottom: 'none',
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (hat.style === 'fedora') {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="relative">
+          <div
+            style={{
+              backgroundColor: color,
+              width: '30px',
+              height: '5px',
+              border: '1.5px solid #3a2a14',
+              borderRadius: '6px',
+            }}
+          />
+          <div
+            className="absolute"
+            style={{
+              backgroundColor: color,
+              width: '16px',
+              height: '14px',
+              top: '-12px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              border: '1.5px solid #3a2a14',
+              borderBottom: 'none',
+              borderTopLeftRadius: '5px',
+              borderTopRightRadius: '5px',
+            }}
+          />
+          <div
+            className="absolute"
+            style={{
+              backgroundColor: hat.accent ?? '#000',
+              width: '16px',
+              height: '3px',
+              top: '-3px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (hat.style === 'top-hat') {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="relative">
+          <div
+            style={{
+              backgroundColor: color,
+              width: '28px',
+              height: '4px',
+              border: '1.5px solid #3a2a14',
+              borderRadius: '4px',
+            }}
+          />
+          <div
+            className="absolute"
+            style={{
+              backgroundColor: color,
+              width: '14px',
+              height: '22px',
+              top: '-22px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              border: '1.5px solid #3a2a14',
+              borderBottom: 'none',
+              borderTopLeftRadius: '3px',
+              borderTopRightRadius: '3px',
+            }}
+          />
+          <div
+            className="absolute"
+            style={{
+              backgroundColor: hat.accent ?? '#000',
+              width: '14px',
+              height: '3px',
+              top: '-3px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (hat.style === 'headband') {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center">
         <div
+          className="rounded-full"
           style={{
             backgroundColor: color,
-            width: '24px',
-            height: '4px',
+            width: '30px',
+            height: '6px',
             border: '1.5px solid #3a2a14',
-            borderRadius: '6px',
-          }}
-        />
-        <div
-          className="absolute"
-          style={{
-            backgroundColor: hat.accent ?? '#fff',
-            top: '4px',
-            left: '-4px',
-            right: '-4px',
-            height: '8px',
-            border: '1.5px solid #3a2a14',
-            borderRadius: '0 0 12px 12px',
-            borderTop: 'none',
           }}
         />
       </div>
-    </div>
-  );
+    );
+  }
+  if (hat.style === 'sombrero') {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="relative">
+          <div
+            style={{
+              backgroundColor: color,
+              width: '44px',
+              height: '5px',
+              border: '1.5px solid #3a2a14',
+              borderRadius: '20px / 50%',
+            }}
+          />
+          <div
+            className="absolute"
+            style={{
+              top: '-18px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 0,
+              height: 0,
+              borderLeft: '9px solid transparent',
+              borderRight: '9px solid transparent',
+              borderBottom: `18px solid ${color}`,
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (hat.style === 'propeller') {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="relative">
+          <div
+            style={{
+              backgroundColor: color,
+              width: '26px',
+              height: '18px',
+              border: '1.5px solid #3a2a14',
+              borderTopLeftRadius: '13px',
+              borderTopRightRadius: '13px',
+            }}
+          />
+          <div
+            className="absolute"
+            style={{
+              backgroundColor: hat.accent ?? '#d92b2b',
+              width: '20px',
+              height: '3px',
+              top: '-8px',
+              left: '50%',
+              transform: 'translateX(-50%) rotate(20deg)',
+              border: '1px solid #3a2a14',
+            }}
+          />
+          <div
+            className="absolute rounded-full"
+            style={{
+              backgroundColor: '#3a2a14',
+              width: '5px',
+              height: '5px',
+              top: '-9px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+  return null;
 }

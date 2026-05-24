@@ -16,6 +16,15 @@ function levelToWaveHeight(meters: number): number {
   return t * 2;
 }
 
+// Real significant wave height (NDBC) → in-game amplitude. Buoy data
+// typically reads 0.3m (glassy) → 4m+ (storm swell). We cap at 3m so a
+// massive storm doesn't break the scene proportions; 3m maps to the same
+// max amplitude (2 in-game units) the tide-derived fallback uses.
+function wvhtToWaveHeight(meters: number): number {
+  const t = Math.min(1, Math.max(0, meters / 3));
+  return t * 2;
+}
+
 // Convert rate (m/min) into a wave-speed multiplier centered on 1.0.
 // A rising or falling tide cranks the speed up; slack water = baseline.
 function rateToWaveSpeed(rateMetersPerMin: number): number {
@@ -103,7 +112,13 @@ export function useTideData(stationId: string = DEFAULT_STATION_ID): UseTideData
     };
   }, [stationId]);
 
-  const waveHeight = snapshot ? levelToWaveHeight(snapshot.currentLevelMeters) : 1.0;
+  // Prefer real NDBC wave height when the proxy includes it; otherwise fall
+  // back to the tide-level proxy mapping (legacy behavior).
+  const waveHeight = !snapshot
+    ? 1.0
+    : snapshot.waveHeightMeters !== undefined
+      ? wvhtToWaveHeight(snapshot.waveHeightMeters)
+      : levelToWaveHeight(snapshot.currentLevelMeters);
   const waveSpeed = snapshot ? rateToWaveSpeed(snapshot.rateMetersPerMin) : 1.0;
 
   return { waveHeight, waveSpeed, isLoading, error, snapshot, isMocked };

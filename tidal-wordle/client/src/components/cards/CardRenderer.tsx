@@ -9,6 +9,10 @@ interface CardRendererProps {
   compact?: boolean;
   /** Slightly larger cards in solo layout. */
   solo?: boolean;
+  /** Hand card — playable, draws extra attention. */
+  highlight?: boolean;
+  /** Already-played card from history — muted look. */
+  dimmed?: boolean;
 }
 
 const TYPE_STYLES: Record<Card['type'], string> = {
@@ -17,7 +21,14 @@ const TYPE_STYLES: Record<Card['type'], string> = {
   wildcard: 'bg-purple-500/70 border-purple-300',
 };
 
-export default function CardRenderer({ card, onClick, compact, solo }: CardRendererProps) {
+export default function CardRenderer({
+  card,
+  onClick,
+  compact,
+  solo,
+  highlight,
+  dimmed,
+}: CardRendererProps) {
   const mode = useGameStore((s) => s.mode);
   const description = getCardDescription(card, mode);
 
@@ -25,7 +36,12 @@ export default function CardRenderer({ card, onClick, compact, solo }: CardRende
     const sizeClass = solo
       ? 'w-[4.5rem] h-[3.5rem]'
       : 'w-[4.5rem] h-[3.5rem] shrink-0';
-    const className = `${sizeClass} rounded border px-1.5 py-1 text-left text-white transition ${TYPE_STYLES[card.type]} ${
+    const tone = dimmed
+      ? 'opacity-55 saturate-50'
+      : highlight
+        ? 'ring-2 ring-white/70 shadow-[0_0_12px_rgba(255,255,255,0.35)]'
+        : '';
+    const className = `${sizeClass} rounded border px-1.5 py-1 text-left text-white transition ${TYPE_STYLES[card.type]} ${tone} ${
       onClick ? 'cursor-pointer hover:scale-[1.03] hover:brightness-110' : ''
     }`;
 

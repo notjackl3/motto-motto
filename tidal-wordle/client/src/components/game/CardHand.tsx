@@ -6,6 +6,7 @@ interface CardHandProps {
 }
 
 export default function CardHand({ solo = false }: CardHandProps) {
+  const hand = useGameStore((s) => s.myHand);
   const history = useGameStore((s) => s.cardDrawHistory);
   const showCardDetailPopup = useGameStore((s) => s.showCardDetailPopup);
 
@@ -15,8 +16,16 @@ export default function CardHand({ solo = false }: CardHandProps) {
         solo ? 'px-2 py-1' : 'px-2 py-1'
       }`}
     >
-      <div className="text-[9px] uppercase opacity-70 mb-1 shrink-0 tracking-wide">
-        Recent cards · tap for details
+      <div className="text-[9px] uppercase opacity-70 mb-1 shrink-0 tracking-wide flex items-center justify-between">
+        <span>
+          Hand · tap to play{' '}
+          <span className="opacity-60 normal-case">({hand.length})</span>
+        </span>
+        {history.length > 0 && (
+          <span className="opacity-50 normal-case">
+            recent: {history.length}
+          </span>
+        )}
       </div>
       <div
         className={`overflow-x-auto overflow-y-visible ${
@@ -25,20 +34,39 @@ export default function CardHand({ solo = false }: CardHandProps) {
             : 'flex gap-1.5 items-center'
         }`}
       >
-        {history.length === 0 ? (
+        {hand.length === 0 && history.length === 0 ? (
           <div className="text-[11px] opacity-60 italic py-1 col-span-full">
-            Cards appear after your first guess
+            Guess a word to draw your first card
           </div>
         ) : (
-          history.map((card, i) => (
-            <CardRenderer
-              key={`${card.id}-${i}`}
-              card={card}
-              compact
-              solo={solo}
-              onClick={() => showCardDetailPopup(card, 'history')}
-            />
-          ))
+          <>
+            {hand.map((card, i) => (
+              <CardRenderer
+                key={`hand-${card.id}-${i}`}
+                card={card}
+                compact
+                solo={solo}
+                onClick={() => showCardDetailPopup(card, 'hand')}
+                highlight
+              />
+            ))}
+            {history.length > 0 && hand.length > 0 && (
+              <div
+                aria-hidden
+                className="self-stretch w-px bg-white/15 mx-1 shrink-0"
+              />
+            )}
+            {history.map((card, i) => (
+              <CardRenderer
+                key={`hist-${card.id}-${i}`}
+                card={card}
+                compact
+                solo={solo}
+                onClick={() => showCardDetailPopup(card, 'history')}
+                dimmed
+              />
+            ))}
+          </>
         )}
       </div>
     </div>

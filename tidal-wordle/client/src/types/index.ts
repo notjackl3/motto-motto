@@ -24,6 +24,15 @@ export interface Guess {
 export type CardType = 'attack' | 'buff' | 'wildcard';
 export type CardDuration = 'instant' | 'persistent';
 
+export interface CardApiSource {
+  /** Category label from the project's "API Category" reference doc. */
+  category: string;
+  /** The specific API the card draws from (display name). */
+  apiName: string;
+  /** Optional URL — clickable in the card popup if present. */
+  url?: string;
+}
+
 export interface Card {
   id: string;
   name: string;
@@ -33,6 +42,8 @@ export interface Card {
   soloDescription?: string;
   targetSelf: boolean;
   duration: CardDuration;
+  /** Inspiration source — which public API the card's mechanic riffs on. */
+  apiSource?: CardApiSource;
 }
 
 export type EffectTarget = 'self' | 'opponent';
@@ -92,7 +103,7 @@ export interface RoundBannerState {
 }
 
 /** Completed round snapshot for match history UI. */
-export type CardDetailSource = 'draw' | 'history';
+export type CardDetailSource = 'draw' | 'hand' | 'history';
 
 export interface CardDetailPopupState {
   card: Card;

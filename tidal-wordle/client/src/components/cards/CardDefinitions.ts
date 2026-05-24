@@ -10,6 +10,11 @@ export const CARD_DEFINITIONS: Card[] = [
       'Chaos draw — drops a goofy meme over your board with your last wrong guess as caption.',
     targetSelf: false,
     duration: 'instant',
+    apiSource: {
+      category: 'BrainRot',
+      apiName: 'Imgflip API',
+      url: 'https://imgflip.com/api',
+    },
   },
   {
     id: 'brainrot-glitch',
@@ -21,6 +26,11 @@ export const CARD_DEFINITIONS: Card[] = [
       "Chaos draw — your tile colors glitch and shift so you can't tell which letters were green or orange until your next guess.",
     targetSelf: false,
     duration: 'instant',
+    apiSource: {
+      category: 'BrainRot',
+      apiName: 'Steal a Brainrot (Postman)',
+      url: 'https://www.postman.com/api-evangelist/steal-a-brainrot/overview',
+    },
   },
   {
     id: 'status-dog',
@@ -31,6 +41,11 @@ export const CARD_DEFINITIONS: Card[] = [
       'Chaos draw — a loyal pup covers one of your letter tiles for 10 seconds.',
     targetSelf: false,
     duration: 'persistent',
+    apiSource: {
+      category: 'HTTPSTATUSCODEDOGS',
+      apiName: 'httpstatusdogs.com',
+      url: 'https://httpstatusdogs.com',
+    },
   },
   {
     id: 'playful-insult',
@@ -40,6 +55,11 @@ export const CARD_DEFINITIONS: Card[] = [
     soloDescription: 'Chaos draw — a playful jab pops up on your screen.',
     targetSelf: false,
     duration: 'instant',
+    apiSource: {
+      category: 'FOAAS',
+      apiName: 'FOAAS',
+      url: 'https://foaas.com',
+    },
   },
   {
     id: 'forced-break',
@@ -51,6 +71,11 @@ export const CARD_DEFINITIONS: Card[] = [
       'Chaos draw — your next guess hides green/yellow colors for answer-length seconds.',
     targetSelf: false,
     duration: 'instant',
+    apiSource: {
+      category: 'Screen Reminder',
+      apiName: 'Screen Time API',
+      url: 'https://developer.apple.com/documentation/screentime',
+    },
   },
   {
     id: 'bored-distraction',
@@ -61,6 +86,11 @@ export const CARD_DEFINITIONS: Card[] = [
       'Chaos draw — a corner distraction with a random activity suggestion.',
     targetSelf: false,
     duration: 'instant',
+    apiSource: {
+      category: 'The Bored API',
+      apiName: 'Bored API',
+      url: 'https://bored-api.appbrewery.com',
+    },
   },
   {
     id: 'recipe-spam',
@@ -71,6 +101,11 @@ export const CARD_DEFINITIONS: Card[] = [
       'Chaos draw — overlays a food-blog style scrolling ingredient list on your board.',
     targetSelf: false,
     duration: 'instant',
+    apiSource: {
+      category: 'Food Recipe App',
+      apiName: 'Recipe Food Nutrition (RapidAPI)',
+      url: 'https://rapidapi.com/spoonacular/api/recipe-food-nutrition',
+    },
   },
   {
     id: 'rejection-letter',
@@ -80,6 +115,11 @@ export const CARD_DEFINITIONS: Card[] = [
     soloDescription: 'Chaos draw — a formal rejection email for your latest guess.',
     targetSelf: false,
     duration: 'instant',
+    apiSource: {
+      category: 'Job Application Meme',
+      apiName: 'Greenhouse Job Board API',
+      url: 'https://developers.greenhouse.io/job-board.html',
+    },
   },
   {
     id: 'face-swap-glitch',
@@ -91,6 +131,11 @@ export const CARD_DEFINITIONS: Card[] = [
       'Chaos draw — a glitchy cartoon face covers your board for answer-length seconds.',
     targetSelf: false,
     duration: 'persistent',
+    apiSource: {
+      category: 'Facial Recognition with Memes',
+      apiName: 'FaceAnalyzer-AI (RapidAPI)',
+      url: 'https://rapidapi.com/search/face%20analyzer',
+    },
   },
   {
     id: 'letter-reveal',
@@ -99,6 +144,11 @@ export const CARD_DEFINITIONS: Card[] = [
     description: 'Reveals one letter in the answer at its correct position.',
     targetSelf: true,
     duration: 'instant',
+    apiSource: {
+      category: 'Pokemon',
+      apiName: 'PokeAPI',
+      url: 'https://pokeapi.co',
+    },
   },
   {
     id: 'cosmic-reset',
@@ -107,6 +157,11 @@ export const CARD_DEFINITIONS: Card[] = [
     description: 'Removes your most recent wrong guess from the board.',
     targetSelf: true,
     duration: 'instant',
+    apiSource: {
+      category: 'NASA',
+      apiName: 'NASA Open APIs',
+      url: 'https://api.nasa.gov',
+    },
   },
   {
     id: 'marine-hint',
@@ -115,6 +170,11 @@ export const CARD_DEFINITIONS: Card[] = [
     description: 'Tells you how many vowels are in the answer.',
     targetSelf: true,
     duration: 'instant',
+    apiSource: {
+      category: 'Marine Life',
+      apiName: 'Marine Species REST API',
+      url: 'https://www.marinespecies.org/rest/',
+    },
   },
   {
     id: 'tide-whisper',
@@ -123,6 +183,11 @@ export const CARD_DEFINITIONS: Card[] = [
     description: 'Reveals the first or last letter of the answer.',
     targetSelf: true,
     duration: 'instant',
+    apiSource: {
+      category: 'Biggest Tidal Wave Creation (NOAA Tides)',
+      apiName: 'NOAA Tides & Currents',
+      url: 'https://tidesandcurrents.noaa.gov/web_services_info.html',
+    },
   },
   {
     id: 'forecast',
@@ -131,6 +196,11 @@ export const CARD_DEFINITIONS: Card[] = [
     description: 'Reveals whether a random position is a vowel or consonant.',
     targetSelf: true,
     duration: 'instant',
+    apiSource: {
+      category: 'Weather',
+      apiName: 'Weather.gov Web API',
+      url: 'https://www.weather.gov/documentation/services-web-api',
+    },
   },
   {
     id: 'related-current',
@@ -139,6 +209,11 @@ export const CARD_DEFINITIONS: Card[] = [
     description: 'Reveals a thematically related word to the answer.',
     targetSelf: true,
     duration: 'instant',
+    apiSource: {
+      category: 'Beach Worlde',
+      apiName: 'Related Words API',
+      url: 'https://relatedwords.org',
+    },
   },
   {
     id: 'resume-polish',
@@ -147,6 +222,11 @@ export const CARD_DEFINITIONS: Card[] = [
     description: 'Suggests an optimal next guess based on your current guesses.',
     targetSelf: true,
     duration: 'instant',
+    apiSource: {
+      category: 'AI Resume Builder',
+      apiName: 'AI Resume Generator (RapidAPI)',
+      url: 'https://rapidapi.com/search/resume',
+    },
   },
   {
     id: 'chess-gambit',
@@ -156,6 +236,11 @@ export const CARD_DEFINITIONS: Card[] = [
     soloDescription: 'Solve a mini chess puzzle before you can continue.',
     targetSelf: false,
     duration: 'instant',
+    apiSource: {
+      category: 'Chess',
+      apiName: 'chess-api.com',
+      url: 'https://chess-api.com',
+    },
   },
   {
     id: 'dice-roll',
@@ -167,6 +252,11 @@ export const CARD_DEFINITIONS: Card[] = [
       'Discards this draw and instantly plays a random card from the deck instead (one reroll).',
     targetSelf: false,
     duration: 'instant',
+    apiSource: {
+      category: 'Biggest Dice Number Generator',
+      apiName: 'Numbers API',
+      url: 'http://numbersapi.com',
+    },
   },
   {
     id: 'beach-playlist',
@@ -175,6 +265,11 @@ export const CARD_DEFINITIONS: Card[] = [
     description: 'Swaps the beach playlist for 30 seconds.',
     targetSelf: false,
     duration: 'instant',
+    apiSource: {
+      category: 'Music',
+      apiName: 'SoundCloud (RapidAPI)',
+      url: 'https://rapidapi.com/search/soundcloud',
+    },
   },
   {
     id: 'critics-rating',
@@ -185,6 +280,11 @@ export const CARD_DEFINITIONS: Card[] = [
       'Rates your guess efficiency at round end; 4+ stars earns a +25 bonus.',
     targetSelf: false,
     duration: 'instant',
+    apiSource: {
+      category: 'Rate Disney Movies',
+      apiName: 'Disney+ Top Movies/TV (RapidAPI)',
+      url: 'https://rapidapi.com/search/disney',
+    },
   },
 ];
 

@@ -116,6 +116,9 @@ function BoredDistractionOverlay({
             src={headerImageUrl}
             alt=""
             className="h-28 w-full shrink-0 object-cover"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
           />
         )}
         <div className="shrink-0 border-b border-amber-200 px-4 py-2.5 font-bold text-base leading-snug">

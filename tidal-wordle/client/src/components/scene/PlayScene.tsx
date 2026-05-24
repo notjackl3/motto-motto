@@ -10,6 +10,7 @@ import SurfingMotion from './SurfingMotion';
 import EnvironmentObjects from './EnvironmentObjects';
 import PlayerControls from './PlayerControls';
 import AmbientSplashes from './AmbientSplashes';
+import MysteryBoxes from './MysteryBoxes';
 import { useGameStore } from '../../stores/gameStore';
 import { ambientMusic, unlockAudio } from '../../lib/audio';
 
@@ -106,6 +107,7 @@ export default function PlayScene({ lookMode }: Props) {
         <PlayerControls active={lookMode} />
         <BodyRig />
         <AmbientSplashes />
+        <MysteryBoxes lookMode={lookMode} />
         <IpadRig lookMode={lookMode} />
       </Canvas>
     </div>

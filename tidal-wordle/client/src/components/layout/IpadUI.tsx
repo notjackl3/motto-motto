@@ -1,103 +1,96 @@
+/**
+ * iPad screen content — rendered inside the held-iPad in PlayScene.
+ *
+ * The screen now mimics nytimes.com/games/wordle: white background, big
+ * "WORDLE" header, centered board, light guess input, recent-cards strip
+ * at the bottom. The `.wordle-nyt-theme` wrapper triggers the palette
+ * overrides in styles.css (NYT tile colours, light input form, light
+ * card history, NYT-coloured opponent tiles).
+ *
+ * In multiplayer the opponent board sits to the right of the player
+ * board, sized to fit the iPad screen. Full-screen effect overlays and
+ * the round banner remain mounted at GameLayout level.
+ */
 import WordleBoard from '../game/WordleBoard';
 import GuessInput from '../game/GuessInput';
-import ActiveEffectTimers from '../game/ActiveEffectTimers';
 import CardHand from '../game/CardHand';
 import OpponentBoard from '../game/OpponentBoard';
-import KnowledgePanel from '../game/KnowledgePanel';
 import CardDetailPopup from '../game/CardDetailPopup';
+import ActiveEffectTimers from '../game/ActiveEffectTimers';
+import KnowledgePanel from '../game/KnowledgePanel';
 import { useGameStore } from '../../stores/gameStore';
 
 export default function IpadUI() {
   const mode = useGameStore((s) => s.mode);
   const roomCode = useGameStore((s) => s.roomCode);
+  const roundsWon = useGameStore((s) => s.roundsWon);
+  const roundsToWin = useGameStore((s) => s.roundsToWin);
+  const activeEffectsCount = useGameStore((s) => s.activeEffects.length);
 
-  const isSolo = mode === 'solo';
-  const rightRailClass = isSolo ? 'w-[22%]' : 'w-[26%]';
+  const totalRounds = roundsToWin * 2 - 1;
+  const roundNumber = Math.min(
+    totalRounds,
+    roundsWon.me + roundsWon.opponent + 1
+  );
 
   return (
-    <div className="ipad-tablet font-body w-full h-full p-[2%] flex flex-col gap-[1%]">
-      {/* ─── Main grid: board · right rail ─────────────────────────── */}
-      <div className="relative flex gap-[0.8%] flex-1 min-h-0 z-[2] overflow-hidden">
-        {/* Center: board + input */}
-        <div className="bracket-corners relative flex-1 min-w-0 instrument-panel flex flex-col items-stretch px-2 pt-1.5 pb-2 min-h-0 overflow-hidden">
-          <span className="bracket-bl" />
-          <span className="bracket-br" />
-          <div className="flex items-center justify-between mb-1 shrink-0 gap-2">
-            <span className="label-instrument">Decoder · Self</span>
-            {mode === 'multiplayer' && roomCode && (
-              <span className="font-mono text-[9px] tracking-[0.28em] text-sand/60 shrink-0">
-                {roomCode}
-              </span>
-            )}
-            <span className="font-mono text-[9px] tracking-[0.22em] text-brass/70 shrink-0">
-              ⌁ TIDE LOCK ⌁
-            </span>
-          </div>
+    <div className="ipad-tablet wordle-nyt-theme font-body w-full h-full flex flex-col">
+      {/* ── Title bar (mimics NYT Wordle header) ─────────────────── */}
+      <header className="shrink-0 border-b border-black/10 px-3 py-1.5 flex items-center justify-between gap-2">
+        <span className="font-mono text-[8px] tracking-[0.22em] uppercase text-black/55 w-[28%] truncate">
+          {mode === 'solo'
+            ? 'Solo'
+            : `MP${roomCode ? ` · ${roomCode}` : ''}`}
+        </span>
+        <h1 className="font-display font-extrabold tracking-[0.34em] uppercase text-[16px] leading-none text-[#1a1a1b] select-none">
+          Wordle
+        </h1>
+        <span className="font-mono text-[8px] tabular-nums tracking-[0.22em] uppercase text-black/55 w-[28%] text-right truncate">
+          R{roundNumber}/{totalRounds} · {roundsWon.me}:{roundsWon.opponent}
+        </span>
+      </header>
+
+      {/* ── Main play area ───────────────────────────────────────────
+          Board sits centered; the Intel (buff output) aside is pinned
+          to the right edge of the iPad screen via `ml-auto`. */}
+      <main className="flex-1 min-h-0 flex items-stretch gap-2 px-3 py-2 overflow-hidden">
+        <section className="flex-1 min-w-0 max-w-[420px] mx-auto flex flex-col items-stretch justify-center gap-2">
           <div className="flex-1 min-h-0 flex flex-col items-stretch justify-center overflow-hidden">
             <WordleBoard boardTarget="self" />
           </div>
-          <div className="mt-1.5 shrink-0">
+          {activeEffectsCount > 0 && (
+            <div className="shrink-0">
+              <ActiveEffectTimers />
+            </div>
+          )}
+          <div className="shrink-0">
             <GuessInput />
           </div>
-        </div>
+        </section>
 
-        {/* Right rail: opponent (mp) or solo info + optional card timers */}
-        <div className={`${rightRailClass} min-w-0 flex flex-col gap-[5%]`}>
-          <ActiveEffectTimersPanel />
+        {mode === 'multiplayer' ? (
+          <aside className="w-[30%] max-w-[200px] shrink-0 ml-auto min-h-0 flex flex-col gap-2 overflow-hidden">
+            <div className="shrink-0 min-h-0 overflow-hidden">
+              <OpponentBoard />
+            </div>
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <KnowledgePanel />
+            </div>
+          </aside>
+        ) : (
+          <aside className="w-[30%] max-w-[200px] shrink-0 ml-auto min-h-0 overflow-hidden">
+            <KnowledgePanel />
+          </aside>
+        )}
+      </main>
 
-          <div className="bracket-corners relative instrument-panel p-2.5 flex-1 min-h-0 overflow-hidden">
-            <span className="bracket-bl" />
-            <span className="bracket-br" />
-            {mode === 'multiplayer' ? (
-              <>
-                <div className="label-instrument mb-1.5">Opponent</div>
-                <OpponentBoard />
-              </>
-            ) : (
-              <>
-                <div className="label-instrument mb-1.5">Surf Log</div>
-                <KnowledgePanel />
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* ─── Bottom: card history strip (content-sized) ───────────── */}
-      <div className="relative shrink-0 z-[4] flex flex-col">
-        <div className="h-px bg-gradient-to-r from-transparent via-brass/30 to-transparent mb-1 shrink-0" />
-        <div className="relative overflow-visible">
+      {/* ── Bottom: recent cards ─────────────────────────────────── */}
+      <footer className="shrink-0 border-t border-black/10 px-3 py-1.5 z-[4]">
+        <div className="relative">
           <CardDetailPopup />
-          <CardHand solo={isSolo} />
+          <CardHand solo={mode === 'solo'} />
         </div>
-      </div>
-    </div>
-  );
-}
-
-function ActiveEffectTimersPanel() {
-  const forcedBreakLabel = useGameStore((s) => s.forcedBreakLabel);
-  const forcedBreakPending = useGameStore((s) => s.forcedBreakPending);
-  const myGuesses = useGameStore((s) => s.myGuesses);
-  const statusDogActive = useGameStore((s) =>
-    s.activeEffects.some(
-      (e) => e.cardId === 'status-dog' && e.target === 'self' && e.expiresAt
-    )
-  );
-
-  const hasColorReveal =
-    Boolean(forcedBreakLabel) &&
-    (forcedBreakPending ||
-      myGuesses.some((g) => g.colorsRevealAt && g.colorsRevealAt > Date.now()));
-
-  if (!hasColorReveal && !statusDogActive) return null;
-
-  return (
-    <div className="bracket-corners relative instrument-panel shrink-0 flex flex-col items-center p-2">
-      <span className="bracket-bl" />
-      <span className="bracket-br" />
-      <div className="label-instrument mb-1.5 self-start">Active Effects</div>
-      <ActiveEffectTimers />
+      </footer>
     </div>
   );
 }

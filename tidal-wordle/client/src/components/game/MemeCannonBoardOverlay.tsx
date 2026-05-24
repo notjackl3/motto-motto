@@ -32,16 +32,18 @@ export default function MemeCannonBoardOverlay({
             src={memeHeroUrl}
             alt=""
             className="min-h-[55%] w-full flex-1 object-contain bg-black"
-            onError={
-              memeHeroFallbackUrl
-                ? (e) => {
-                    const img = e.currentTarget;
-                    if (img.dataset.fallbackApplied === '1') return;
-                    img.dataset.fallbackApplied = '1';
-                    img.src = memeHeroFallbackUrl;
-                  }
-                : undefined
-            }
+            onError={(e) => {
+              const img = e.currentTarget;
+              if (
+                memeHeroFallbackUrl &&
+                img.dataset.fallbackApplied !== '1'
+              ) {
+                img.dataset.fallbackApplied = '1';
+                img.src = memeHeroFallbackUrl;
+                return;
+              }
+              img.style.display = 'none';
+            }}
           />
         ) : (
           <div className="flex min-h-[55%] flex-1 items-center justify-center bg-slate-100">

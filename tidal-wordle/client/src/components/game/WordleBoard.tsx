@@ -213,7 +213,8 @@ export default function WordleBoard({ boardTarget = 'self' }: WordleBoardProps) 
                 return (
                   <div
                     key={c}
-                    className={`relative aspect-square min-w-0 w-full border-2 flex items-center justify-center font-bold uppercase ${sizing.fontClass} ${isGlitching ? '' : 'transition-colors'} ${tileStateClass} ${masked && !isGlitching ? 'half-masked-tile' : ''}`}
+                    data-state={covered ? 'covered' : displayState}
+                    className={`wordle-tile relative aspect-square min-w-0 w-full border-2 flex items-center justify-center font-bold uppercase ${sizing.fontClass} ${isGlitching ? '' : 'transition-colors'} ${tileStateClass} ${masked && !isGlitching ? 'half-masked-tile' : ''}`}
                     aria-label={
                       isGlitching
                         ? covered

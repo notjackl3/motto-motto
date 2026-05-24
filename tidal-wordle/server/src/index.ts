@@ -49,10 +49,74 @@ const app = express();
 app.use(cors({ origin: CLIENT_ORIGIN }));
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
+app.get('/api/words', async (req, res) => {
+  const term = (req.query.term as string | undefined)?.trim();
+  if (!term) {
+    res.status(400).json({ error: 'missing term' });
+    return;
+  }
+  try {
+    const upstream = await fetch(
+      `https://relatedwords.io/api/relatedTerms?term=${encodeURIComponent(term)}`
+    );
+    if (!upstream.ok) {
+      res
+        .status(upstream.status)
+        .json({ error: `upstream ${upstream.status}` });
+      return;
+    }
+    const data = await upstream.json();
+    res.json(data);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn('[words] proxy failed:', message);
+    res.status(502).json({ error: message });
+  }
+});
+
+app.get('/api/hint', async (req, res) => {
+  const word = (req.query.word as string | undefined)?.trim();
+  if (!word || word.length < 2 || word.length > 12 || !/^[a-zA-Z]+$/.test(word)) {
+    res.status(400).json({ error: 'Invalid word' });
+    return;
+  }
+  try {
+    const { generateHint } = await import('./openai.js');
+    const hint = await generateHint(word);
+    res.json({ hint });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn('[hint] generation failed:', message);
+    res.status(502).json({ error: message });
+  }
+});
+
+// Pre-warm: client calls this when a round starts so per-box pickups can
+// pop from a local list instead of round-tripping each time.
+app.get('/api/hints', async (req, res) => {
+  const word = (req.query.word as string | undefined)?.trim();
+  const countRaw = Number((req.query.count as string | undefined) ?? '4');
+  const count = Number.isFinite(countRaw) ? Math.max(1, Math.min(8, countRaw)) : 4;
+  if (!word || word.length < 2 || word.length > 12 || !/^[a-zA-Z]+$/.test(word)) {
+    res.status(400).json({ error: 'Invalid word' });
+    return;
+  }
+  try {
+    const { generateHintBatch } = await import('./openai.js');
+    const hints = await generateHintBatch(word, count);
+    res.json({ hints });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn('[hints] generation failed:', message);
+    res.status(502).json({ error: message });
+  }
+});
+
 app.get('/api/tides', async (req, res) => {
   const station = (req.query.station as string | undefined)?.trim() || '9410230';
+  const buoy = (req.query.buoy as string | undefined)?.trim() || '46232';
   try {
-    const snapshot = await getTideSnapshot(station);
+    const snapshot = await getTideSnapshot(station, buoy);
     res.json(snapshot);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

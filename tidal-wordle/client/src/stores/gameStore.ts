@@ -29,6 +29,10 @@ import { stopPlaylist } from '../lib/cardAudio';
 import { evaluateGuess, isSolvedGuess } from '../lib/guessEvaluator';
 import { getRandomWord, normalizeWord } from '../lib/wordList';
 import {
+  getRandomFetchedWord,
+  prefetchTopics,
+} from '../lib/wordSources';
+import {
   MIN_GUESS_LENGTH,
   resolveCriticsRating,
   isMatchOver,
@@ -130,6 +134,8 @@ interface GameStoreState {
   musicMuted: boolean;
   /** Multiplayer room code (kept for UI compatibility; multiplayer flow stubbed). */
   roomCode: string | null;
+  /** Source label for the current solo round answer (e.g. 'beach', 'ocean', 'local'). */
+  currentWordSource: string | null;
   /** Multiplayer bridge — written by useSocketBridge from server events. */
   myCooldownEndsAt: number | null;
   opponentCooldownEndsAt: number | null;
@@ -148,6 +154,8 @@ interface GameStoreState {
   dismissRoundBanner: () => void;
   /** Reveal answer length to the player (hint cards call this). */
   revealAnswerLength: () => void;
+  /** Append a hint (mystery boxes / hint cards). Deduplicates by text. */
+  addHint: (text: string) => void;
   showCardDetailPopup: (card: Card, source?: CardDetailSource) => void;
   dismissCardDetailPopup: () => void;
   resetRound: () => void;
@@ -224,6 +232,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   musicMuted: false,
   roomCode: null,
   opponentLeft: false,
+  currentWordSource: null,
 
   setMode: (mode) => set({ mode }),
   setMusicMuted: (musicMuted) => set({ musicMuted }),
@@ -242,11 +251,18 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       myHand: [],
       ...initialRoundState,
     });
+    if (mode === 'solo') {
+      // Fire-and-forget: rounds use whatever has loaded so far and fall
+      // back to the local list when nothing has arrived yet.
+      void prefetchTopics().catch(() => {});
+    }
     get().startRound();
   },
 
   startRound: () => {
-    const word = getRandomWord();
+    const picked = getRandomFetchedWord();
+    const word = picked?.word ?? getRandomWord();
+    const source = picked?.topic ?? 'local';
     set({
       ...initialRoundState,
       answer: word,
@@ -254,6 +270,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       roundOver: false,
       roundBanner: null,
       cardDrawHistory: [],
+      currentWordSource: source,
     });
   },
 
@@ -356,6 +373,20 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     if (answer) set({ answerLength: answer.length });
   },
 
+  addHint: (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    const existing = get().hints;
+    // Skip if we already have an identical hint this round.
+    if (existing.some((h) => h.text === trimmed)) return;
+    const hint: Hint = {
+      id: `hint-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      text: trimmed,
+      createdAt: Date.now(),
+    };
+    set({ hints: [...existing, hint] });
+  },
+
   showCardDetailPopup: (card, source = 'history') => {
     set({ cardDetailPopup: { card, source } });
   },
@@ -443,7 +474,8 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       myHand: [],
       musicSwapActive: false,
       faceSwap: false,
-  faceSwapImageUrl: null as string | null,
+      faceSwapImageUrl: null as string | null,
+      currentWordSource: null,
       ...initialRoundState,
     });
   },

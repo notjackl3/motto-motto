@@ -15,6 +15,7 @@ import OpponentLeftModal from './components/ui/OpponentLeftModal';
 import { useGameStore, onMatchEnd } from './stores/gameStore';
 import { useMultiplayerStore } from './stores/multiplayerStore';
 import { useSocket, useSocketBridge } from './hooks/useSocket';
+import { prefetchTopics } from './lib/wordSources';
 
 /**
  * Top-level layout: mounts global concerns (socket bridge, opponent-left
@@ -30,6 +31,12 @@ function RootLayout() {
   const { disconnect } = useSocket();
 
   useSocketBridge();
+
+  // Warm the multi-source word pool so the first solo round can pull
+  // from relatedwords.io topics. Falls back silently to local.
+  useEffect(() => {
+    void prefetchTopics().catch(() => {});
+  }, []);
 
   // Match-end → /game-over.
   useEffect(() => {

@@ -611,28 +611,94 @@ export function applyCriticsAtRoundEnd(): {
   return { myStars: stars.myStars, oppStars: stars.oppStars };
 }
 
+// Evict any attack cards (or dice-roll) lingering in myHand by firing them
+// immediately. Needed because earlier builds let attacks sit in hand, and
+// those instances should now auto-resolve. Safe to call at any time —
+// no-ops if the hand has no eligible cards.
+export function sweepInvoluntaryHandCards(): void {
+  const state = useGameStore.getState();
+  const involuntary = state.myHand.filter(
+    (c) => c.type === 'attack' || c.id === 'dice-roll',
+  );
+  if (involuntary.length === 0) return;
+  const remainingHand = state.myHand.filter(
+    (c) => !(c.type === 'attack' || c.id === 'dice-roll'),
+  );
+  const nextHistory = [...involuntary, ...state.cardDrawHistory].slice(0, 5);
+  useGameStore.setState({ myHand: remainingHand, cardDrawHistory: nextHistory });
+  for (const card of involuntary) {
+    const target = getCardTarget(state.mode, card);
+    applyEffect(card.id, target);
+  }
+}
+
 export function fireCardAfterGuess(): void {
+  // Self-heal: if any stale attack/reroll cards are still sitting in the
+  // hand from a previous build, drain them first.
+  sweepInvoluntaryHandCards();
+
   const state = useGameStore.getState();
   if (state.roundOver || state.matchWinner) return;
 
   const card = drawCard();
   const target = getCardTarget(state.mode, card);
+
+  // Dice Roll: meta reroll wildcard, always auto-fires (discards itself
+  // and re-rolls into another draw).
   if (card.id === 'dice-roll') {
     applyEffect(card.id, target);
     return;
   }
-  const history = [card, ...state.cardDrawHistory].slice(0, 5);
-  useGameStore.setState({ cardDrawHistory: history });
 
-  applyEffect(card.id, target);
+  // Attack cards auto-fire — they're chaos *inflicted* on the player (or
+  // on the opponent in multiplayer). There's no strategic value in
+  // holding them and no reason for the player to opt-in to their own
+  // damage, so we push to history and resolve the effect immediately.
+  if (card.type === 'attack') {
+    const nextHistory = [card, ...state.cardDrawHistory].slice(0, 5);
+    useGameStore.setState({ cardDrawHistory: nextHistory });
+    applyEffect(card.id, target);
+    showCardDetailOnDraw(card);
+    return;
+  }
+
+  // Buffs + non-dice wildcards land in the player's hand for them to time
+  // strategically. Cap at 5 so a long round doesn't hoard infinitely.
+  const nextHand = [...state.myHand, card].slice(-5);
+  useGameStore.setState({ myHand: nextHand });
   showCardDetailOnDraw(card);
+}
+
+// Player-initiated play: pull a card out of myHand and resolve its effect.
+// Mirrors the old fireCardAfterGuess for the resolve step, but driven by
+// the user clicking "Play card" in CardDetailPopup or CardHand.
+export function playCardFromHand(cardId: string): void {
+  const state = useGameStore.getState();
+  if (state.roundOver || state.matchWinner) return;
+  const idx = state.myHand.findIndex((c) => c.id === cardId);
+  if (idx < 0) return;
+  const card = state.myHand[idx];
+
+  // Safety net: attack cards (and dice-roll) shouldn't be player-activated
+  // — they auto-fire. If one is somehow being "played", treat it the same
+  // as a normal play (so it doesn't get stuck), but the UI shouldn't have
+  // surfaced a Play button for it in the first place.
+
+  // Remove from hand + push into the recent-history list so the player
+  // can still review what they played.
+  const nextHand = [...state.myHand.slice(0, idx), ...state.myHand.slice(idx + 1)];
+  const nextHistory = [card, ...state.cardDrawHistory].slice(0, 5);
+  useGameStore.setState({ myHand: nextHand, cardDrawHistory: nextHistory });
+
+  const target = getCardTarget(state.mode, card);
+  applyEffect(card.id, target);
 }
 
 export function applyCardFromSocket(cardId: string, target: EffectTarget): void {
   applyEffect(cardId, target);
 }
 
-if (import.meta.env.DEV) {
+if (import.meta.env.DEV && typeof window !== 'undefined') {
   const w = window as unknown as {
     __testCard: (id: string) => void;
     __testCardList: () => string[];
