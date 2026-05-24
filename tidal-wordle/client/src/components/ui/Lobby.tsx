@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import WaveScene from '../scene/WaveScene';
 import { useSocket } from '../../hooks/useSocket';
-import { useGameStore } from '../../stores/gameStore';
 import { useMultiplayerStore } from '../../stores/multiplayerStore';
 
 interface LobbyProps {
@@ -11,26 +10,42 @@ interface LobbyProps {
 
 type Tab = 'create' | 'join';
 
-export default function Lobby({ onJoined, onBack }: LobbyProps) {
+export default function Lobby({ onBack }: LobbyProps) {
   const { connect, createRoom, joinRoom } = useSocket();
   const [tab, setTab] = useState<Tab>('create');
   const [code, setCode] = useState('');
-  const roomCode = useGameStore((s) => s.roomCode);
-  const answerLength = useGameStore((s) => s.answerLength);
+  const [copied, setCopied] = useState(false);
+  const roomCode = useMultiplayerStore((s) => s.roomCode);
   const status = useMultiplayerStore((s) => s.connectionStatus);
+  const lobbyStatus = useMultiplayerStore((s) => s.lobbyStatus);
+  const lobbyError = useMultiplayerStore((s) => s.lobbyError);
+  const setLobbyError = useMultiplayerStore((s) => s.setLobbyError);
 
   useEffect(() => {
     connect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Server emits game:start once two players are present. Bridge sets
-  // answerLength on the store, which is our cue to jump into the game.
+  // Auto-dismiss lobby error after 4s.
   useEffect(() => {
-    if (answerLength !== null) onJoined();
-  }, [answerLength, onJoined]);
+    if (!lobbyError) return;
+    const t = setTimeout(() => setLobbyError(null), 4000);
+    return () => clearTimeout(t);
+  }, [lobbyError, setLobbyError]);
 
-  const waitingForOpponent = tab === 'create' && roomCode && answerLength === null;
+  const waitingForOpponent =
+    tab === 'create' && roomCode && lobbyStatus === 'waitingForOpponent';
+
+  async function copyRoomCode() {
+    if (!roomCode) return;
+    try {
+      await navigator.clipboard.writeText(roomCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      /* clipboard may be unavailable; non-fatal */
+    }
+  }
 
   return (
     <div className="relative h-full w-full overflow-hidden text-white">
@@ -82,9 +97,16 @@ export default function Lobby({ onJoined, onBack }: LobbyProps) {
                     <div className="text-xs uppercase tracking-widest opacity-70 mb-1">
                       Share this code
                     </div>
-                    <div className="text-4xl font-extrabold tracking-[0.4em] text-sand bg-black/30 rounded-lg py-3 mb-2">
+                    <button
+                      onClick={copyRoomCode}
+                      className="w-full text-4xl font-extrabold tracking-[0.4em] text-sand bg-black/30 rounded-lg py-3 mb-2 hover:bg-black/40 transition relative group"
+                      title="Click to copy"
+                    >
                       {roomCode}
-                    </div>
+                      <span className="absolute top-1 right-2 text-[10px] tracking-widest font-mono text-sand/70 group-hover:text-sand">
+                        {copied ? 'COPIED' : 'COPY'}
+                      </span>
+                    </button>
                     {waitingForOpponent && (
                       <div className="text-sm opacity-80 italic flex items-center justify-center gap-2">
                         <span className="inline-block w-2 h-2 rounded-full bg-seafoam animate-pulse" />
@@ -118,6 +140,10 @@ export default function Lobby({ onJoined, onBack }: LobbyProps) {
           </div>
         </div>
 
+        <p className="text-[11px] opacity-50 italic">
+          Refreshing the page will exit the match.
+        </p>
+
         <button
           onClick={onBack}
           className="text-sm opacity-70 hover:opacity-100 underline transition"
@@ -125,6 +151,15 @@ export default function Lobby({ onJoined, onBack }: LobbyProps) {
           ← Back to menu
         </button>
       </div>
+
+      {/* Transient error toast */}
+      {lobbyError && (
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 bg-coral/90 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-lg border border-coral animate-pulse">
+          {lobbyError.type === 'full'
+            ? `Room ${lobbyError.roomCode} is full.`
+            : `Room ${lobbyError.roomCode} not found.`}
+        </div>
+      )}
     </div>
   );
 }

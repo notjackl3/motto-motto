@@ -1,0 +1,32 @@
+# Template fly.toml — copy this to `fly.toml` and edit before deploying.
+#   cp fly.toml.example fly.toml
+#
+# Required edits:
+#   - `app` must be globally unique on Fly. Pick something like
+#     "tidal-wordle-<yourname>-server".
+#   - `primary_region` should be the airport code closest to your players
+#     (e.g. sjc=San Jose, lax=LA, sea=Seattle, ord=Chicago, iad=Virginia).
+#     Full list: https://fly.io/docs/reference/regions/
+
+app = "tidal-wordle-server"
+primary_region = "sjc"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  # CLIENT_ORIGIN is set as a secret after the Vercel URL is known:
+  #   fly secrets set CLIENT_ORIGIN=https://<your-app>.vercel.app -a <app>
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"   # suspend after idle (cheaper)
+  auto_start_machines = true    # wake on first connection
+  min_machines_running = 0      # bump to 1 to skip cold starts (~$2/mo)
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256

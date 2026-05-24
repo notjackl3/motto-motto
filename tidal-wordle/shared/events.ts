@@ -1,32 +1,66 @@
-export const SocketEvents = {
-  RoomCreate: 'room:create',
-  RoomCreated: 'room:created',
-  RoomJoin: 'room:join',
-  RoomJoined: 'room:joined',
-  RoomFull: 'room:full',
-  RoomNotFound: 'room:notFound',
-  GameStart: 'game:start',
-  GameGuess: 'game:guess',
-  GameCardPlayed: 'game:cardPlayed',
-  GameCooldownViolation: 'game:cooldownViolation',
-  GameRoundEnd: 'game:roundEnd',
-  GameMatchEnd: 'game:matchEnd',
-  OpponentLeft: 'opponent:left',
+// Wire-protocol contract between client and server.
+// Both sides import the Events constant + payload types from here.
+//
+// Naming:
+//   - Client → server events are emitted with the same string the server
+//     listens on (Socket.IO uses event names, not directions).
+//   - Server → client events are usually a sibling string (e.g. ROOM_CREATE
+//     in, ROOM_CREATED out). The Events const lists all of them flat.
+
+export const Events = {
+  // Lobby / room lifecycle
+  ROOM_CREATE: 'room:create',
+  ROOM_CREATED: 'room:created',
+  ROOM_JOIN: 'room:join',
+  ROOM_JOINED: 'room:joined',
+  ROOM_FULL: 'room:full',
+  ROOM_NOT_FOUND: 'room:notFound',
+  // Match flow
+  GAME_START: 'game:start',
+  GAME_GUESS: 'game:guess', // client → server
+  GAME_GUESS_RESULT: 'game:guessResult', // server → both clients
+  GAME_INVALID_GUESS: 'game:invalidGuess',
+  GAME_COOLDOWN_VIOLATION: 'game:cooldownViolation',
+  GAME_CARD_PLAYED: 'game:cardPlayed', // client → server
+  GAME_CARD_EFFECT: 'game:cardEffect', // server → both clients
+  GAME_ROUND_END: 'game:roundEnd',
+  GAME_NEXT_ROUND: 'game:nextRound',
+  GAME_MATCH_END: 'game:matchEnd',
+  OPPONENT_LEFT: 'opponent:left',
 } as const;
 
-export type SocketEventName = (typeof SocketEvents)[keyof typeof SocketEvents];
+export type EventName = (typeof Events)[keyof typeof Events];
 
-// 3 seconds between guesses per player. Server is authoritative; clients
-// should mirror this for their optimistic cooldown display.
+// Back-compat alias so any straggler import that still references
+// SocketEvents keeps compiling while we finish the rewrite. Remove later.
+export const SocketEvents = {
+  RoomCreate: Events.ROOM_CREATE,
+  RoomCreated: Events.ROOM_CREATED,
+  RoomJoin: Events.ROOM_JOIN,
+  RoomJoined: Events.ROOM_JOINED,
+  RoomFull: Events.ROOM_FULL,
+  RoomNotFound: Events.ROOM_NOT_FOUND,
+  GameStart: Events.GAME_START,
+  GameGuess: Events.GAME_GUESS,
+  GameCardPlayed: Events.GAME_CARD_PLAYED,
+  GameCooldownViolation: Events.GAME_COOLDOWN_VIOLATION,
+  GameRoundEnd: Events.GAME_ROUND_END,
+  GameMatchEnd: Events.GAME_MATCH_END,
+  OpponentLeft: Events.OPPONENT_LEFT,
+} as const;
+
+// ----- Tuning constants -----
+
 export const GUESS_COOLDOWN_MS = 3000;
-
-// Best of 3 = first to win 2 rounds.
-export const ROUNDS_TO_WIN = 2;
-
-// Delay between a correct guess and the next round.
+export const ROUNDS_TO_WIN = 2; // best of 3
 export const ROUND_TRANSITION_MS = 5000;
+export const DISCONNECT_GRACE_MS = 30_000;
+export const MATCH_END_PERSIST_MS = 60_000;
+export const ROOM_INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
 
-// ----- Payload types shared across the wire -----
+// ----- Wire types -----
+
+export type Role = 'host' | 'guest';
 
 export type WireLetterState = 'correct' | 'present' | 'absent';
 
@@ -35,58 +69,94 @@ export interface WireLetterResult {
   state: WireLetterState;
 }
 
+// ROOM_CREATED → host
 export interface RoomCreatedPayload {
   roomId: string;
+  role: 'host';
 }
 
+// ROOM_JOINED → both players (per-recipient)
 export interface RoomJoinedPayload {
   roomId: string;
-  isHost: boolean;
-  playerCount: number;
+  role: Role;
+  playerCount: number; // 1 if just host present, 2 once guest joined
 }
 
+export interface RoomFullPayload {
+  roomId: string;
+}
+export interface RoomNotFoundPayload {
+  roomId: string;
+}
+
+// GAME_START → both players (per-recipient: yourRole differs)
 export interface GameStartPayload {
-  answerLength: number;
-  roundIndex: number;
-  // Authoritative match score so a late-joining client can render correctly.
-  matchScore: { me: number; opponent: number };
+  roundNumber: number; // 1, 2, or 3
+  yourRole: Role;
+  opponentName: string; // "Opponent" default; future: user-set
 }
 
-export interface GameGuessPayload {
-  playerId: string; // socket id
-  fromSelf: boolean; // server fills this per-recipient
+// GAME_GUESS (client → server)
+export interface GameGuessInbound {
+  guess: string;
+}
+
+// GAME_GUESS_RESULT → both players
+export interface GameGuessResultPayload {
+  role: Role; // who guessed
   guess: string;
   evaluation: WireLetterResult[];
   isCorrect: boolean;
   cooldownEndsAt: number;
+  answerLength: number; // first-guess-reveals-length to both
   timestamp: number;
 }
 
-export interface GameCardPlayedPayload {
-  playerId: string;
-  fromSelf: boolean;
-  cardId: string;
-  target: 'self' | 'opponent';
-  timestamp: number;
+export interface GameInvalidGuessPayload {
+  reason: 'length' | 'unknown';
+  expectedLength?: number;
 }
 
 export interface GameCooldownViolationPayload {
   cooldownEndsAt: number;
 }
 
+// GAME_CARD_PLAYED (client → server)
+export interface GameCardPlayedInbound {
+  cardId: string;
+  target: 'self' | 'opponent' | 'both';
+}
+
+// GAME_CARD_EFFECT → both players
+export interface GameCardEffectPayload {
+  sourceRole: Role;
+  cardId: string;
+  affectedRole: Role | 'both';
+  timestamp: number;
+}
+
+// GAME_ROUND_END → both players
 export interface GameRoundEndPayload {
-  winner: 'me' | 'opponent' | null;
+  winner: Role | null; // null if the round ended without a solve (timeout etc.)
   answer: string;
-  roundIndex: number;
-  matchScore: { me: number; opponent: number };
-  nextRoundAt: number | null;
+  roundNumber: number;
+  roundsWon: { host: number; guest: number };
+  nextRoundAt: number | null; // null when match ended
 }
 
+// GAME_NEXT_ROUND → both players
+export interface GameNextRoundPayload {
+  roundNumber: number;
+}
+
+// GAME_MATCH_END → both players
 export interface GameMatchEndPayload {
-  winner: 'me' | 'opponent' | null;
-  matchScore: { me: number; opponent: number };
+  winner: Role;
+  roundsWon: { host: number; guest: number };
 }
 
+// OPPONENT_LEFT → remaining player
 export interface OpponentLeftPayload {
   reason: 'disconnect' | 'leave';
+  graceMs: number; // window for opponent to reconnect before room is torn down
 }

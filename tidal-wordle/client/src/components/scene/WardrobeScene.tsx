@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import SkyAndLighting from './SkyAndLighting';
 import Wave from './Wave';
+import BoardParticles from './BoardParticles';
 import {
   getBoard,
   getHat,
@@ -30,9 +31,47 @@ import { ambientMusic, unlockAudio } from '../../lib/audio';
 // buttons can be placed on top. No drei <Text>, no <Html> inside the Canvas
 // — that combination broke the previous attempt.
 
-export default function WardrobeScene() {
+export type WardrobeFocus = 'overview' | 'shirt' | 'shorts' | 'board' | 'hat';
+
+interface Props {
+  focus: WardrobeFocus;
+  onResetFocus: () => void;
+}
+
+export default function WardrobeScene({ focus, onResetFocus }: Props) {
   const musicSwapActive = useGameStore((s) => s.musicSwapActive);
   const musicMuted = useGameStore((s) => s.musicMuted);
+
+  // Cursor-drag spins the mannequin around its Y axis. A click (no
+  // meaningful drag distance) resets the camera focus to overview, so the
+  // user can "press away" from a zoomed-in tab to see the whole character.
+  const [yaw, setYaw] = useState(0);
+  const dragRef = useRef<{
+    startX: number;
+    startYaw: number;
+    moved: boolean;
+  } | null>(null);
+
+  function handlePointerDown(e: React.PointerEvent) {
+    (e.target as Element).setPointerCapture?.(e.pointerId);
+    dragRef.current = { startX: e.clientX, startYaw: yaw, moved: false };
+  }
+  function handlePointerMove(e: React.PointerEvent) {
+    if (!dragRef.current) return;
+    const dx = e.clientX - dragRef.current.startX;
+    if (Math.abs(dx) > 4) dragRef.current.moved = true;
+    setYaw(dragRef.current.startYaw + dx * 0.012);
+  }
+  function handlePointerUp(e: React.PointerEvent) {
+    const drag = dragRef.current;
+    dragRef.current = null;
+    (e.target as Element).releasePointerCapture?.(e.pointerId);
+    // A pointerup without significant horizontal drag counts as a click
+    // — treat it as "press away" to return the camera to the overview pose.
+    if (drag && !drag.moved && focus !== 'overview') {
+      onResetFocus();
+    }
+  }
 
   useEffect(() => {
     ambientMusic()?.start();
@@ -50,12 +89,20 @@ export default function WardrobeScene() {
   }, []);
 
   return (
-    <div className="absolute inset-0">
+    <div
+      className="absolute inset-0"
+      style={{ cursor: 'grab', touchAction: 'none' }}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
+    >
       <Canvas
         shadows="soft"
         gl={{ antialias: true, alpha: false }}
-        camera={{ position: [0, 3.5, 9.5], fov: 50 }}
+        camera={{ position: [0, 2.4, 7.0], fov: 42 }}
       >
+        <CameraController focus={focus} />
         <SkyAndLighting />
         <Wave />
         <Clouds />
@@ -69,8 +116,8 @@ export default function WardrobeScene() {
         <PalmTree position={[5.0, -1, -0.5]} sway={-0.07} />
         <PalmTree position={[-3.0, -1, 3.0]} sway={0.04} />
 
-        {/* Mannequin centered on the island. */}
-        <Mannequin />
+        {/* Mannequin centered on the island — driven by cursor-drag yaw. */}
+        <Mannequin focus={focus} yaw={yaw} />
 
         {/* Wooden sign post on the LEFT — 3D backing for the HTML buttons. */}
         <SignPost />
@@ -80,6 +127,59 @@ export default function WardrobeScene() {
       </Canvas>
     </div>
   );
+}
+
+// ---------- Camera controller ----------
+//
+// Lerps the camera position + lookAt target whenever `focus` changes. The
+// overview pose frames the whole island; each other focus zooms in on a
+// specific body part. The mannequin is at world (0, 1.2, 0) (after a scale
+// of 2.0 brings its feet to the island top at y=-0.8).
+//
+// World-space anchor points (mannequin scale 2.0, mannequin pos y=1.2):
+//   feet     ~ y = -0.8
+//   knees    ~ y = -0.2
+//   waist    ~ y =  0.9
+//   chest    ~ y =  1.8
+//   head     ~ y =  3.0
+//   board    ~ at x≈1.8, y≈1.0..2.6
+//
+// Camera positions chosen so the targeted area fills most of the frame.
+// For each zoom focus we put camera.Y === lookAt.Y so the targeted body
+// part lands at the exact vertical center (no downward tilt that would
+// push the character to the top of the frame).
+
+const FOCUS_POSES: Record<
+  WardrobeFocus,
+  { pos: [number, number, number]; look: [number, number, number] }
+> = {
+  overview: { pos: [0, 1.6, 7.5], look: [0, 1.3, 0] },
+  hat: { pos: [0, 3.04, 3.2], look: [0, 3.04, 0] },
+  shirt: { pos: [0, 1.76, 3.4], look: [0, 1.76, 0] },
+  shorts: { pos: [0, 0.05, 3.6], look: [0, 0.05, 0] },
+  board: { pos: [3.8, 1.1, 2.4], look: [1.8, 1.1, 0] },
+};
+
+function CameraController({ focus }: { focus: WardrobeFocus }) {
+  const { camera } = useThree();
+  const targetPos = useRef(new THREE.Vector3(...FOCUS_POSES.overview.pos));
+  const targetLook = useRef(new THREE.Vector3(...FOCUS_POSES.overview.look));
+  const currentLook = useRef(new THREE.Vector3(...FOCUS_POSES.overview.look));
+
+  // Update target when focus changes.
+  useEffect(() => {
+    const p = FOCUS_POSES[focus];
+    targetPos.current.set(...p.pos);
+    targetLook.current.set(...p.look);
+  }, [focus]);
+
+  useFrame(() => {
+    camera.position.lerp(targetPos.current, 0.08);
+    currentLook.current.lerp(targetLook.current, 0.08);
+    camera.lookAt(currentLook.current);
+  });
+
+  return null;
 }
 
 // ---------- Island ----------
@@ -186,6 +286,16 @@ function DistantSailboat() {
 }
 
 // ---------- Palm tree ----------
+//
+// Smooth tapered trunk + leaf-shaped fronds.
+// Trunk: single tall cylinder, narrower at top than base. A handful of dark
+// torus rings give it the segmented palm look without breaking continuity.
+// Fronds: each is a stem (thin cylinder) + a flat blade (cone flattened in
+// Z). Eight fronds radiate around the crown, drooping outward and down.
+
+const PALM_TRUNK_HEIGHT = 5.0;
+const PALM_BASE_R = 0.32;
+const PALM_TOP_R = 0.16;
 
 function PalmTree({
   position,
@@ -200,56 +310,106 @@ function PalmTree({
     const t = state.clock.elapsedTime;
     ref.current.rotation.z = Math.sin(t * 0.7 + position[0]) * sway;
   });
-  const segs = 5;
   return (
     <group ref={ref} position={position}>
-      {Array.from({ length: segs }).map((_, i) => (
-        <mesh
-          key={i}
-          position={[Math.sin(i * 0.4) * 0.1, i * 0.85, 0]}
-          rotation={[0, 0, Math.sin(i * 0.4) * 0.05]}
-          castShadow
-        >
-          <cylinderGeometry args={[0.16 - i * 0.015, 0.18 - i * 0.015, 0.9, 8]} />
-          <meshStandardMaterial color="#7a4d24" flatShading />
-        </mesh>
-      ))}
-      {/* Crown */}
-      <group position={[0, segs * 0.85 + 0.05, 0]}>
-        {/* Coconuts */}
+      {/* Smooth tapered trunk. */}
+      <mesh position={[0, PALM_TRUNK_HEIGHT / 2, 0]} castShadow>
+        <cylinderGeometry
+          args={[PALM_TOP_R, PALM_BASE_R, PALM_TRUNK_HEIGHT, 12]}
+        />
+        <meshStandardMaterial color="#8a5a2a" flatShading />
+      </mesh>
+      {/* Decorative bark rings — dark thin tori up the trunk. */}
+      {Array.from({ length: 7 }).map((_, i) => {
+        const y = 0.45 + i * 0.6;
+        // Interpolate radius along the taper.
+        const r =
+          PALM_BASE_R -
+          ((PALM_BASE_R - PALM_TOP_R) * y) / PALM_TRUNK_HEIGHT +
+          0.01;
+        return (
+          <mesh key={i} position={[0, y, 0]} rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[r, 0.03, 4, 14]} />
+            <meshStandardMaterial color="#5a3a1a" flatShading />
+          </mesh>
+        );
+      })}
+      {/* Crown — coconuts + fronds. */}
+      <group position={[0, PALM_TRUNK_HEIGHT, 0]}>
         {[
-          [-0.12, 0, 0.05],
-          [0.12, 0, -0.05],
-          [0, 0.05, -0.12],
+          [-0.18, -0.1, 0.12],
+          [0.16, -0.08, -0.05],
+          [0.02, -0.02, -0.18],
+          [0.1, -0.12, 0.16],
         ].map((p, i) => (
           <mesh key={i} position={p as [number, number, number]} castShadow>
-            <sphereGeometry args={[0.1, 8, 8]} />
+            <sphereGeometry args={[0.13, 8, 8]} />
             <meshStandardMaterial color="#3a2a1a" flatShading />
           </mesh>
         ))}
-        {/* Fronds */}
-        {Array.from({ length: 7 }).map((_, i) => {
-          const angle = (i / 7) * Math.PI * 2;
-          return (
-            <mesh
-              key={i}
-              position={[Math.cos(angle) * 0.4, 0.05, Math.sin(angle) * 0.4]}
-              rotation={[Math.sin(angle) * 0.6, angle, Math.cos(angle) * 0.6 - 0.5]}
-              castShadow
-            >
-              <coneGeometry args={[0.22, 1.4, 4]} />
-              <meshStandardMaterial color="#3a8a3a" flatShading />
-            </mesh>
-          );
+        {Array.from({ length: 8 }).map((_, i) => {
+          const angle = (i / 8) * Math.PI * 2;
+          return <Frond key={i} angle={angle} />;
         })}
       </group>
     </group>
   );
 }
 
+function Frond({ angle }: { angle: number }) {
+  // Each frond points radially OUTWARD from the crown along +X in its local
+  // frame, after rotating by `angle` around the Y axis. The blade tilts
+  // downward (-Z rotation) for a natural droop. The blade is a cone
+  // flattened in Z to read as a flat leaf rather than a spike.
+  return (
+    <group rotation={[0, angle, 0]}>
+      {/* Stem — short cylinder anchoring the frond to the crown. */}
+      <mesh
+        position={[0.45, -0.05, 0]}
+        rotation={[0, 0, -Math.PI / 2 - 0.25]}
+        castShadow
+      >
+        <cylinderGeometry args={[0.025, 0.05, 0.9, 6]} />
+        <meshStandardMaterial color="#5a6a2a" flatShading />
+      </mesh>
+      {/* Blade — flattened cone, drooping outward and slightly down. */}
+      <mesh
+        position={[1.1, -0.25, 0]}
+        rotation={[0, 0, -Math.PI / 2 - 0.45]}
+        scale={[1.0, 1.0, 0.18]}
+        castShadow
+      >
+        <coneGeometry args={[0.32, 1.8, 8]} />
+        <meshStandardMaterial color="#3a8a3a" flatShading />
+      </mesh>
+      {/* Darker midrib stripe down the leaf. */}
+      <mesh
+        position={[1.1, -0.25, 0]}
+        rotation={[0, 0, -Math.PI / 2 - 0.45]}
+        castShadow
+      >
+        <boxGeometry args={[0.025, 1.7, 0.025]} />
+        <meshStandardMaterial color="#2a6a2a" flatShading />
+      </mesh>
+    </group>
+  );
+}
+
 // ---------- Mannequin (standing, holding upright board) ----------
 
-function Mannequin() {
+const MANNEQUIN_SCALE = 2.0;
+// Feet at local y=-1 inside the mannequin group. After scaling, feet sit at
+// world y = MANNEQUIN_Y - MANNEQUIN_SCALE. Island top is at y=-0.8, so we
+// pick MANNEQUIN_Y so feet land exactly there: y = -0.8 + scale = 1.2.
+const MANNEQUIN_Y = -0.8 + MANNEQUIN_SCALE;
+
+function Mannequin({
+  focus,
+  yaw,
+}: {
+  focus: WardrobeFocus;
+  yaw: number;
+}) {
   const ref = useRef<THREE.Group>(null);
 
   const shirt = getShirt(useAppearanceStore((s) => s.shirtId));
@@ -257,18 +417,23 @@ function Mannequin() {
   const board = getBoard(useAppearanceStore((s) => s.boardId));
   const hat = getHat(useAppearanceStore((s) => s.hatId));
 
+  // Mannequin rotation is fully user-controlled (cursor-drag yaw from
+  // WardrobeScene). A subtle vertical bob gives it some life.
   useFrame((state) => {
+    if (!ref.current) return;
     const t = state.clock.elapsedTime;
-    if (ref.current) {
-      ref.current.rotation.y = t * 0.25;
-      ref.current.position.y = 0.6 + Math.sin(t * 1.0) * 0.02;
-    }
+    ref.current.rotation.y = yaw;
+    ref.current.position.y = MANNEQUIN_Y + Math.sin(t * 1.0) * 0.02;
   });
 
   const SKIN = '#f0caa0';
 
   return (
-    <group ref={ref} position={[0, 0.6, 0]}>
+    <group
+      ref={ref}
+      position={[0, MANNEQUIN_Y, 0]}
+      scale={MANNEQUIN_SCALE}
+    >
       {/* Wooden turntable */}
       <mesh position={[0, -1.06, 0]} receiveShadow castShadow>
         <cylinderGeometry args={[1.0, 1.0, 0.12, 24]} />
@@ -326,6 +491,8 @@ function Mannequin() {
       {/* Surfboard upright next to surfer */}
       <group position={[0.9, -0.05, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <BoardMesh board={board} />
+        {/* Particle effects play only when the BOARD tab is focused. */}
+        <BoardParticles board={board} active={focus === 'board'} />
       </group>
     </group>
   );
@@ -442,67 +609,101 @@ function TorsoPattern({ shirt }: { shirt: ShirtOption }) {
   return null;
 }
 
+// Arm joints are defined by 3 endpoints (shoulder, elbow, hand). The Limb
+// helper builds a cylinder that precisely connects two endpoints (correct
+// length, correct rotation), and a sphere at each joint hides the seam.
+// This is far more reliable than hand-positioning + rotating cylinders.
+
 function Arms({ shirt, skin }: { shirt: ShirtOption; skin: string }) {
   const isTank = shirt.cut === 'tank';
   const isRashguard = shirt.cut === 'rashguard';
+
+  // Shoulders anchored INSIDE the torso top (torso top is at local y ~0.6).
+  const LShoulder: [number, number, number] = [-0.26, 0.55, 0];
+  const LElbow: [number, number, number] = [-0.3, 0.05, 0];
+  const LHand: [number, number, number] = [-0.34, -0.45, 0];
+
+  // Right arm reaches up-out to rest the hand on the board's top edge.
+  // Board sub-group sits at local (0.9, -0.05, 0) and stands vertical,
+  // so the board's top in mannequin-local coords is roughly (0.9, ~0.95, 0).
+  const RShoulder: [number, number, number] = [0.26, 0.55, 0];
+  const RElbow: [number, number, number] = [0.55, 0.3, 0];
+  const RHand: [number, number, number] = [0.85, 0.85, 0];
+
+  const upperColor = isTank ? skin : shirt.color;
+  const lowerColor = isRashguard ? shirt.color : skin;
+
   return (
     <group>
-      {/* LEFT arm, hangs at side */}
-      <mesh position={[-0.32, 0.5, 0]} castShadow>
-        <sphereGeometry args={[0.1, 12, 10]} />
-        <meshStandardMaterial color={isTank ? skin : shirt.color} flatShading />
-      </mesh>
-      {!isTank && (
-        <mesh position={[-0.34, 0.22, 0]} castShadow>
-          <cylinderGeometry args={[0.085, 0.08, isRashguard ? 0.55 : 0.3, 10]} />
-          <meshStandardMaterial color={shirt.color} flatShading />
-        </mesh>
-      )}
-      <mesh
-        position={[-0.36, isRashguard ? -0.18 : isTank ? 0.18 : -0.05, 0]}
-        castShadow
-      >
-        <cylinderGeometry
-          args={[0.08, 0.078, isRashguard ? 0.32 : isTank ? 0.7 : 0.4, 10]}
-        />
-        <meshStandardMaterial color={skin} flatShading />
-      </mesh>
-      <mesh position={[-0.36, -0.42, 0]} castShadow>
-        <sphereGeometry args={[0.09, 12, 10]} />
-        <meshStandardMaterial color={skin} flatShading />
-      </mesh>
+      {/* LEFT arm */}
+      <Joint position={LShoulder} radius={0.13} color={upperColor} />
+      <Limb from={LShoulder} to={LElbow} radius={0.095} color={upperColor} />
+      <Joint position={LElbow} radius={0.09} color={lowerColor} />
+      <Limb from={LElbow} to={LHand} radius={0.085} color={lowerColor} />
+      <Joint position={LHand} radius={0.1} color={skin} />
 
-      {/* RIGHT arm bent up, hand on top of vertical board */}
-      <mesh position={[0.32, 0.5, 0]} castShadow>
-        <sphereGeometry args={[0.1, 12, 10]} />
-        <meshStandardMaterial color={isTank ? skin : shirt.color} flatShading />
-      </mesh>
-      {/* Upper arm angled out */}
-      <mesh position={[0.44, 0.4, 0]} rotation={[0, 0, -0.6]} castShadow>
-        <cylinderGeometry args={[0.085, 0.08, 0.3, 10]} />
-        <meshStandardMaterial color={isTank ? skin : shirt.color} flatShading />
-      </mesh>
-      {/* Elbow */}
-      <mesh position={[0.6, 0.3, 0]} castShadow>
-        <sphereGeometry args={[0.08, 10, 10]} />
-        <meshStandardMaterial
-          color={isRashguard ? shirt.color : skin}
-          flatShading
-        />
-      </mesh>
-      {/* Forearm up-out */}
-      <mesh position={[0.75, 0.55, 0]} rotation={[0, 0, -0.6]} castShadow>
-        <cylinderGeometry args={[0.075, 0.075, 0.5, 10]} />
-        <meshStandardMaterial
-          color={isRashguard ? shirt.color : skin}
-          flatShading
-        />
-      </mesh>
-      <mesh position={[0.88, 0.78, 0]} castShadow>
-        <sphereGeometry args={[0.09, 12, 10]} />
-        <meshStandardMaterial color={skin} flatShading />
-      </mesh>
+      {/* RIGHT arm */}
+      <Joint position={RShoulder} radius={0.13} color={upperColor} />
+      <Limb from={RShoulder} to={RElbow} radius={0.095} color={upperColor} />
+      <Joint position={RElbow} radius={0.09} color={lowerColor} />
+      <Limb from={RElbow} to={RHand} radius={0.085} color={lowerColor} />
+      <Joint position={RHand} radius={0.1} color={skin} />
     </group>
+  );
+}
+
+function Joint({
+  position,
+  radius,
+  color,
+}: {
+  position: [number, number, number];
+  radius: number;
+  color: string;
+}) {
+  return (
+    <mesh position={position} castShadow>
+      <sphereGeometry args={[radius, 14, 12]} />
+      <meshStandardMaterial color={color} flatShading />
+    </mesh>
+  );
+}
+
+function Limb({
+  from,
+  to,
+  radius,
+  color,
+}: {
+  from: [number, number, number];
+  to: [number, number, number];
+  radius: number;
+  color: string;
+}) {
+  const { position, rotation, length } = useMemo(() => {
+    const a = new THREE.Vector3(...from);
+    const b = new THREE.Vector3(...to);
+    const dir = b.clone().sub(a);
+    const len = dir.length();
+    dir.normalize();
+    const q = new THREE.Quaternion().setFromUnitVectors(
+      new THREE.Vector3(0, 1, 0),
+      dir,
+    );
+    const e = new THREE.Euler().setFromQuaternion(q);
+    const mid = a.clone().add(b).multiplyScalar(0.5);
+    return {
+      position: mid.toArray() as [number, number, number],
+      rotation: [e.x, e.y, e.z] as [number, number, number],
+      length: len,
+    };
+  }, [from, to]);
+
+  return (
+    <mesh position={position} rotation={rotation} castShadow>
+      <cylinderGeometry args={[radius, radius * 1.05, length, 12]} />
+      <meshStandardMaterial color={color} flatShading />
+    </mesh>
   );
 }
 
@@ -570,56 +771,124 @@ function Hat({ hat }: { hat: HatOption }) {
 // ---------- Surfboard ----------
 
 function BoardMesh({ board }: { board: BoardOption }) {
+  // Use ExtrudeGeometry on a 2D surfboard silhouette so the board is one
+  // flat piece (no protruding nose cone). Width along X, length along Y in
+  // the shape; extrusion along Z is the deck thickness. We then internally
+  // rotate the mesh -90° around X so the long axis points along local -Z
+  // (matches the rest of the code's coordinate convention) and the
+  // thickness sits along local Y.
   const isLong = board.shape === 'longboard';
   const isFish = board.shape === 'fish';
   const isGun = board.shape === 'gun';
-  const width = isFish ? 0.62 : isGun ? 0.42 : isLong ? 0.55 : 0.5;
-  const length = isLong ? 2.4 : isGun ? 2.3 : 1.9;
-  const noseLen = isLong ? 0.4 : isGun ? 0.7 : 0.55;
-  const noseRadius = isGun ? 0.13 : isLong ? 0.3 : 0.26;
+  const width = isFish ? 0.7 : isGun ? 0.42 : isLong ? 0.6 : 0.52;
+  const length = isLong ? 2.6 : isGun ? 2.5 : 2.0;
+  const tailWidth = isFish ? width * 0.95 : isGun ? width * 0.55 : width * 0.85;
+  const thickness = 0.07;
+
+  const shape = useMemo(() => {
+    const w = width / 2;
+    const l = length / 2;
+    const tw = tailWidth / 2;
+    const s = new THREE.Shape();
+    // Surfboard outline in 2D: tail at +Y, nose at -Y, width along X.
+    // Sequence: start at tail-left, curve up the left side, sweep around
+    // the nose, come back down the right side, close at tail-right.
+    s.moveTo(-tw, l);
+    // Tail-left -> mid-left
+    s.quadraticCurveTo(-w * 1.02, l * 0.6, -w, 0);
+    // Mid-left -> nose
+    s.quadraticCurveTo(-w * 0.95, -l * 0.65, -w * 0.4, -l * 0.95);
+    // Nose curve
+    s.quadraticCurveTo(0, -l * 1.04, w * 0.4, -l * 0.95);
+    // Nose -> mid-right
+    s.quadraticCurveTo(w * 0.95, -l * 0.65, w, 0);
+    // Mid-right -> tail-right
+    s.quadraticCurveTo(w * 1.02, l * 0.6, tw, l);
+    // Tail edge — fish has a notch, others are straight.
+    if (isFish) {
+      s.lineTo(w * 0.1, l * 0.78);
+      s.lineTo(0, l);
+      s.lineTo(-w * 0.1, l * 0.78);
+      s.lineTo(-tw, l);
+    } else {
+      s.lineTo(-tw, l);
+    }
+    return s;
+  }, [width, length, tailWidth, isFish]);
+
+  const extrudeSettings = useMemo(
+    () => ({ depth: thickness, bevelEnabled: false, steps: 1 }),
+    [],
+  );
+
   return (
     <group>
-      <mesh castShadow>
-        <boxGeometry args={[width, 0.07, length]} />
+      {/* Deck — extruded 2D silhouette, lying flat. The internal
+          rotation [-Math.PI/2, 0, 0] makes shape-Y (length) → mesh -Z and
+          shape-Z (depth) → mesh +Y, matching board-local axes used below. */}
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -thickness / 2, 0]}
+        castShadow
+        receiveShadow
+      >
+        <extrudeGeometry args={[shape, extrudeSettings]} />
         <meshStandardMaterial color={board.deck} flatShading />
       </mesh>
-      <mesh position={[-(width / 2 - 0.04), 0.04, 0]}>
-        <boxGeometry args={[0.04, 0.013, length * 0.85]} />
+
+      {/* Rails — slim accent strips down each side of the deck. */}
+      <mesh position={[-(width / 2 - 0.05), 0.04, 0]}>
+        <boxGeometry args={[0.04, 0.013, length * 0.78]} />
         <meshStandardMaterial color={board.rail} flatShading />
       </mesh>
-      <mesh position={[width / 2 - 0.04, 0.04, 0]}>
-        <boxGeometry args={[0.04, 0.013, length * 0.85]} />
+      <mesh position={[width / 2 - 0.05, 0.04, 0]}>
+        <boxGeometry args={[0.04, 0.013, length * 0.78]} />
         <meshStandardMaterial color={board.rail} flatShading />
       </mesh>
-      <mesh position={[0, 0, -(length / 2 + noseLen / 2 - 0.05)]}>
-        <coneGeometry args={[noseRadius, noseLen, 4]} />
-        <meshStandardMaterial color={board.deck} flatShading />
-      </mesh>
+
+      {/* Center stripe down the deck. */}
       <mesh position={[0, 0.04, 0]}>
-        <boxGeometry args={[0.08, 0.012, length * 0.9]} />
+        <boxGeometry args={[0.08, 0.012, length * 0.78]} />
         <meshStandardMaterial color={board.stripe} flatShading />
       </mesh>
+
       <BoardAccent board={board} length={length} width={width} />
+
+      {/* Fin — a thin flat blade. Stays under the board (in board-local -Y)
+          so when the board stands vertical the fin sticks straight back. */}
       {isFish ? (
-        <group position={[0, -0.04, length / 2 - 0.05]}>
-          <mesh position={[-0.12, 0, 0.08]} rotation={[0, 0.4, 0]}>
-            <coneGeometry args={[0.08, 0.24, 4]} />
+        <group position={[0, -0.05, length / 2 - 0.12]}>
+          <mesh
+            position={[-0.13, 0, 0.06]}
+            rotation={[0, 0.35, 0.1]}
+            castShadow
+          >
+            <boxGeometry args={[0.18, 0.02, 0.05]} />
             <meshStandardMaterial color={board.finColor} flatShading />
           </mesh>
-          <mesh position={[0.12, 0, 0.08]} rotation={[0, -0.4, 0]}>
-            <coneGeometry args={[0.08, 0.24, 4]} />
+          <mesh
+            position={[0.13, 0, 0.06]}
+            rotation={[0, -0.35, -0.1]}
+            castShadow
+          >
+            <boxGeometry args={[0.18, 0.02, 0.05]} />
             <meshStandardMaterial color={board.finColor} flatShading />
           </mesh>
         </group>
       ) : (
-        <mesh position={[0, -0.1, length / 2 - 0.1]}>
-          <coneGeometry args={[0.08, 0.22, 4]} />
+        <mesh
+          position={[0, -0.08, length / 2 - 0.15]}
+          rotation={[0, 0, 0]}
+          castShadow
+        >
+          <boxGeometry args={[0.04, 0.18, 0.08]} />
           <meshStandardMaterial color={board.finColor} flatShading />
         </mesh>
       )}
     </group>
   );
 }
+
 
 function BoardAccent({
   board,

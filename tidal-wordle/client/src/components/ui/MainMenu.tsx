@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import WardrobeScene from '../scene/WardrobeScene';
+import WardrobeScene, { type WardrobeFocus } from '../scene/WardrobeScene';
 import {
   BOARDS,
   HATS,
@@ -36,6 +36,14 @@ type WardrobeTab = 'shirt' | 'shorts' | 'board' | 'hat';
 export default function MainMenu({ onSolo, onMultiplayer }: MainMenuProps) {
   const [showSettings, setShowSettings] = useState(false);
   const [tab, setTab] = useState<WardrobeTab>('shirt');
+  const [focus, setFocus] = useState<WardrobeFocus>('overview');
+
+  function selectTab(t: WardrobeTab) {
+    setTab(t);
+    // Camera zooms into the relevant body part. Re-clicking the active tab
+    // returns to the overview.
+    setFocus((cur) => (cur === t ? 'overview' : t));
+  }
   const musicMuted = useGameStore((s) => s.musicMuted);
   const setMusicMuted = useGameStore((s) => s.setMusicMuted);
 
@@ -56,7 +64,7 @@ export default function MainMenu({ onSolo, onMultiplayer }: MainMenuProps) {
   return (
     <div className="relative h-full w-full overflow-hidden">
       {/* 3D scene fills the entire viewport. */}
-      <WardrobeScene />
+      <WardrobeScene focus={focus} onResetFocus={() => setFocus('overview')} />
 
       {/* LEFT: wooden sign menu — sits over the 3D sign post. */}
       <div className="absolute left-[5%] top-[14%] z-10 flex flex-col gap-3 items-start pointer-events-auto">
@@ -118,10 +126,10 @@ export default function MainMenu({ onSolo, onMultiplayer }: MainMenuProps) {
             className="flex border-b-2"
             style={{ backgroundColor: '#a07a52', borderColor: '#7a4d24' }}
           >
-            <Tab label="SHIRT" active={tab === 'shirt'} onClick={() => setTab('shirt')} />
-            <Tab label="SHORTS" active={tab === 'shorts'} onClick={() => setTab('shorts')} />
-            <Tab label="BOARD" active={tab === 'board'} onClick={() => setTab('board')} />
-            <Tab label="HAT" active={tab === 'hat'} onClick={() => setTab('hat')} />
+            <Tab label="SHIRT" active={tab === 'shirt'} onClick={() => selectTab('shirt')} />
+            <Tab label="SHORTS" active={tab === 'shorts'} onClick={() => selectTab('shorts')} />
+            <Tab label="BOARD" active={tab === 'board'} onClick={() => selectTab('board')} />
+            <Tab label="HAT" active={tab === 'hat'} onClick={() => selectTab('hat')} />
           </div>
 
           <div className="p-4" style={{ backgroundColor: '#f4e1c1' }}>

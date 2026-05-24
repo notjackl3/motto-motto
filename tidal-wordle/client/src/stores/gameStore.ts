@@ -95,6 +95,8 @@ interface GameStoreState {
   opponentGuesses: Guess[];
   myCooldownEndsAt: number | null;
   opponentCooldownEndsAt: number | null;
+  /** Dev B: set true when server emits opponent:left; UI shows a 30s modal. */
+  opponentLeft: boolean;
   myHand: import('../types').Card[];
   activeEffects: ActiveEffect[];
   roundScore: { me: number; opponent: number };
@@ -162,6 +164,27 @@ interface GameStoreState {
   resetMatch: () => void;
   setMyCooldownEndsAt: (at: number | null) => void;
   clearDistractionBlock: () => void;
+
+  // ---- Dev B: multiplayer bridge surface ----
+  /** Append a server-evaluated opponent guess. */
+  addOpponentGuess: (guess: Guess) => void;
+  /** Append a server-evaluated self guess; idempotent on word. */
+  addMyGuess: (guess: Guess) => void;
+  /** Server-authoritative opponent cooldown end timestamp. */
+  setOpponentCooldownEndsAt: (at: number | null) => void;
+  setAnswerLengthFromServer: (length: number) => void;
+  setOpponentLeft: (left: boolean) => void;
+  /**
+   * Pre-check + emit path used by multiplayer. Returns the same shape as
+   * submitGuess but skips local evaluation entirely — server is authoritative.
+   * The actual socket emit happens in useSocket; this just gates on local
+   * cooldown / lock / round-over state.
+   */
+  multiplayerSubmitGuess: (word: string) => SubmitGuessResult;
+  /** Called from the multiplayer bridge when the server signals round end. */
+  applyRemoteRoundEnd: (winner: 'me' | 'opponent', answer: string) => void;
+  /** Called from the multiplayer bridge when server signals next round. */
+  applyRemoteNextRound: (roundNumber: number) => void;
 }
 
 const initialRoundState = {
@@ -222,6 +245,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   distractionBlocking: false,
   musicMuted: false,
   roomCode: null,
+  opponentLeft: false,
 
   setMode: (mode) => set({ mode }),
   setMusicMuted: (musicMuted) => set({ musicMuted }),
@@ -445,7 +469,9 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
 
     setTimeout(() => {
       const s = get();
-      if (!s.matchWinner && s.roundBanner) {
+      // Dev B note: in multiplayer the server picks the next word and we
+      // wait for GAME_NEXT_ROUND to reset — don't auto-restart locally.
+      if (!s.matchWinner && s.roundBanner && s.mode !== 'multiplayer') {
         get().dismissRoundBanner();
         get().startRound();
       }
@@ -485,4 +511,74 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
 
   clearDistractionBlock: () =>
     set({ distractionBlocking: false, inputLocked: false }),
+
+  // ---------- Dev B: multiplayer bridge surface ----------
+
+  addOpponentGuess: (guess) =>
+    set((state) => ({ opponentGuesses: [...state.opponentGuesses, guess] })),
+
+  addMyGuess: (guess) =>
+    set((state) => {
+      if (state.myGuesses.some((g) => g.word === guess.word)) return state;
+      return { myGuesses: [...state.myGuesses, guess] };
+    }),
+
+  setOpponentCooldownEndsAt: (at) => set({ opponentCooldownEndsAt: at }),
+
+  setAnswerLengthFromServer: (length) =>
+    set((state) =>
+      state.answerLength === null ? { answerLength: length } : state,
+    ),
+
+  setOpponentLeft: (left) => set({ opponentLeft: left }),
+
+  multiplayerSubmitGuess: (rawWord: string): SubmitGuessResult => {
+    const state = get();
+    if (state.roundOver || state.matchWinner) {
+      return { ok: false, reason: 'round_over' };
+    }
+    if (
+      state.inputLocked ||
+      state.chessPuzzleActive ||
+      state.distractionBlocking
+    ) {
+      return { ok: false, reason: 'locked' };
+    }
+    const word = normalizeWord(rawWord);
+    if (!word || word.length < MIN_GUESS_LENGTH) {
+      return { ok: false, reason: 'length' };
+    }
+    if (state.answerLength && word.length !== state.answerLength) {
+      return { ok: false, reason: 'length' };
+    }
+    if (
+      state.myCooldownEndsAt &&
+      Date.now() < state.myCooldownEndsAt &&
+      !state.cooldownFrozen
+    ) {
+      return { ok: false, reason: 'locked' };
+    }
+    return { ok: true, solved: false };
+  },
+
+  applyRemoteRoundEnd: (winner, answer) => {
+    const state = get();
+    if (state.roundOver) return;
+    set({ answer });
+    get().endRound(winner);
+  },
+
+  applyRemoteNextRound: (_roundNumber) => {
+    // Multiplayer: server picks the word; client just resets visible round
+    // state. We don't call Dev A's startRound (which would pick a local
+    // getRandomWord) — the answer stays null on the client until round end.
+    set({
+      ...initialRoundState,
+      answer: null,
+      answerLength: null,
+      roundScore: { me: ROUND_START_SCORE, opponent: ROUND_START_SCORE },
+      cardDrawHistory: [],
+      opponentLeft: false,
+    });
+  },
 }));

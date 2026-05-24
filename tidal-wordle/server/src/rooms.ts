@@ -1,10 +1,13 @@
-import { MAX_PLAYERS_PER_ROOM, ROOM_CODE_LENGTH, type Room } from './types.js';
+import {
+  ROOM_INACTIVITY_TIMEOUT_MS,
+  type Role,
+} from '../../shared/events.js';
+import { ROOM_CODE_LENGTH, type Room } from './types.js';
 
 const rooms = new Map<string, Room>();
-// Reverse index: socketId -> roomId for O(1) lookup on guess/card/disconnect.
-const socketRoom = new Map<string, string>();
+const socketRoom = new Map<string, string>(); // socketId → roomCode
 
-const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no I/O/0/1 — easier to read.
+const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no I/O/0/1
 
 function generateCode(): string {
   let out = '';
@@ -14,75 +17,133 @@ function generateCode(): string {
   return out;
 }
 
-function emptyRoom(socketId: string): Room {
-  let id = generateCode();
-  while (rooms.has(id)) id = generateCode();
-  return {
-    id,
-    players: [{ socketId, isHost: true }],
-    createdAt: Date.now(),
-    answer: null,
-    roundIndex: 0,
-    matchScore: { [socketId]: 0 },
-    lastGuessAt: {},
-    roundActive: false,
-    matchEnded: false,
-    roundEndTimerHandle: null,
-  };
+function uniqueCode(): string {
+  let code = generateCode();
+  while (rooms.has(code)) code = generateCode();
+  return code;
 }
 
-export function createRoom(socketId: string): Room {
-  const room = emptyRoom(socketId);
-  rooms.set(room.id, room);
-  socketRoom.set(socketId, room.id);
+function scheduleInactivityCleanup(room: Room): void {
+  if (room.inactivityHandle) clearTimeout(room.inactivityHandle);
+  room.inactivityHandle = setTimeout(() => {
+    deleteRoom(room.code);
+  }, ROOM_INACTIVITY_TIMEOUT_MS);
+}
+
+export function touchRoom(room: Room): void {
+  room.lastActivityAt = Date.now();
+  scheduleInactivityCleanup(room);
+}
+
+export function createRoom(hostSocketId: string): Room {
+  const code = uniqueCode();
+  const now = Date.now();
+  const room: Room = {
+    code,
+    hostSocketId,
+    guestSocketId: null,
+    answer: null,
+    answerLength: null,
+    roundNumber: 1,
+    roundsWon: { host: 0, guest: 0 },
+    guesses: { host: [], guest: [] },
+    cooldowns: { host: null, guest: null },
+    activeEffects: { host: [], guest: [] },
+    roundWinner: null,
+    status: 'waiting',
+    createdAt: now,
+    lastActivityAt: now,
+    roundTimerHandle: null,
+    disconnectGraceHandle: null,
+    matchEndCleanupHandle: null,
+    inactivityHandle: null,
+  };
+  rooms.set(code, room);
+  socketRoom.set(hostSocketId, code);
+  scheduleInactivityCleanup(room);
   return room;
 }
 
-export function joinRoom(
-  rawRoomId: string,
-  socketId: string,
-): { room: Room | null; status: 'joined' | 'full' | 'missing' } {
-  const roomId = rawRoomId.toUpperCase();
-  const room = rooms.get(roomId);
-  if (!room) return { room: null, status: 'missing' };
-  if (room.players.length >= MAX_PLAYERS_PER_ROOM) {
-    return { room, status: 'full' };
+export type JoinResult =
+  | { status: 'joined'; room: Room }
+  | { status: 'full' }
+  | { status: 'notFound' };
+
+export function joinRoom(rawCode: string, guestSocketId: string): JoinResult {
+  const code = rawCode.trim().toUpperCase();
+  const room = rooms.get(code);
+  if (!room) return { status: 'notFound' };
+  if (room.guestSocketId && room.guestSocketId !== guestSocketId) {
+    return { status: 'full' };
   }
-  room.players.push({ socketId, isHost: false });
-  room.matchScore[socketId] = 0;
-  socketRoom.set(socketId, room.id);
-  return { room, status: 'joined' };
+  room.guestSocketId = guestSocketId;
+  socketRoom.set(guestSocketId, code);
+  // Cancel disconnect-grace if the guest is the one who'd left and returned.
+  if (room.disconnectGraceHandle) {
+    clearTimeout(room.disconnectGraceHandle);
+    room.disconnectGraceHandle = null;
+  }
+  touchRoom(room);
+  return { status: 'joined', room };
 }
 
-export function getRoom(roomId: string): Room | undefined {
-  return rooms.get(roomId);
+export function getRoom(code: string): Room | undefined {
+  return rooms.get(code);
 }
 
-export function getRoomForSocket(socketId: string): Room | undefined {
-  const id = socketRoom.get(socketId);
-  if (!id) return undefined;
-  return rooms.get(id);
+export function getRoomBySocket(socketId: string): Room | undefined {
+  const code = socketRoom.get(socketId);
+  if (!code) return undefined;
+  return rooms.get(code);
 }
 
-export function destroyRoom(roomId: string): void {
-  const room = rooms.get(roomId);
+export function roleInRoom(room: Room, socketId: string): Role | null {
+  if (room.hostSocketId === socketId) return 'host';
+  if (room.guestSocketId === socketId) return 'guest';
+  return null;
+}
+
+export function opponentRoleOf(role: Role): Role {
+  return role === 'host' ? 'guest' : 'host';
+}
+
+export function opponentSocketIdOf(room: Room, role: Role): string | null {
+  return role === 'host' ? room.guestSocketId : room.hostSocketId;
+}
+
+export function deleteRoom(code: string): void {
+  const room = rooms.get(code);
   if (!room) return;
-  if (room.roundEndTimerHandle) clearTimeout(room.roundEndTimerHandle);
-  for (const p of room.players) socketRoom.delete(p.socketId);
-  rooms.delete(roomId);
+  if (room.roundTimerHandle) clearTimeout(room.roundTimerHandle);
+  if (room.disconnectGraceHandle) clearTimeout(room.disconnectGraceHandle);
+  if (room.matchEndCleanupHandle) clearTimeout(room.matchEndCleanupHandle);
+  if (room.inactivityHandle) clearTimeout(room.inactivityHandle);
+  if (room.hostSocketId) socketRoom.delete(room.hostSocketId);
+  if (room.guestSocketId) socketRoom.delete(room.guestSocketId);
+  rooms.delete(code);
 }
 
-export function removeSocket(socketId: string): { room: Room | null; wasInRoom: boolean } {
-  const roomId = socketRoom.get(socketId);
+/**
+ * Mark a socket as no longer associated with its room. Returns the room +
+ * the role they had, so the caller can broadcast opponent:left / schedule
+ * the disconnect-grace window.
+ */
+export function detachSocket(socketId: string): {
+  room: Room | null;
+  role: Role | null;
+} {
+  const code = socketRoom.get(socketId);
   socketRoom.delete(socketId);
-  if (!roomId) return { room: null, wasInRoom: false };
-  const room = rooms.get(roomId);
-  if (!room) return { room: null, wasInRoom: false };
-  room.players = room.players.filter((p) => p.socketId !== socketId);
-  return { room, wasInRoom: true };
-}
-
-export function opponentOf(room: Room, socketId: string): string | null {
-  const other = room.players.find((p) => p.socketId !== socketId);
-  return other?.socketId ?? null;
+  if (!code) return { room: null, role: null };
+  const room = rooms.get(code);
+  if (!room) return { room: null, role: null };
+  let role: Role | null = null;
+  if (room.hostSocketId === socketId) {
+    role = 'host';
+    room.hostSocketId = '';
+  } else if (room.guestSocketId === socketId) {
+    role = 'guest';
+    room.guestSocketId = null;
+  }
+  return { room, role };
 }

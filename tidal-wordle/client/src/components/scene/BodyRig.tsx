@@ -7,6 +7,7 @@ import {
   getShorts,
   useAppearanceStore,
 } from '../../stores/appearanceStore';
+import BoardParticles from './BoardParticles';
 
 // The player's lower body + surfboard + foam wake. Yaw + roll attachment to
 // the camera (so the body turns with your head and leans with A/D) but
@@ -74,6 +75,10 @@ export default function BodyRig() {
       {/* Surfboard — center under the feet, extending forward into the wave. */}
       <group ref={boardRef} position={[0, -1.6, -1.1]}>
         <Surfboard deck={board.deck} stripe={board.stripe} rail={board.rail} />
+        {/* Per-board ambient particle effect — same vibe the player saw in
+            the wardrobe is carried into gameplay. Subtle scale so it
+            doesn't dominate the foam wake. */}
+        <BoardParticles board={board} active scale={0.7} />
       </group>
 
       {/* Foam wake bursting from the board nose. */}

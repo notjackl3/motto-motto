@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import { useGameStore } from '../../stores/gameStore';
 import { selectIsInputDisabled } from '../../stores/gameSelectors';
 import { getSubmitFeedbackMessage } from '../../lib/submitFeedback';
+// Dev B touch: in multiplayer, dispatch via socket instead of running Dev A's
+// local evaluator (which doesn't know the server-side answer).
+import { useSocket } from '../../hooks/useSocket';
+
 export default function GuessInput() {
   const [value, setValue] = useState('');
   const [shake, setShake] = useState(false);
@@ -9,6 +13,9 @@ export default function GuessInput() {
   const [now, setNow] = useState(Date.now());
 
   const submitGuess = useGameStore((s) => s.submitGuess);
+  const multiplayerSubmitGuess = useGameStore((s) => s.multiplayerSubmitGuess);
+  const mode = useGameStore((s) => s.mode);
+  const { sendGuess } = useSocket();
   const knownLength = useGameStore((s) => s.answerLength);
   const myCooldownEndsAt = useGameStore((s) => s.myCooldownEndsAt);
   const inputLocked = useGameStore((s) => s.inputLocked);
@@ -47,7 +54,10 @@ export default function GuessInput() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const result = submitGuess(value);
+    const result =
+      mode === 'multiplayer'
+        ? multiplayerSubmitGuess(value)
+        : submitGuess(value);
     if (!result.ok) {
       setFeedback(getSubmitFeedbackMessage(result, onCooldown));
       if (result.reason === 'length') {
@@ -55,6 +65,11 @@ export default function GuessInput() {
         setTimeout(() => setShake(false), 500);
       }
       return;
+    }
+    // In multiplayer the pre-check passed but the actual guess hasn't been
+    // recorded yet — emit it to the server, which will broadcast the result.
+    if (mode === 'multiplayer') {
+      sendGuess(value.toLowerCase());
     }
     setFeedback(null);
     setValue('');
