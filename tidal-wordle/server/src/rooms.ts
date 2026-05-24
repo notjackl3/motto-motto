@@ -23,8 +23,7 @@ function emptyRoom(socketId: string): Room {
     createdAt: Date.now(),
     answer: null,
     roundIndex: 0,
-    matchScore: { [socketId]: 0 },
-    lastGuessAt: {},
+    roundsWon: { [socketId]: 0 },
     roundActive: false,
     matchEnded: false,
     roundEndTimerHandle: null,
@@ -49,7 +48,7 @@ export function joinRoom(
     return { room, status: 'full' };
   }
   room.players.push({ socketId, isHost: false });
-  room.matchScore[socketId] = 0;
+  room.roundsWon[socketId] = 0;
   socketRoom.set(socketId, room.id);
   return { room, status: 'joined' };
 }

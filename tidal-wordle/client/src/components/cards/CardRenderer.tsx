@@ -7,6 +7,8 @@ interface CardRendererProps {
   onClick?: () => void;
   /** Compact strip for card history (fits bottom bar). */
   compact?: boolean;
+  /** Slightly larger cards in solo layout. */
+  solo?: boolean;
 }
 
 const TYPE_STYLES: Record<Card['type'], string> = {
@@ -15,13 +17,16 @@ const TYPE_STYLES: Record<Card['type'], string> = {
   wildcard: 'bg-purple-500/70 border-purple-300',
 };
 
-export default function CardRenderer({ card, onClick, compact }: CardRendererProps) {
+export default function CardRenderer({ card, onClick, compact, solo }: CardRendererProps) {
   const mode = useGameStore((s) => s.mode);
   const description = getCardDescription(card, mode);
 
   if (compact) {
-    const className = `w-28 h-20 rounded-md border-2 px-2 py-1.5 text-left text-white shrink-0 transition ${TYPE_STYLES[card.type]} ${
-      onClick ? 'cursor-pointer hover:scale-105 hover:brightness-110' : ''
+    const sizeClass = solo
+      ? 'w-[4.5rem] h-[3.5rem]'
+      : 'w-[4.5rem] h-[3.5rem] shrink-0';
+    const className = `${sizeClass} rounded border px-1.5 py-1 text-left text-white transition ${TYPE_STYLES[card.type]} ${
+      onClick ? 'cursor-pointer hover:scale-[1.03] hover:brightness-110' : ''
     }`;
 
     if (onClick) {
@@ -33,16 +38,16 @@ export default function CardRenderer({ card, onClick, compact }: CardRendererPro
           aria-label={`View ${card.name} card details`}
           className={className}
         >
-          <div className="font-bold text-xs leading-tight truncate">{card.name}</div>
-          <div className="text-[10px] uppercase opacity-80">{card.type}</div>
+          <div className="font-bold text-[10px] leading-tight truncate">{card.name}</div>
+          <div className="text-[8px] uppercase opacity-80">{card.type}</div>
         </button>
       );
     }
 
     return (
       <div data-card-id={card.id} className={className} title={description}>
-        <div className="font-bold text-xs leading-tight truncate">{card.name}</div>
-        <div className="text-[10px] uppercase opacity-80">{card.type}</div>
+        <div className="font-bold text-[10px] leading-tight truncate">{card.name}</div>
+        <div className="text-[8px] uppercase opacity-80">{card.type}</div>
       </div>
     );
   }

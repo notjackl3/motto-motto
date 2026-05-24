@@ -44,7 +44,7 @@ export default function KnowledgePanel() {
           {knowledge.patternDisplay && (
             <div>
               <p className="text-[10px] uppercase opacity-60 mb-1">Pattern</p>
-              <p className="font-mono text-emerald-200 tracking-wide">
+              <p className="font-mono text-emerald-200 tracking-wide break-all">
                 {knowledge.patternDisplay}
               </p>
               {knowledge.answerLength === null && (

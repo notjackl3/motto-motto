@@ -48,7 +48,7 @@ export const CARD_DEFINITIONS: Card[] = [
     description:
       'Delays color feedback on the target\'s next guess — green and yellow tiles stay neutral for answer-length seconds.',
     soloDescription:
-      'Chaos draw — your next guess hides green/yellow colors for answer-length seconds (you can still guess on the normal cooldown).',
+      'Chaos draw — your next guess hides green/yellow colors for answer-length seconds.',
     targetSelf: false,
     duration: 'instant',
   },

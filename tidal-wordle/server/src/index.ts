@@ -4,7 +4,6 @@ import cors from 'cors';
 import { Server, type Socket } from 'socket.io';
 import {
   SocketEvents,
-  GUESS_COOLDOWN_MS,
   ROUNDS_TO_WIN,
   ROUND_TRANSITION_MS,
   type GameCardPlayedPayload,
@@ -56,18 +55,14 @@ const io = new Server(server, {
 function startRound(room: Room) {
   room.answer = pickAnswer();
   room.roundActive = true;
-  room.lastGuessAt = {};
-
-  // Emit a per-socket payload so each client gets its own match score
-  // perspective without us shipping socket ids around.
   for (const player of room.players) {
     const opponent = opponentOf(room, player.socketId);
     const payload: GameStartPayload = {
       answerLength: room.answer.length,
       roundIndex: room.roundIndex,
-      matchScore: {
-        me: room.matchScore[player.socketId] ?? 0,
-        opponent: opponent ? (room.matchScore[opponent] ?? 0) : 0,
+      roundsWon: {
+        me: room.roundsWon[player.socketId] ?? 0,
+        opponent: opponent ? (room.roundsWon[opponent] ?? 0) : 0,
       },
     };
     io.to(player.socketId).emit(SocketEvents.GameStart, payload);
@@ -79,11 +74,11 @@ function finishRound(room: Room, winnerSocketId: string | null) {
   if (!room.answer) return;
   room.roundActive = false;
   if (winnerSocketId) {
-    room.matchScore[winnerSocketId] = (room.matchScore[winnerSocketId] ?? 0) + 1;
+    room.roundsWon[winnerSocketId] = (room.roundsWon[winnerSocketId] ?? 0) + 1;
   }
 
   const matchWinner = room.players.find(
-    (p) => (room.matchScore[p.socketId] ?? 0) >= ROUNDS_TO_WIN,
+    (p) => (room.roundsWon[p.socketId] ?? 0) >= ROUNDS_TO_WIN,
   );
   const isMatchOver = !!matchWinner;
   const answer = room.answer;
@@ -92,8 +87,8 @@ function finishRound(room: Room, winnerSocketId: string | null) {
   // Per-recipient round-end payload (me/opponent perspective).
   for (const player of room.players) {
     const opponent = opponentOf(room, player.socketId);
-    const myWins = room.matchScore[player.socketId] ?? 0;
-    const oppWins = opponent ? (room.matchScore[opponent] ?? 0) : 0;
+    const myWins = room.roundsWon[player.socketId] ?? 0;
+    const oppWins = opponent ? (room.roundsWon[opponent] ?? 0) : 0;
     const winnerLabel: 'me' | 'opponent' | null =
       winnerSocketId === null
         ? null
@@ -105,7 +100,7 @@ function finishRound(room: Room, winnerSocketId: string | null) {
       winner: winnerLabel,
       answer,
       roundIndex: finishedIndex,
-      matchScore: { me: myWins, opponent: oppWins },
+      roundsWon: { me: myWins, opponent: oppWins },
       nextRoundAt: isMatchOver ? null : Date.now() + ROUND_TRANSITION_MS,
     };
     io.to(player.socketId).emit(SocketEvents.GameRoundEnd, payload);
@@ -122,9 +117,9 @@ function finishRound(room: Room, winnerSocketId: string | null) {
           matchWinner.socketId === player.socketId
             ? 'me'
             : 'opponent',
-        matchScore: {
-          me: room.matchScore[player.socketId] ?? 0,
-          opponent: opponent ? (room.matchScore[opponent] ?? 0) : 0,
+        roundsWon: {
+          me: room.roundsWon[player.socketId] ?? 0,
+          opponent: opponent ? (room.roundsWon[opponent] ?? 0) : 0,
         },
       };
       io.to(player.socketId).emit(SocketEvents.GameMatchEnd, matchPayload);
@@ -154,16 +149,6 @@ function handleGuess(socket: Socket, raw: unknown) {
   }
 
   const now = Date.now();
-  const last = room.lastGuessAt[socket.id] ?? 0;
-  const earliestNextGuess = last + GUESS_COOLDOWN_MS;
-  if (now < earliestNextGuess) {
-    socket.emit(SocketEvents.GameCooldownViolation, {
-      cooldownEndsAt: earliestNextGuess,
-    });
-    return;
-  }
-  room.lastGuessAt[socket.id] = now;
-  const cooldownEndsAt = now + GUESS_COOLDOWN_MS;
 
   const evaluation = evaluateGuess(word, room.answer);
   const correct = isCorrect(evaluation);
@@ -175,7 +160,6 @@ function handleGuess(socket: Socket, raw: unknown) {
       guess: word.toLowerCase(),
       evaluation,
       isCorrect: correct,
-      cooldownEndsAt,
       timestamp: now,
     };
     io.to(player.socketId).emit(SocketEvents.GameGuess, payload);
@@ -246,6 +230,14 @@ io.on('connection', (socket) => {
 
   socket.on(SocketEvents.GameGuess, (payload) => handleGuess(socket, payload));
   socket.on(SocketEvents.GameCardPlayed, (payload) => handleCardPlayed(socket, payload));
+
+  // TODO (Dev B): scope to opponent socket only; validate room + match state.
+  socket.on(SocketEvents.GameChessBlunderInfoLeak, (payload: { roomId?: string }) => {
+    const roomId = payload?.roomId;
+    if (roomId) {
+      socket.to(roomId).emit(SocketEvents.GameChessBlunderInfoLeak, payload);
+    }
+  });
 
   socket.on('disconnect', () => {
     console.log('[socket] disconnected', socket.id);

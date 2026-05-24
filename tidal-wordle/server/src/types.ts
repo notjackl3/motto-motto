@@ -16,8 +16,7 @@ export interface Room {
   // Active round state.
   answer: string | null;
   roundIndex: number;
-  matchScore: Record<string, number>; // socketId -> rounds won
-  lastGuessAt: Record<string, number>; // socketId -> last guess timestamp
+  roundsWon: Record<string, number>; // socketId -> rounds won
   roundActive: boolean;
   matchEnded: boolean;
 

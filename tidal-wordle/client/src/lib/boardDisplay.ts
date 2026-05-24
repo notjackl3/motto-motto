@@ -6,6 +6,12 @@ import type {
   LetterState,
 } from '../types';
 
+function isColOnHalfSide(col: number, colCount: number, side: HalfGuessSide): boolean {
+  const split = Math.ceil(colCount / 2);
+  if (side === 'left') return col < split;
+  return col >= split;
+}
+
 export function isHalfMasked(
   col: number,
   colCount: number,
@@ -13,9 +19,17 @@ export function isHalfMasked(
   boardTarget: 'self' | 'opponent'
 ): boolean {
   if (!mask || mask.target !== boardTarget) return false;
-  const split = Math.ceil(colCount / 2);
-  if (mask.side === 'left') return col < split;
-  return col >= split;
+  return isColOnHalfSide(col, colCount, mask.side);
+}
+
+/** Per-row mask (e.g. Chess Gambit solo Wordle tax on the next guess only). */
+export function isGuessRowHalfMasked(
+  col: number,
+  colCount: number,
+  guess: Guess
+): boolean {
+  if (!guess.halfMaskSide) return false;
+  return isColOnHalfSide(col, colCount, guess.halfMaskSide);
 }
 
 export function areGuessColorsRevealed(guess: Guess, now = Date.now()): boolean {

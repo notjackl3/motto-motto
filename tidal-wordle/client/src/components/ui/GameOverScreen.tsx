@@ -24,7 +24,7 @@ function buildConfetti(count: number) {
 
 export default function GameOverScreen({ onReplay, onMainMenu }: GameOverScreenProps) {
   const winner = useGameStore((s) => s.matchWinner);
-  const matchScore = useGameStore((s) => s.matchScore);
+  const roundsWon = useGameStore((s) => s.roundsWon);
   const mode = useGameStore((s) => s.mode);
   const setFaceSwap = useGameStore((s) => s.setFaceSwap);
   const setMusicSwapActive = useGameStore((s) => s.setMusicSwapActive);
@@ -99,17 +99,17 @@ export default function GameOverScreen({ onReplay, onMainMenu }: GameOverScreenP
         {winner !== null && (
           <div className="backdrop-blur-md bg-deep/40 border border-white/15 rounded-xl px-6 py-4 shadow-2xl">
             <div className="text-xs uppercase tracking-widest opacity-70 mb-1 text-center">
-              Final Score
+              Rounds Won
             </div>
             <div className="text-3xl font-bold flex items-center gap-6">
               <div className="text-center">
                 <div className="text-xs uppercase opacity-70">You</div>
-                <div className="text-4xl text-seafoam">{matchScore.me}</div>
+                <div className="text-4xl text-seafoam">{roundsWon.me}</div>
               </div>
               <span className="opacity-50">—</span>
               <div className="text-center">
                 <div className="text-xs uppercase opacity-70">Opponent</div>
-                <div className="text-4xl text-sand">{matchScore.opponent}</div>
+                <div className="text-4xl text-sand">{roundsWon.opponent}</div>
               </div>
             </div>
           </div>

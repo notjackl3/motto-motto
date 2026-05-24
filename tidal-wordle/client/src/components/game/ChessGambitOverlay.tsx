@@ -1,6 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { getChessPuzzleById, shuffleOptionOrder } from '../../lib/chessPuzzles';
-import { answerChessPuzzle } from '../../lib/cardEffects';
+import {
+  answerChessPuzzle,
+  type ChessPuzzleAnswerResult,
+} from '../../lib/cardEffects';
+import {
+  multiplayerInfoLeakHint,
+  soloWordleTaxHint,
+} from '../../lib/chessBlunderPenalties';
 import { useGameStore } from '../../stores/gameStore';
 import ChessBoard from './ChessBoard';
 
@@ -10,23 +17,31 @@ interface ChessGambitOverlayProps {
   puzzleId: string;
 }
 
+function blunderFooter(
+  answer: ChessPuzzleAnswerResult,
+  mode: 'solo' | 'multiplayer' | null
+): string | undefined {
+  if (answer.result !== 'wrong') return undefined;
+  if (answer.penalty.kind === 'solo-wordle-tax' && answer.penalty.halfMaskSide) {
+    return soloWordleTaxHint(answer.penalty.halfMaskSide);
+  }
+  if (mode === 'multiplayer') {
+    return multiplayerInfoLeakHint();
+  }
+  return undefined;
+}
+
 export default function ChessGambitOverlay({ puzzleId }: ChessGambitOverlayProps) {
   const puzzle = getChessPuzzleById(puzzleId);
-  const chessLockUntil = useGameStore((s) => s.chessLockUntil);
+  const mode = useGameStore((s) => s.mode);
   const [phase, setPhase] = useState<Phase>('pick');
   const [pickedIndex, setPickedIndex] = useState<number | null>(null);
-  const [now, setNow] = useState(Date.now());
+  const [wrongFooter, setWrongFooter] = useState<string | undefined>();
 
   const optionOrder = useMemo(
     () => shuffleOptionOrder(puzzle?.options.length ?? 4),
     [puzzle?.options.length]
   );
-
-  useEffect(() => {
-    if (phase !== 'wrong' || !chessLockUntil) return;
-    const t = setInterval(() => setNow(Date.now()), 200);
-    return () => clearInterval(t);
-  }, [phase, chessLockUntil]);
 
   if (!puzzle) {
     return (
@@ -38,16 +53,16 @@ export default function ChessGambitOverlay({ puzzleId }: ChessGambitOverlayProps
     );
   }
 
-  const penaltyRemaining =
-    chessLockUntil !== null
-      ? Math.max(0, Math.ceil((chessLockUntil - now) / 1000))
-      : 0;
-
   function handlePick(optionIndex: number) {
     if (phase !== 'pick' || !puzzle) return;
     setPickedIndex(optionIndex);
-    const result = answerChessPuzzle(puzzle.id, optionIndex);
-    setPhase(result === 'correct' ? 'correct' : 'wrong');
+    const answer = answerChessPuzzle(puzzle.id, optionIndex);
+    if (answer.result === 'correct') {
+      setPhase('correct');
+      return;
+    }
+    setWrongFooter(blunderFooter(answer, mode));
+    setPhase('wrong');
   }
 
   return (
@@ -98,11 +113,7 @@ export default function ChessGambitOverlay({ puzzleId }: ChessGambitOverlayProps
               tone="penalty"
               title="Blunder!"
               body={puzzle.wrongFeedback}
-              footer={
-                penaltyRemaining > 0
-                  ? `Penalty: input frozen for ${penaltyRemaining}s (+4s cooldown)`
-                  : 'Resuming…'
-              }
+              footer={wrongFooter}
             />
           )}
         </div>
@@ -141,7 +152,7 @@ function ResultBanner({
       <p className="text-sm text-slate-700">{body}</p>
       {footer && (
         <p
-          className={`text-xs mt-2 font-mono tabular-nums ${
+          className={`text-xs mt-2 leading-snug ${
             isSuccess ? 'text-emerald-700/70' : 'text-red-600'
           }`}
         >

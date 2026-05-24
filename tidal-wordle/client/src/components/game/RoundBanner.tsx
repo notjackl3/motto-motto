@@ -30,14 +30,12 @@ export default function RoundBanner() {
     >
       <div className="bg-deep/95 border border-seafoam/50 rounded-xl px-8 py-6 text-center shadow-2xl pointer-events-auto">
         <h3 className="text-2xl font-bold text-seafoam mb-1">{title}</h3>
-        <p className="text-lg text-white/90">+{banner.points} match points</p>
         {banner.criticsStars && (
           <p className="text-sm text-white/70 mt-2">
             {mode === 'solo' ? (
               <>
                 Critic&apos;s Rating:{' '}
                 <CriticsStars count={banner.criticsStars.me} />
-                {banner.criticsStars.me >= 4 ? ' (+25 bonus!)' : ''}
               </>
             ) : (
               <>

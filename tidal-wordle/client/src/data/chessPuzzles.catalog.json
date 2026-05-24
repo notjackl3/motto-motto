@@ -1,0 +1,5343 @@
+{
+  "meta": {
+    "version": 1,
+    "generatedAt": "2026-05-24T19:56:39.201Z",
+    "count": 205,
+    "curated": 5,
+    "imported": 200,
+    "source": "lichess_db_puzzle.csv (CC0)",
+    "refresh": "node scripts/import-lichess-puzzles.mjs --csv /path/to/lichess_db_puzzle.csv --count 120"
+  },
+  "puzzles": [
+    {
+      "id": "scholars-mate-f7",
+      "title": "Scholar's Trap",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+      "options": [
+        {
+          "label": "Qh5",
+          "san": "Qh5"
+        },
+        {
+          "label": "Qxf7#",
+          "san": "Qxf7"
+        },
+        {
+          "label": "Nf3",
+          "san": "Nf3"
+        },
+        {
+          "label": "Bxf7+",
+          "san": "Bxf7"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "The f7 pawn is the only shield — Qxf7# ends the game instantly."
+    },
+    {
+      "id": "back-rank-mate",
+      "title": "Back Rank Crush",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "6k1/5ppp/8/8/8/5R2/5PPP/6K1 w - - 0 1",
+      "options": [
+        {
+          "label": "Rf8#",
+          "san": "Rf8"
+        },
+        {
+          "label": "Rg3",
+          "san": "Rg3"
+        },
+        {
+          "label": "Kf1",
+          "san": "Kf1"
+        },
+        {
+          "label": "h4",
+          "san": "h4"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "Black's king is trapped on the back rank — Rf8# is unstoppable."
+    },
+    {
+      "id": "rook-x-ray",
+      "title": "Rook Squeeze",
+      "prompt": "White to move. Win the rook in one.",
+      "fen": "4r2k/8/8/8/8/8/8/4R2K w - - 0 1",
+      "options": [
+        {
+          "label": "Rxe8+",
+          "san": "Rxe8"
+        },
+        {
+          "label": "Re2",
+          "san": "Re2"
+        },
+        {
+          "label": "Kf1",
+          "san": "Kf1"
+        },
+        {
+          "label": "Rh1",
+          "san": "Rh1"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "The rooks are aligned on the e-file — Rxe8+ wins the exchange."
+    },
+    {
+      "id": "knight-fork",
+      "title": "Knight Fork",
+      "prompt": "White to move. Win the queen in one.",
+      "fen": "4k2q/8/8/4N3/8/8/8/4K3 w - - 0 1",
+      "options": [
+        {
+          "label": "Ng6",
+          "san": "Ng6"
+        },
+        {
+          "label": "Nf7",
+          "san": "Nf7"
+        },
+        {
+          "label": "Nc6",
+          "san": "Nc6"
+        },
+        {
+          "label": "Ke2",
+          "san": "Ke2"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "Nf7 forks the king on e8 and queen on h8 — pick up the queen next move."
+    },
+    {
+      "id": "discovered-attack",
+      "title": "Battery Blast",
+      "prompt": "White to move. Win material in one.",
+      "fen": "r1bqk2r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 5 4",
+      "options": [
+        {
+          "label": "Qxf7+",
+          "san": "Qxf7"
+        },
+        {
+          "label": "Qh4",
+          "san": "Qh4"
+        },
+        {
+          "label": "Qd5",
+          "san": "Qd5"
+        },
+        {
+          "label": "Qg5",
+          "san": "Qg5"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "Qxf7+ wins the pawn with check — Black must respond while you stay ahead."
+    },
+    {
+      "id": "lichess-001gi",
+      "title": "Loose Piece",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "N6r/1p1k1ppp/2np4/b3p3/4P1b1/N1Q5/P4PPP/R3KB1R b KQ - 0 18",
+      "options": [
+        {
+          "label": "Ne7",
+          "san": "Ne7"
+        },
+        {
+          "label": "Bxc3#",
+          "san": "Bxc3#"
+        },
+        {
+          "label": "Nd4",
+          "san": "Nd4"
+        },
+        {
+          "label": "Bb6",
+          "san": "Bb6"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-001pC",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r4rk1/pp3ppp/3b4/2p1pPB1/7N/2PP3n/PP4PP/R2Q2RK b - - 0 18",
+      "options": [
+        {
+          "label": "Rae8",
+          "san": "Rae8"
+        },
+        {
+          "label": "Rab8",
+          "san": "Rab8"
+        },
+        {
+          "label": "Nf2#",
+          "san": "Nf2#"
+        },
+        {
+          "label": "Kh8",
+          "san": "Kh8"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-001wb",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r3k2r/pb1p1ppp/1b4q1/1Q2P3/8/2NP1PP1/PP4P1/R1B2R1K b kq - 0 17",
+      "options": [
+        {
+          "label": "Be3",
+          "san": "Be3"
+        },
+        {
+          "label": "Qh5#",
+          "san": "Qh5#"
+        },
+        {
+          "label": "Ba5",
+          "san": "Ba5"
+        },
+        {
+          "label": "Qxg3",
+          "san": "Qxg3"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-002CP",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r5k1/pp4pp/4p1q1/4p3/3n4/P3Q1P1/1PP4P/2KR1R2 b - - 5 24",
+      "options": [
+        {
+          "label": "a6",
+          "san": "a6"
+        },
+        {
+          "label": "Qxc2#",
+          "san": "Qxc2#"
+        },
+        {
+          "label": "b5",
+          "san": "b5"
+        },
+        {
+          "label": "Rd8",
+          "san": "Rd8"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-002HE",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "1qr2rk1/1p1p1ppp/pB2p1n1/7n/2P1P3/1Q2NP1P/PP2BKPb/3R1R2 b - - 2 20",
+      "options": [
+        {
+          "label": "Rxc4",
+          "san": "Rxc4"
+        },
+        {
+          "label": "Qg3#",
+          "san": "Qg3#"
+        },
+        {
+          "label": "Qd6",
+          "san": "Qd6"
+        },
+        {
+          "label": "e5",
+          "san": "e5"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-002Q2",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "7k/p4R1p/3p3B/2pN1n2/2PbB1b1/3P2P1/P3r3/5R1K b - - 0 28",
+      "options": [
+        {
+          "label": "Nxg3#",
+          "san": "Nxg3#"
+        },
+        {
+          "label": "Nh4",
+          "san": "Nh4"
+        },
+        {
+          "label": "Bf6",
+          "san": "Bf6"
+        },
+        {
+          "label": "a5",
+          "san": "a5"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-002Z9",
+      "title": "Loose Piece",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "4r1k1/1p2R1p1/p2p2Pp/P1pP4/8/1R3p2/1P1q3P/5B1K w - - 0 35",
+      "options": [
+        {
+          "label": "Re5",
+          "san": "Re5"
+        },
+        {
+          "label": "Rxe8#",
+          "san": "Rxe8#"
+        },
+        {
+          "label": "Rxf3",
+          "san": "Rxf3"
+        },
+        {
+          "label": "Rbxb7",
+          "san": "Rbxb7"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-003AX",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "2r2rk1/5ppp/bq2p3/p2pP1N1/Pb1p2P1/1P2P2P/2QN4/2R1K2R w K - 0 19",
+      "options": [
+        {
+          "label": "Kf2",
+          "san": "Kf2"
+        },
+        {
+          "label": "Qa2",
+          "san": "Qa2"
+        },
+        {
+          "label": "Rg1",
+          "san": "Rg1"
+        },
+        {
+          "label": "Qxh7#",
+          "san": "Qxh7#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-003YF",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r4rk1/1pp2ppp/p2p4/2bPp3/2P1PB1q/P1N2B2/1P3P2/R2QK1R1 b Q - 0 15",
+      "options": [
+        {
+          "label": "Qd8",
+          "san": "Qd8"
+        },
+        {
+          "label": "exf4",
+          "san": "exf4"
+        },
+        {
+          "label": "h6",
+          "san": "h6"
+        },
+        {
+          "label": "Qxf2#",
+          "san": "Qxf2#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-004JD",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "3r4/R7/2p5/p1P2p2/1p4k1/nP2K3/P3NP2/8 b - - 4 41",
+      "options": [
+        {
+          "label": "Rd7",
+          "san": "Rd7"
+        },
+        {
+          "label": "Rd4",
+          "san": "Rd4"
+        },
+        {
+          "label": "Nc2#",
+          "san": "Nc2#"
+        },
+        {
+          "label": "Rb8",
+          "san": "Rb8"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-004WZ",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r6k/1b3pp1/p1q1pn1p/2p5/P1B5/1PN4Q/2P1RP1P/R5K1 b - - 0 26",
+      "options": [
+        {
+          "label": "Qh1#",
+          "san": "Qh1#"
+        },
+        {
+          "label": "Qd5",
+          "san": "Qd5"
+        },
+        {
+          "label": "Ng8",
+          "san": "Ng8"
+        },
+        {
+          "label": "Rc8",
+          "san": "Rc8"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-004yJ",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r4rk1/1bp2ppp/p1q1pn2/2P1N3/8/3B4/P1P1QPPP/R4RK1 b - - 1 16",
+      "options": [
+        {
+          "label": "Nd5",
+          "san": "Nd5"
+        },
+        {
+          "label": "Qxg2#",
+          "san": "Qxg2#"
+        },
+        {
+          "label": "Rfb8",
+          "san": "Rfb8"
+        },
+        {
+          "label": "g6",
+          "san": "g6"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-004zI",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "2q3k1/4br2/6pQ/1p1n2p1/7P/1P4P1/1B2PP2/6K1 w - - 0 28",
+      "options": [
+        {
+          "label": "Ba1",
+          "san": "Ba1"
+        },
+        {
+          "label": "Qh8#",
+          "san": "Qh8#"
+        },
+        {
+          "label": "Bg7",
+          "san": "Bg7"
+        },
+        {
+          "label": "e4",
+          "san": "e4"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-005Ep",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "5kr1/ppR3p1/3R3p/1n6/1r6/8/1P3PPP/2K5 w - - 5 32",
+      "options": [
+        {
+          "label": "Rd8#",
+          "san": "Rd8#"
+        },
+        {
+          "label": "Rc8+",
+          "san": "Rc8+"
+        },
+        {
+          "label": "b3",
+          "san": "b3"
+        },
+        {
+          "label": "Rcc6",
+          "san": "Rcc6"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-005wJ",
+      "title": "Loose Piece",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r3kb1r/ppqN1ppp/4pn2/1Q3b2/3P4/8/PP2PPPP/RNB1KB1R b KQkq - 0 9",
+      "options": [
+        {
+          "label": "h5",
+          "san": "h5"
+        },
+        {
+          "label": "Qxd7",
+          "san": "Qxd7"
+        },
+        {
+          "label": "Qxc1#",
+          "san": "Qxc1#"
+        },
+        {
+          "label": "Qc3+",
+          "san": "Qc3+"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-005x9",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r1b1kb1Q/ppp4p/6pB/3P4/2pn4/8/PPP1qPPP/RNK4R b q - 3 13",
+      "options": [
+        {
+          "label": "Qe6",
+          "san": "Qe6"
+        },
+        {
+          "label": "a5",
+          "san": "a5"
+        },
+        {
+          "label": "Kd7",
+          "san": "Kd7"
+        },
+        {
+          "label": "Qxc2#",
+          "san": "Qxc2#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-007QU",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "2rq1rk1/1b5p/p3p3/1p1pBpp1/2nP2N1/1RP1PP2/P1Q3PP/3R2K1 w - - 0 23",
+      "options": [
+        {
+          "label": "Qxf5",
+          "san": "Qxf5"
+        },
+        {
+          "label": "Nh6#",
+          "san": "Nh6#"
+        },
+        {
+          "label": "Qb2",
+          "san": "Qb2"
+        },
+        {
+          "label": "Qf2",
+          "san": "Qf2"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-007c6",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "2kr3r/p2n2pp/2pB1bp1/5q2/2B5/8/PPP2PPP/3R1RK1 w - - 0 18",
+      "options": [
+        {
+          "label": "Be2",
+          "san": "Be2"
+        },
+        {
+          "label": "Ba6#",
+          "san": "Ba6#"
+        },
+        {
+          "label": "Rfe1",
+          "san": "Rfe1"
+        },
+        {
+          "label": "Rb1",
+          "san": "Rb1"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-0082f",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r4rk1/2q2ppp/3pp3/4Pb1N/1p6/1p4Q1/PPP3PP/1K1RR3 w - - 0 22",
+      "options": [
+        {
+          "label": "Rf1",
+          "san": "Rf1"
+        },
+        {
+          "label": "Qxg7#",
+          "san": "Qxg7#"
+        },
+        {
+          "label": "Re4",
+          "san": "Re4"
+        },
+        {
+          "label": "Qd3",
+          "san": "Qd3"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-008cl",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r3k2r/ppp2p1p/2n1pp2/7q/2PN2P1/2BP2b1/PP2B1P1/R2Q1RK1 b kq - 0 16",
+      "options": [
+        {
+          "label": "Qh2#",
+          "san": "Qh2#"
+        },
+        {
+          "label": "Bd6",
+          "san": "Bd6"
+        },
+        {
+          "label": "Qd5",
+          "san": "Qd5"
+        },
+        {
+          "label": "Bh2+",
+          "san": "Bh2+"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-008rw",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "rn2kb1r/pp2pp1p/2p2np1/4q3/8/2N4Q/PPPPBPPP/R1B1K2R w KQkq - 0 9",
+      "options": [
+        {
+          "label": "Nd1",
+          "san": "Nd1"
+        },
+        {
+          "label": "Qc8#",
+          "san": "Qc8#"
+        },
+        {
+          "label": "Qe6",
+          "san": "Qe6"
+        },
+        {
+          "label": "a3",
+          "san": "a3"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-009J1",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "rn3k1r/pp2bp1p/2p1pNp1/6B1/5P2/7P/PPP4P/2K1RR2 w - - 4 18",
+      "options": [
+        {
+          "label": "Nxh7+",
+          "san": "Nxh7+"
+        },
+        {
+          "label": "f5",
+          "san": "f5"
+        },
+        {
+          "label": "Bh6#",
+          "san": "Bh6#"
+        },
+        {
+          "label": "b4",
+          "san": "b4"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-009eX",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "2r3k1/7p/6q1/p1Np4/Qp2pr2/P4P2/1PR2P1K/6R1 b - - 1 36",
+      "options": [
+        {
+          "label": "Rg4",
+          "san": "Rg4"
+        },
+        {
+          "label": "Rh4#",
+          "san": "Rh4#"
+        },
+        {
+          "label": "Qg7",
+          "san": "Qg7"
+        },
+        {
+          "label": "Qg2+",
+          "san": "Qg2+"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-009fH",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "rn2kb1r/pQ2pppp/2p2n2/8/3q2b1/8/PPP2PPP/RNB1KBNR b KQkq - 0 7",
+      "options": [
+        {
+          "label": "Nd5",
+          "san": "Nd5"
+        },
+        {
+          "label": "Rg8",
+          "san": "Rg8"
+        },
+        {
+          "label": "g6",
+          "san": "g6"
+        },
+        {
+          "label": "Qd1#",
+          "san": "Qd1#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00A9Q",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "2rq1rk1/1p3p1p/p1pn2p1/P1Np4/1P1PnP2/4P3/5PBP/R1Q3RK b - - 3 22",
+      "options": [
+        {
+          "label": "Nxf2#",
+          "san": "Nxf2#"
+        },
+        {
+          "label": "f6",
+          "san": "f6"
+        },
+        {
+          "label": "Ng5",
+          "san": "Ng5"
+        },
+        {
+          "label": "Rc7",
+          "san": "Rc7"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00AGs",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "rn5Q/4kp2/2p1p1r1/1q4p1/8/8/4NPPP/3R1K1R w - - 6 24",
+      "options": [
+        {
+          "label": "g4",
+          "san": "g4"
+        },
+        {
+          "label": "Qd8#",
+          "san": "Qd8#"
+        },
+        {
+          "label": "Rd2",
+          "san": "Rd2"
+        },
+        {
+          "label": "Qb2",
+          "san": "Qb2"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00AfZ",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "2r3kq/Q7/8/1brpN3/5Pp1/4P1P1/6K1/1B6 w - - 0 44",
+      "options": [
+        {
+          "label": "Qf7#",
+          "san": "Qf7#"
+        },
+        {
+          "label": "Nxg4",
+          "san": "Nxg4"
+        },
+        {
+          "label": "Bd3",
+          "san": "Bd3"
+        },
+        {
+          "label": "Kf2",
+          "san": "Kf2"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00BQD",
+      "title": "Back Rank Crush",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "4r3/3R1pkp/6p1/1P6/1b6/5B2/1P1R1PPP/6K1 b - - 0 36",
+      "options": [
+        {
+          "label": "Ra8",
+          "san": "Ra8"
+        },
+        {
+          "label": "Rd8",
+          "san": "Rd8"
+        },
+        {
+          "label": "Re1#",
+          "san": "Re1#"
+        },
+        {
+          "label": "Kh6",
+          "san": "Kh6"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Bm8",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "8/6kp/4b1q1/1p6/1PpPN2Q/2P1P3/r5P1/5RK1 b - - 0 34",
+      "options": [
+        {
+          "label": "Ra4",
+          "san": "Ra4"
+        },
+        {
+          "label": "Bf5",
+          "san": "Bf5"
+        },
+        {
+          "label": "h5",
+          "san": "h5"
+        },
+        {
+          "label": "Qxg2#",
+          "san": "Qxg2#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Bn0",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r1bqkb1r/pp1pnppp/2n5/1N2p3/5B2/8/PPP1PPPP/R2QKBNR w KQkq - 0 7",
+      "options": [
+        {
+          "label": "Nd6#",
+          "san": "Nd6#"
+        },
+        {
+          "label": "a3",
+          "san": "a3"
+        },
+        {
+          "label": "f3",
+          "san": "f3"
+        },
+        {
+          "label": "e3",
+          "san": "e3"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00C7m",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "8/5k2/1P4RK/6P1/1r6/8/8/8 b - - 2 58",
+      "options": [
+        {
+          "label": "Rd4",
+          "san": "Rd4"
+        },
+        {
+          "label": "Rf4",
+          "san": "Rf4"
+        },
+        {
+          "label": "Rh4#",
+          "san": "Rh4#"
+        },
+        {
+          "label": "Rb2",
+          "san": "Rb2"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00C8Y",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "rnb2rk1/pp3p1p/3p2Pb/4p1q1/3pQ3/5N2/PPP1PPP1/RN2KB1R b KQ - 2 12",
+      "options": [
+        {
+          "label": "Qxg6",
+          "san": "Qxg6"
+        },
+        {
+          "label": "Kg7",
+          "san": "Kg7"
+        },
+        {
+          "label": "Bd7",
+          "san": "Bd7"
+        },
+        {
+          "label": "Qc1#",
+          "san": "Qc1#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00CWE",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "3r4/1p4p1/2pB1bBp/p1Pk4/3rp3/P7/1PK2P2/4R3 w - - 2 32",
+      "options": [
+        {
+          "label": "Be8",
+          "san": "Be8"
+        },
+        {
+          "label": "a4",
+          "san": "a4"
+        },
+        {
+          "label": "Rh1",
+          "san": "Rh1"
+        },
+        {
+          "label": "Bf7#",
+          "san": "Bf7#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00CYP",
+      "title": "Loose Piece",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "3r1k1r/p1p2pp1/1p6/2pQ1b2/2Pn1P2/8/PP1P1KBq/R1B1R3 w - - 4 26",
+      "options": [
+        {
+          "label": "Re4",
+          "san": "Re4"
+        },
+        {
+          "label": "Re8+",
+          "san": "Re8+"
+        },
+        {
+          "label": "b4",
+          "san": "b4"
+        },
+        {
+          "label": "Qxd8#",
+          "san": "Qxd8#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00DAs",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r6r/ppp1n1p1/3bBk1p/4nP2/3p4/8/PPPN1P1P/R1B1K2R w KQ - 2 16",
+      "options": [
+        {
+          "label": "f3",
+          "san": "f3"
+        },
+        {
+          "label": "Ne4#",
+          "san": "Ne4#"
+        },
+        {
+          "label": "Nf1",
+          "san": "Nf1"
+        },
+        {
+          "label": "Bb3",
+          "san": "Bb3"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00DPQ",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "2k4r/pp3pp1/4pn2/2np2p1/8/1B1P1Pq1/PPPN3R/R2Q3K b - - 7 20",
+      "options": [
+        {
+          "label": "Ne8",
+          "san": "Ne8"
+        },
+        {
+          "label": "Qh4",
+          "san": "Qh4"
+        },
+        {
+          "label": "Qxh2#",
+          "san": "Qxh2#"
+        },
+        {
+          "label": "Qc7",
+          "san": "Qc7"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00EDa",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r1bk3r/ppp1np1p/3P2pP/1N4q1/2BP1n2/8/PPP3P1/R1BQ2KR b - - 0 14",
+      "options": [
+        {
+          "label": "Ned5",
+          "san": "Ned5"
+        },
+        {
+          "label": "Qxb5",
+          "san": "Qxb5"
+        },
+        {
+          "label": "Qxg2#",
+          "san": "Qxg2#"
+        },
+        {
+          "label": "Qg3",
+          "san": "Qg3"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00ERL",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "4r1k1/2Q4p/pp6/2p2n2/P2P1P1q/2P4P/2PB2b1/4R1K1 w - - 0 30",
+      "options": [
+        {
+          "label": "Qg7+",
+          "san": "Qg7+"
+        },
+        {
+          "label": "Re6",
+          "san": "Re6"
+        },
+        {
+          "label": "Rxe8#",
+          "san": "Rxe8#"
+        },
+        {
+          "label": "Qa7",
+          "san": "Qa7"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00EWi",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "8/8/5pkp/1RP5/1P3PKP/r7/8/8 b - - 0 48",
+      "options": [
+        {
+          "label": "Ra1",
+          "san": "Ra1"
+        },
+        {
+          "label": "f5#",
+          "san": "f5#"
+        },
+        {
+          "label": "Rh3",
+          "san": "Rh3"
+        },
+        {
+          "label": "Kg7",
+          "san": "Kg7"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Elq",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "rn3q1r/4pk2/2pp1npp/p5Q1/1p1PPNP1/5P2/PPP5/R4KNR w - - 0 18",
+      "options": [
+        {
+          "label": "Qxg6#",
+          "san": "Qxg6#"
+        },
+        {
+          "label": "Nfh3",
+          "san": "Nfh3"
+        },
+        {
+          "label": "a4",
+          "san": "a4"
+        },
+        {
+          "label": "Ng2",
+          "san": "Ng2"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Enl",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "2kr4/1pp5/p1b4R/2PpP3/3B2p1/2P1Q1Pp/PPq4P/5RK1 b - - 0 27",
+      "options": [
+        {
+          "label": "Qf5",
+          "san": "Qf5"
+        },
+        {
+          "label": "Qd1",
+          "san": "Qd1"
+        },
+        {
+          "label": "Qg2#",
+          "san": "Qg2#"
+        },
+        {
+          "label": "Qg6",
+          "san": "Qg6"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00FH6",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r6r/1q2bpk1/7p/p1p1pPpn/Pp2P1nP/1P1B1N2/1BP3P1/3RR1QK b - - 8 30",
+      "options": [
+        {
+          "label": "Bd6",
+          "san": "Bd6"
+        },
+        {
+          "label": "Ng3#",
+          "san": "Ng3#"
+        },
+        {
+          "label": "Qb8",
+          "san": "Qb8"
+        },
+        {
+          "label": "Rhd8",
+          "san": "Rhd8"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00FjB",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "rnbk1r2/pppp1Bpp/8/5p2/4p3/2PP4/P1P2PPP/R1B1K2R w KQ - 1 14",
+      "options": [
+        {
+          "label": "Bg5#",
+          "san": "Bg5#"
+        },
+        {
+          "label": "c4",
+          "san": "c4"
+        },
+        {
+          "label": "dxe4",
+          "san": "dxe4"
+        },
+        {
+          "label": "Rg1",
+          "san": "Rg1"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00GY4",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "3k2r1/pR5R/3r4/4p3/7q/3Pn1PP/PP5K/8 w - - 0 28",
+      "options": [
+        {
+          "label": "Rb8#",
+          "san": "Rb8#"
+        },
+        {
+          "label": "Rbd7+",
+          "san": "Rbd7+"
+        },
+        {
+          "label": "Rhd7+",
+          "san": "Rhd7+"
+        },
+        {
+          "label": "g4",
+          "san": "g4"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00H1C",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r3r3/1kpR1qpp/p1n2p2/Qp2P2P/1N6/4Pb2/PPP3P1/2K2R2 w - - 1 23",
+      "options": [
+        {
+          "label": "e4",
+          "san": "e4"
+        },
+        {
+          "label": "Qxc7#",
+          "san": "Qxc7#"
+        },
+        {
+          "label": "Kb1",
+          "san": "Kb1"
+        },
+        {
+          "label": "Nd3",
+          "san": "Nd3"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00H9n",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "7k/6p1/8/4p3/Pp1Q4/1P3b1q/6P1/5RK1 b - - 0 45",
+      "options": [
+        {
+          "label": "Bd1",
+          "san": "Bd1"
+        },
+        {
+          "label": "Qxg2#",
+          "san": "Qxg2#"
+        },
+        {
+          "label": "Bb7",
+          "san": "Bb7"
+        },
+        {
+          "label": "Qh5",
+          "san": "Qh5"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00HHN",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "4r2k/p4R1p/1p6/2p5/2P5/1P4R1/r5PP/2K5 b - - 1 32",
+      "options": [
+        {
+          "label": "Re1#",
+          "san": "Re1#"
+        },
+        {
+          "label": "a5",
+          "san": "a5"
+        },
+        {
+          "label": "Rf8",
+          "san": "Rf8"
+        },
+        {
+          "label": "Ra3",
+          "san": "Ra3"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Hk4",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "5rk1/p4ppp/4p3/1Q6/1P1BN1b1/8/Pq3PPP/2R1KB1R b K - 0 18",
+      "options": [
+        {
+          "label": "a6",
+          "san": "a6"
+        },
+        {
+          "label": "Bf3",
+          "san": "Bf3"
+        },
+        {
+          "label": "Qxc1#",
+          "san": "Qxc1#"
+        },
+        {
+          "label": "Qa3",
+          "san": "Qa3"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00HnR",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "q5kr/p4p2/4b1p1/4B2p/5n2/2P5/P1Q2PPP/3R1RK1 b - - 0 21",
+      "options": [
+        {
+          "label": "Qd8",
+          "san": "Qd8"
+        },
+        {
+          "label": "Qxg2#",
+          "san": "Qxg2#"
+        },
+        {
+          "label": "Qc6",
+          "san": "Qc6"
+        },
+        {
+          "label": "f6",
+          "san": "f6"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00HoG",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "5r1k/8/2b2rQp/1p1p2p1/1q4P1/8/8/1B3R1K w - - 0 37",
+      "options": [
+        {
+          "label": "Qxf6+",
+          "san": "Qxf6+"
+        },
+        {
+          "label": "Qh7#",
+          "san": "Qh7#"
+        },
+        {
+          "label": "Re1",
+          "san": "Re1"
+        },
+        {
+          "label": "Rd1",
+          "san": "Rd1"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Hut",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r4rk1/4p1bp/3p2p1/q1pP1P2/4QP2/4B3/1pK4P/1B1R3R b - - 1 22",
+      "options": [
+        {
+          "label": "Qa2",
+          "san": "Qa2"
+        },
+        {
+          "label": "Qa6",
+          "san": "Qa6"
+        },
+        {
+          "label": "Qb5",
+          "san": "Qb5"
+        },
+        {
+          "label": "Qc3#",
+          "san": "Qc3#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Hxb",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "1rb2k2/p4ppp/2B5/2pr1NP1/2P5/P7/7P/4R1K1 w - - 0 28",
+      "options": [
+        {
+          "label": "Re8#",
+          "san": "Re8#"
+        },
+        {
+          "label": "Re6",
+          "san": "Re6"
+        },
+        {
+          "label": "Kf1",
+          "san": "Kf1"
+        },
+        {
+          "label": "Ne7",
+          "san": "Ne7"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00ITc",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "3r1rk1/5pp1/7p/8/b2Qp1n1/1P6/PB1q1PP1/R5K1 w - - 0 26",
+      "options": [
+        {
+          "label": "Qc5",
+          "san": "Qc5"
+        },
+        {
+          "label": "Ba3",
+          "san": "Ba3"
+        },
+        {
+          "label": "Qxd2",
+          "san": "Qxd2"
+        },
+        {
+          "label": "Qxg7#",
+          "san": "Qxg7#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00IaZ",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "4R3/4R3/1k1K2p1/1P6/1P6/2rp3r/8/8 w - - 4 46",
+      "options": [
+        {
+          "label": "Rf8",
+          "san": "Rf8"
+        },
+        {
+          "label": "Rb8#",
+          "san": "Rb8#"
+        },
+        {
+          "label": "Rc8",
+          "san": "Rc8"
+        },
+        {
+          "label": "Re6",
+          "san": "Re6"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00J7i",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "3r2k1/pQ4pp/4p1n1/2q5/2P5/2B3P1/P4PBP/6K1 w - - 0 25",
+      "options": [
+        {
+          "label": "h3",
+          "san": "h3"
+        },
+        {
+          "label": "Qb5",
+          "san": "Qb5"
+        },
+        {
+          "label": "Qxg7#",
+          "san": "Qxg7#"
+        },
+        {
+          "label": "a4",
+          "san": "a4"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00JO7",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "5rk1/pp4pR/4p1r1/2qp4/8/2P4Q/PP3RPP/6K1 w - - 1 23",
+      "options": [
+        {
+          "label": "Qh4",
+          "san": "Qh4"
+        },
+        {
+          "label": "Rh8#",
+          "san": "Rh8#"
+        },
+        {
+          "label": "b4",
+          "san": "b4"
+        },
+        {
+          "label": "Rh6",
+          "san": "Rh6"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00KYE",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r1b2k1r/pp4p1/2pq2p1/3p4/3Q4/1N6/PPP2PPP/R4RK1 b - - 0 17",
+      "options": [
+        {
+          "label": "Rh7",
+          "san": "Rh7"
+        },
+        {
+          "label": "Bg4",
+          "san": "Bg4"
+        },
+        {
+          "label": "Qxh2#",
+          "san": "Qxh2#"
+        },
+        {
+          "label": "g5",
+          "san": "g5"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00KgR",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "7k/1pq3p1/2p2r1p/3pPQ2/1p1P4/7P/1rB4K/5R2 w - - 0 36",
+      "options": [
+        {
+          "label": "Rb1",
+          "san": "Rb1"
+        },
+        {
+          "label": "Rd1",
+          "san": "Rd1"
+        },
+        {
+          "label": "Qd7",
+          "san": "Qd7"
+        },
+        {
+          "label": "Qh7#",
+          "san": "Qh7#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00LPw",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "1rb4r/pp1nb1pp/6k1/3np3/2q1P3/2N2Q2/PPP2PPP/R1B1K2R w KQ - 0 13",
+      "options": [
+        {
+          "label": "Qf5#",
+          "san": "Qf5#"
+        },
+        {
+          "label": "Rg1",
+          "san": "Rg1"
+        },
+        {
+          "label": "Be3",
+          "san": "Be3"
+        },
+        {
+          "label": "Qd1",
+          "san": "Qd1"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00LWX",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "2r4k/5p2/4pNp1/6Pp/qQ5P/7r/2P5/1RKN4 b - - 3 37",
+      "options": [
+        {
+          "label": "Rc7",
+          "san": "Rc7"
+        },
+        {
+          "label": "Rb8",
+          "san": "Rb8"
+        },
+        {
+          "label": "Rg3",
+          "san": "Rg3"
+        },
+        {
+          "label": "Rxc2#",
+          "san": "Rxc2#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00LWa",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "2r3k1/5ppp/2P5/8/5P2/P5Pn/6BP/R5RK b - - 0 32",
+      "options": [
+        {
+          "label": "g6",
+          "san": "g6"
+        },
+        {
+          "label": "Rxc6",
+          "san": "Rxc6"
+        },
+        {
+          "label": "Nf2#",
+          "san": "Nf2#"
+        },
+        {
+          "label": "h6",
+          "san": "h6"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Lnf",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r4knb/1bpp4/p1n1p2q/1p4NQ/3PP3/2N5/PPP2PP1/2KR1B2 w - - 4 16",
+      "options": [
+        {
+          "label": "Bxb5",
+          "san": "Bxb5"
+        },
+        {
+          "label": "Qf7#",
+          "san": "Qf7#"
+        },
+        {
+          "label": "g4",
+          "san": "g4"
+        },
+        {
+          "label": "Be2",
+          "san": "Be2"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00M0i",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r3r1k1/p2n1p1R/5n2/qp3Q2/3P4/B3Pp2/P4P1P/1B5K w - - 1 24",
+      "options": [
+        {
+          "label": "Qg5#",
+          "san": "Qg5#"
+        },
+        {
+          "label": "Rh4",
+          "san": "Rh4"
+        },
+        {
+          "label": "Qc2",
+          "san": "Qc2"
+        },
+        {
+          "label": "Qg4+",
+          "san": "Qg4+"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00MYL",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "1R6/5Q2/p1kb1p2/2r1p3/3n4/P6P/5PP1/4qBK1 w - - 2 41",
+      "options": [
+        {
+          "label": "Qe7",
+          "san": "Qe7"
+        },
+        {
+          "label": "Rb4",
+          "san": "Rb4"
+        },
+        {
+          "label": "Kh1",
+          "san": "Kh1"
+        },
+        {
+          "label": "Qb7#",
+          "san": "Qb7#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00O9q",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "5r2/5p2/4nP1k/4N1p1/8/6P1/6K1/R7 w - - 2 79",
+      "options": [
+        {
+          "label": "Rh1#",
+          "san": "Rh1#"
+        },
+        {
+          "label": "Ng4+",
+          "san": "Ng4+"
+        },
+        {
+          "label": "Nc4",
+          "san": "Nc4"
+        },
+        {
+          "label": "Ra8",
+          "san": "Ra8"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00OPk",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "6rk/7p/R2N3P/3r4/1P5K/P7/8/8 w - - 5 51",
+      "options": [
+        {
+          "label": "Ra4",
+          "san": "Ra4"
+        },
+        {
+          "label": "Nf5",
+          "san": "Nf5"
+        },
+        {
+          "label": "Nf7#",
+          "san": "Nf7#"
+        },
+        {
+          "label": "b5",
+          "san": "b5"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00OXc",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "8/5K1p/1p5k/6p1/3brp2/5R2/8/8 w - - 0 51",
+      "options": [
+        {
+          "label": "Rf2",
+          "san": "Rf2"
+        },
+        {
+          "label": "Kg8",
+          "san": "Kg8"
+        },
+        {
+          "label": "Rb3",
+          "san": "Rb3"
+        },
+        {
+          "label": "Rh3#",
+          "san": "Rh3#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Or5",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r2qkbnr/pp5p/8/4Nb2/8/1Qp5/PP2PPPP/R3KB1R w KQkq - 0 13",
+      "options": [
+        {
+          "label": "Qf7#",
+          "san": "Qf7#"
+        },
+        {
+          "label": "Qb4",
+          "san": "Qb4"
+        },
+        {
+          "label": "g3",
+          "san": "g3"
+        },
+        {
+          "label": "Qxb7",
+          "san": "Qxb7"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Ozz",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "3kr3/3n1B1p/2pP4/p1n5/Ppp5/8/1P3PPP/4R1K1 w - - 0 33",
+      "options": [
+        {
+          "label": "Rxe8#",
+          "san": "Rxe8#"
+        },
+        {
+          "label": "Re5",
+          "san": "Re5"
+        },
+        {
+          "label": "Ra1",
+          "san": "Ra1"
+        },
+        {
+          "label": "Bd5",
+          "san": "Bd5"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Pw1",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "5r1k/2p3Rp/3p4/p2Pn3/1p2B3/1P6/PKP1r2P/6R1 w - - 2 29",
+      "options": [
+        {
+          "label": "Rxh7#",
+          "san": "Rxh7#"
+        },
+        {
+          "label": "Ra1",
+          "san": "Ra1"
+        },
+        {
+          "label": "Ka1",
+          "san": "Ka1"
+        },
+        {
+          "label": "Bg2",
+          "san": "Bg2"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00QBx",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "rn1qk2r/pb3ppp/5n2/2b5/8/2N1p1P1/PP1PPPNP/R1BQKB1R b KQkq - 1 9",
+      "options": [
+        {
+          "label": "Qd6",
+          "san": "Qd6"
+        },
+        {
+          "label": "g5",
+          "san": "g5"
+        },
+        {
+          "label": "Kd7",
+          "san": "Kd7"
+        },
+        {
+          "label": "exf2#",
+          "san": "exf2#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00QY3",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "2k3r1/pp5p/4p3/2p2p2/2P5/P4P1q/1PQ1R2R/7K b - - 0 32",
+      "options": [
+        {
+          "label": "Qxf3+",
+          "san": "Qxf3+"
+        },
+        {
+          "label": "b5",
+          "san": "b5"
+        },
+        {
+          "label": "Rg1+",
+          "san": "Rg1+"
+        },
+        {
+          "label": "Qf1#",
+          "san": "Qf1#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00QkV",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "5k1r/p3R1bp/3N1pp1/4nbB1/2P5/3rP3/q4PPP/3Q1RK1 w - - 0 17",
+      "options": [
+        {
+          "label": "Re8#",
+          "san": "Re8#"
+        },
+        {
+          "label": "Qe1",
+          "san": "Qe1"
+        },
+        {
+          "label": "Nf7",
+          "san": "Nf7"
+        },
+        {
+          "label": "Kh1",
+          "san": "Kh1"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Qpu",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "3r1b1r/2pn4/1p1p3p/2kP2qn/Q3P3/4pp2/1P4PP/4R1K1 w - - 0 27",
+      "options": [
+        {
+          "label": "Qa7",
+          "san": "Qa7"
+        },
+        {
+          "label": "Qb3",
+          "san": "Qb3"
+        },
+        {
+          "label": "g4",
+          "san": "g4"
+        },
+        {
+          "label": "Rc1#",
+          "san": "Rc1#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00RoG",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "2kr2nr/pp2nppp/2pp4/2b2PP1/4NPq1/3B1R1P/PPP5/R2QB2K b - - 0 18",
+      "options": [
+        {
+          "label": "Qxg5",
+          "san": "Qxg5"
+        },
+        {
+          "label": "h6",
+          "san": "h6"
+        },
+        {
+          "label": "b6",
+          "san": "b6"
+        },
+        {
+          "label": "Qg1#",
+          "san": "Qg1#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00SMl",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r4rk1/ppp2pn1/3p4/q2N4/1n1PP3/5P2/PPP5/1K1R1B1R w - - 3 19",
+      "options": [
+        {
+          "label": "Bc4",
+          "san": "Bc4"
+        },
+        {
+          "label": "Nf6#",
+          "san": "Nf6#"
+        },
+        {
+          "label": "Be2",
+          "san": "Be2"
+        },
+        {
+          "label": "Nc3",
+          "san": "Nc3"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00SOy",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "6k1/6b1/p1Q1p2p/1pN4r/3P3q/2P5/P4PP1/1R2R1K1 b - - 0 31",
+      "options": [
+        {
+          "label": "Kf7",
+          "san": "Kf7"
+        },
+        {
+          "label": "Qh1#",
+          "san": "Qh1#"
+        },
+        {
+          "label": "Qd8",
+          "san": "Qd8"
+        },
+        {
+          "label": "Re5",
+          "san": "Re5"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00SfT",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r4rk1/pb2ppb1/1q6/6PQ/8/2NP1N2/PP1K1PP1/n6R w - - 0 17",
+      "options": [
+        {
+          "label": "Qh7#",
+          "san": "Qh7#"
+        },
+        {
+          "label": "Ne5",
+          "san": "Ne5"
+        },
+        {
+          "label": "Kc1",
+          "san": "Kc1"
+        },
+        {
+          "label": "Rh2",
+          "san": "Rh2"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00T85",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "8/8/8/8/8/4K3/5Q2/1qk5 w - - 6 54",
+      "options": [
+        {
+          "label": "Qh4",
+          "san": "Qh4"
+        },
+        {
+          "label": "Qd2#",
+          "san": "Qd2#"
+        },
+        {
+          "label": "Qa2",
+          "san": "Qa2"
+        },
+        {
+          "label": "Qf5",
+          "san": "Qf5"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00TTm",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r4bkr/pppqp1pp/6B1/7Q/2PP4/2N1P2P/PP4P1/R5K1 w - - 1 16",
+      "options": [
+        {
+          "label": "Kh1",
+          "san": "Kh1"
+        },
+        {
+          "label": "Bf7#",
+          "san": "Bf7#"
+        },
+        {
+          "label": "Qd1",
+          "san": "Qd1"
+        },
+        {
+          "label": "c5",
+          "san": "c5"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Tmr",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "2r3rk/6pp/p6N/1p1p4/2pq4/P6P/1P3PP1/4R1K1 w - - 0 37",
+      "options": [
+        {
+          "label": "Nf7#",
+          "san": "Nf7#"
+        },
+        {
+          "label": "Nf5",
+          "san": "Nf5"
+        },
+        {
+          "label": "b3",
+          "san": "b3"
+        },
+        {
+          "label": "Rf1",
+          "san": "Rf1"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00ViT",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "6k1/5pp1/4pP1p/1p1bP3/1P1P1KP1/1r6/3B1R1P/8 b - - 0 37",
+      "options": [
+        {
+          "label": "Kh7",
+          "san": "Kh7"
+        },
+        {
+          "label": "Bf3",
+          "san": "Bf3"
+        },
+        {
+          "label": "g5#",
+          "san": "g5#"
+        },
+        {
+          "label": "g6",
+          "san": "g6"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Vv9",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "5r1k/pp4pp/5r2/3NQ3/3P4/5pN1/Pq5P/2R2R1K b - - 1 29",
+      "options": [
+        {
+          "label": "Rd8",
+          "san": "Rd8"
+        },
+        {
+          "label": "Qg2#",
+          "san": "Qg2#"
+        },
+        {
+          "label": "Qc3",
+          "san": "Qc3"
+        },
+        {
+          "label": "Qxc1",
+          "san": "Qxc1"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00WAp",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r5k1/4p2p/p5p1/1p1b2Q1/2p5/P4q2/1P3P2/R2R2KN b - - 0 28",
+      "options": [
+        {
+          "label": "Qxh1#",
+          "san": "Qxh1#"
+        },
+        {
+          "label": "Qb3",
+          "san": "Qb3"
+        },
+        {
+          "label": "Rc8",
+          "san": "Rc8"
+        },
+        {
+          "label": "e6",
+          "san": "e6"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00WiZ",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "3r1rk1/p3R2p/b2P2p1/2p5/7Q/P2q1P1P/6P1/2R3K1 w - - 0 35",
+      "options": [
+        {
+          "label": "Rce1",
+          "san": "Rce1"
+        },
+        {
+          "label": "Rc2",
+          "san": "Rc2"
+        },
+        {
+          "label": "Qg3",
+          "san": "Qg3"
+        },
+        {
+          "label": "Qxh7#",
+          "san": "Qxh7#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00X1l",
+      "title": "Loose Piece",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "5r1k/Q6p/1pb3p1/4q3/4p3/1BP4P/PP4p1/5RK1 w - - 0 31",
+      "options": [
+        {
+          "label": "Rxf8#",
+          "san": "Rxf8#"
+        },
+        {
+          "label": "Rc1",
+          "san": "Rc1"
+        },
+        {
+          "label": "Qa3",
+          "san": "Qa3"
+        },
+        {
+          "label": "Rf5",
+          "san": "Rf5"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00X5a",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "3N3k/pQ5p/4p1p1/3q4/8/2b1P1PK/P3RP1P/4n3 b - - 2 28",
+      "options": [
+        {
+          "label": "Qh5#",
+          "san": "Qh5#"
+        },
+        {
+          "label": "Qe5",
+          "san": "Qe5"
+        },
+        {
+          "label": "Ba5",
+          "san": "Ba5"
+        },
+        {
+          "label": "a6",
+          "san": "a6"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Xdc",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r1br1N1k/ppp2Bbn/2n4p/q7/3P4/2N5/PPP2PPP/R1B2RK1 w - - 0 16",
+      "options": [
+        {
+          "label": "Be8",
+          "san": "Be8"
+        },
+        {
+          "label": "Ng6#",
+          "san": "Ng6#"
+        },
+        {
+          "label": "Bf4",
+          "san": "Bf4"
+        },
+        {
+          "label": "Kh1",
+          "san": "Kh1"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Xfn",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "rn4k1/pp1q1r2/3p2B1/3p4/2PB2b1/8/P2K1PP1/7R w - - 0 22",
+      "options": [
+        {
+          "label": "f3",
+          "san": "f3"
+        },
+        {
+          "label": "Bh5",
+          "san": "Bh5"
+        },
+        {
+          "label": "Bb6",
+          "san": "Bb6"
+        },
+        {
+          "label": "Rh8#",
+          "san": "Rh8#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Yfi",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "1Q6/5p1k/4b1pp/5B2/3p2KP/6P1/P3R3/5r2 b - - 0 45",
+      "options": [
+        {
+          "label": "Bxf5#",
+          "san": "Bxf5#"
+        },
+        {
+          "label": "Bb3",
+          "san": "Bb3"
+        },
+        {
+          "label": "Rg1",
+          "san": "Rg1"
+        },
+        {
+          "label": "Bd5",
+          "san": "Bd5"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00YqR",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "5k2/p1p4Q/1pPpBp2/2qP3b/8/2P5/P6P/7K b - - 0 33",
+      "options": [
+        {
+          "label": "Bf3#",
+          "san": "Bf3#"
+        },
+        {
+          "label": "Qd4",
+          "san": "Qd4"
+        },
+        {
+          "label": "Qe3",
+          "san": "Qe3"
+        },
+        {
+          "label": "Ke8",
+          "san": "Ke8"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Zh6",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r1bqkn1r/ppb1n2p/2p1pp2/4N3/3PN3/3B4/PPPQ1PPP/R3K2R w KQkq - 0 13",
+      "options": [
+        {
+          "label": "Nxf6#",
+          "san": "Nxf6#"
+        },
+        {
+          "label": "Be2",
+          "san": "Be2"
+        },
+        {
+          "label": "Qf4",
+          "san": "Qf4"
+        },
+        {
+          "label": "Qe2",
+          "san": "Qe2"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Zwc",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r2k4/pp1nRr2/2pP1N1p/8/3P3p/8/PPP3P1/6K1 w - - 0 25",
+      "options": [
+        {
+          "label": "b4",
+          "san": "b4"
+        },
+        {
+          "label": "Re4",
+          "san": "Re4"
+        },
+        {
+          "label": "Kf1",
+          "san": "Kf1"
+        },
+        {
+          "label": "Re8#",
+          "san": "Re8#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00Zx9",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r1b1k1nr/ppp2ppp/6q1/4p1B1/2B2P2/7P/P5P1/1N1Q2K1 w kq - 0 15",
+      "options": [
+        {
+          "label": "fxe5",
+          "san": "fxe5"
+        },
+        {
+          "label": "Qd8#",
+          "san": "Qd8#"
+        },
+        {
+          "label": "Ba6",
+          "san": "Ba6"
+        },
+        {
+          "label": "Qd3",
+          "san": "Qd3"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00aZP",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r1b1k2r/p1p2ppp/1pN2n2/2n5/2B1P3/P1b5/1PP2PPP/R1BR2K1 w kq - 0 14",
+      "options": [
+        {
+          "label": "Rd8#",
+          "san": "Rd8#"
+        },
+        {
+          "label": "Bb3",
+          "san": "Bb3"
+        },
+        {
+          "label": "Nd8",
+          "san": "Nd8"
+        },
+        {
+          "label": "Bd2",
+          "san": "Bd2"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00ad3",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "2kr3r/ppp2p2/2nb1n1p/4q1p1/Q1N5/2P1B3/PP2NPPP/R4RK1 b - - 3 13",
+      "options": [
+        {
+          "label": "Qxe3",
+          "san": "Qxe3"
+        },
+        {
+          "label": "Qf4",
+          "san": "Qf4"
+        },
+        {
+          "label": "Bb4",
+          "san": "Bb4"
+        },
+        {
+          "label": "Qxh2#",
+          "san": "Qxh2#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00b3n",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "1Q5R/5pk1/5rpp/8/8/4P1PK/4qPQP/8 b - - 0 41",
+      "options": [
+        {
+          "label": "Qh5#",
+          "san": "Qh5#"
+        },
+        {
+          "label": "Qe1",
+          "san": "Qe1"
+        },
+        {
+          "label": "g5",
+          "san": "g5"
+        },
+        {
+          "label": "Rxf2",
+          "san": "Rxf2"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00b58",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "4k2r/1bq2pb1/4p3/1p4p1/2pN4/R7/1P2BPPP/3Q1RK1 b k - 0 17",
+      "options": [
+        {
+          "label": "Qxh2#",
+          "san": "Qxh2#"
+        },
+        {
+          "label": "Bd5",
+          "san": "Bd5"
+        },
+        {
+          "label": "g4",
+          "san": "g4"
+        },
+        {
+          "label": "Bf8",
+          "san": "Bf8"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00bJi",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "7k/1p2R3/p3N3/3p4/2n5/2PK4/PP5r/8 b - - 4 36",
+      "options": [
+        {
+          "label": "Rh5",
+          "san": "Rh5"
+        },
+        {
+          "label": "Rh7",
+          "san": "Rh7"
+        },
+        {
+          "label": "b5",
+          "san": "b5"
+        },
+        {
+          "label": "Rd2#",
+          "san": "Rd2#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00bZ2",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "4b1k1/4P2p/p1p3pP/6q1/3Q4/Pr6/1PP3P1/1K6 w - - 0 37",
+      "options": [
+        {
+          "label": "Qa4",
+          "san": "Qa4"
+        },
+        {
+          "label": "Ka2",
+          "san": "Ka2"
+        },
+        {
+          "label": "Qh8+",
+          "san": "Qh8+"
+        },
+        {
+          "label": "Qg7#",
+          "san": "Qg7#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00beo",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r4rk1/pb1Q2pp/1p2p1q1/2b5/2P5/P1N1B2P/1P2BPP1/R4RK1 b - - 0 18",
+      "options": [
+        {
+          "label": "Qg4",
+          "san": "Qg4"
+        },
+        {
+          "label": "Qxg2#",
+          "san": "Qxg2#"
+        },
+        {
+          "label": "Be4",
+          "san": "Be4"
+        },
+        {
+          "label": "Rf3",
+          "san": "Rf3"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00bnX",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "4rr1k/ppp3pp/3b1p2/6qQ/8/1PBB3P/P1P3P1/5RK1 w - - 14 27",
+      "options": [
+        {
+          "label": "Rf4",
+          "san": "Rf4"
+        },
+        {
+          "label": "Qh4",
+          "san": "Qh4"
+        },
+        {
+          "label": "Qxh7#",
+          "san": "Qxh7#"
+        },
+        {
+          "label": "Qxg5",
+          "san": "Qxg5"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00bzC",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r1r3k1/2p3p1/p2p3p/Pp1Pp3/4P3/3P1p1q/R1Q2P1N/4R2K b - - 1 28",
+      "options": [
+        {
+          "label": "Qh4",
+          "san": "Qh4"
+        },
+        {
+          "label": "Qe6",
+          "san": "Qe6"
+        },
+        {
+          "label": "Qg2#",
+          "san": "Qg2#"
+        },
+        {
+          "label": "Qg3",
+          "san": "Qg3"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00c0D",
+      "title": "Double Check",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "rnb1k2r/ppB2p2/8/3p2p1/3Q2np/2N2N1K/PPP1B1PP/R6R b kq - 1 14",
+      "options": [
+        {
+          "label": "Kd7",
+          "san": "Kd7"
+        },
+        {
+          "label": "f5",
+          "san": "f5"
+        },
+        {
+          "label": "Rh5",
+          "san": "Rh5"
+        },
+        {
+          "label": "Nf2#",
+          "san": "Nf2#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00cZ4",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "8/2R5/6pk/p3p2p/4Nq2/5n1P/P4RP1/7K b - - 1 41",
+      "options": [
+        {
+          "label": "Qh2#",
+          "san": "Qh2#"
+        },
+        {
+          "label": "Qc1+",
+          "san": "Qc1+"
+        },
+        {
+          "label": "Qxe4",
+          "san": "Qxe4"
+        },
+        {
+          "label": "Qf6",
+          "san": "Qf6"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00cl7",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r5k1/ppp1p1b1/4N1Q1/3pq1Bp/7P/5N2/PPP2rP1/2KR4 b - - 2 17",
+      "options": [
+        {
+          "label": "Qf5",
+          "san": "Qf5"
+        },
+        {
+          "label": "a5",
+          "san": "a5"
+        },
+        {
+          "label": "Qxb2#",
+          "san": "Qxb2#"
+        },
+        {
+          "label": "Qd4",
+          "san": "Qd4"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00d8a",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r1b1k2r/1p3p2/p1pqp3/2b2Ppp/4P1n1/2NB1Q1P/PPP3P1/R3BR1K b kq - 2 15",
+      "options": [
+        {
+          "label": "Ne5",
+          "san": "Ne5"
+        },
+        {
+          "label": "a5",
+          "san": "a5"
+        },
+        {
+          "label": "Qh2#",
+          "san": "Qh2#"
+        },
+        {
+          "label": "Qd5",
+          "san": "Qd5"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00dEJ",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "1br2rk1/ppqn2pp/4p3/1P6/P3B3/8/1B3PPP/2RQ1RK1 b - - 2 18",
+      "options": [
+        {
+          "label": "Qg3",
+          "san": "Qg3"
+        },
+        {
+          "label": "Kh8",
+          "san": "Kh8"
+        },
+        {
+          "label": "Qxh2#",
+          "san": "Qxh2#"
+        },
+        {
+          "label": "Qe5",
+          "san": "Qe5"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00dzs",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "2k2b1r/1p1n1ppp/1B6/1p6/8/5K2/PPr2PPP/3RR3 w - - 2 20",
+      "options": [
+        {
+          "label": "Re7",
+          "san": "Re7"
+        },
+        {
+          "label": "Re8#",
+          "san": "Re8#"
+        },
+        {
+          "label": "Rb1",
+          "san": "Rb1"
+        },
+        {
+          "label": "Rf1",
+          "san": "Rf1"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00eNa",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "rnb1k2r/p1p2ppp/1p3n2/2b3B1/3qP3/3P1N2/PPP3PP/RN1QKB1R b KQkq - 2 8",
+      "options": [
+        {
+          "label": "Qf2#",
+          "san": "Qf2#"
+        },
+        {
+          "label": "Nxe4",
+          "san": "Nxe4"
+        },
+        {
+          "label": "Qxb2",
+          "san": "Qxb2"
+        },
+        {
+          "label": "Rf8",
+          "san": "Rf8"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00ems",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "2r1r1k1/1bpn1ppp/p4n2/1p6/1P1N2q1/P3P3/1BB1QPPP/3R1RK1 b - - 7 18",
+      "options": [
+        {
+          "label": "Qf5",
+          "san": "Qf5"
+        },
+        {
+          "label": "Bxg2",
+          "san": "Bxg2"
+        },
+        {
+          "label": "Qf3",
+          "san": "Qf3"
+        },
+        {
+          "label": "Qxg2#",
+          "san": "Qxg2#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00euQ",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r1b1k1nr/pppp1ppp/5q2/2b1N3/4P3/2N5/PPPP2PP/R1BQKB1R b KQkq - 0 6",
+      "options": [
+        {
+          "label": "Bb6",
+          "san": "Bb6"
+        },
+        {
+          "label": "Qh4+",
+          "san": "Qh4+"
+        },
+        {
+          "label": "Qf2#",
+          "san": "Qf2#"
+        },
+        {
+          "label": "g5",
+          "san": "g5"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00f1D",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r2q2kr/1p2b1pp/p2pb3/4p3/2B1P3/5Q2/PP3PPP/2RR2K1 w - - 0 18",
+      "options": [
+        {
+          "label": "Rc2",
+          "san": "Rc2"
+        },
+        {
+          "label": "Bxe6#",
+          "san": "Bxe6#"
+        },
+        {
+          "label": "Be2",
+          "san": "Be2"
+        },
+        {
+          "label": "Bxa6",
+          "san": "Bxa6"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00f7K",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r3k3/ppP2pp1/8/3Nn3/1bP3p1/4P1Pq/PP2NK2/R1BQ1R2 b q - 4 18",
+      "options": [
+        {
+          "label": "Ng6",
+          "san": "Ng6"
+        },
+        {
+          "label": "Bc3",
+          "san": "Bc3"
+        },
+        {
+          "label": "Qh1",
+          "san": "Qh1"
+        },
+        {
+          "label": "Qh2#",
+          "san": "Qh2#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00fDM",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "3rr1k1/2p3b1/1p2q2Q/3p4/1P6/2B4P/6P1/3R2K1 w - - 0 34",
+      "options": [
+        {
+          "label": "Qxg7#",
+          "san": "Qxg7#"
+        },
+        {
+          "label": "Qf4",
+          "san": "Qf4"
+        },
+        {
+          "label": "Qg6",
+          "san": "Qg6"
+        },
+        {
+          "label": "Kf1",
+          "san": "Kf1"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00fK0",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r2q1r2/pp3pk1/2npbNp1/2pN4/2B4Q/3P4/PPP3PP/R5K1 w - - 2 18",
+      "options": [
+        {
+          "label": "Nb6",
+          "san": "Nb6"
+        },
+        {
+          "label": "Bb5",
+          "san": "Bb5"
+        },
+        {
+          "label": "Qh7#",
+          "san": "Qh7#"
+        },
+        {
+          "label": "Ba6",
+          "san": "Ba6"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00fXd",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "8/Q5b1/p3p3/1p1kqpN1/1P6/P7/4nPP1/5K2 w - - 6 47",
+      "options": [
+        {
+          "label": "f4",
+          "san": "f4"
+        },
+        {
+          "label": "Qc5#",
+          "san": "Qc5#"
+        },
+        {
+          "label": "Qe7",
+          "san": "Qe7"
+        },
+        {
+          "label": "g4",
+          "san": "g4"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00fZM",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "5rk1/1q3r2/3p2pQ/3p4/3B4/2P2P2/P5PP/6K1 w - - 0 31",
+      "options": [
+        {
+          "label": "Qh8#",
+          "san": "Qh8#"
+        },
+        {
+          "label": "Bh8",
+          "san": "Bh8"
+        },
+        {
+          "label": "Bf2",
+          "san": "Bf2"
+        },
+        {
+          "label": "Bb6",
+          "san": "Bb6"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00fpk",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "rq2kb1r/1b1p1pp1/p3pn2/1p5p/4P1n1/1NN1BB1P/PPP1QPP1/R4RK1 b kq - 0 14",
+      "options": [
+        {
+          "label": "Nxe3",
+          "san": "Nxe3"
+        },
+        {
+          "label": "Ra7",
+          "san": "Ra7"
+        },
+        {
+          "label": "Qf4",
+          "san": "Qf4"
+        },
+        {
+          "label": "Qh2#",
+          "san": "Qh2#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00ggZ",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "5r1k/1pr3pp/p3b3/P7/1P5Q/4q1P1/6PK/RB6 w - - 0 38",
+      "options": [
+        {
+          "label": "g4",
+          "san": "g4"
+        },
+        {
+          "label": "Qh3",
+          "san": "Qh3"
+        },
+        {
+          "label": "Qd8",
+          "san": "Qd8"
+        },
+        {
+          "label": "Qxh7#",
+          "san": "Qxh7#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00hck",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "8/pp3k1p/3B2p1/2P5/1P6/4n2P/P4qPK/2Q5 b - - 1 33",
+      "options": [
+        {
+          "label": "Qxg2#",
+          "san": "Qxg2#"
+        },
+        {
+          "label": "Kg8",
+          "san": "Kg8"
+        },
+        {
+          "label": "Qd2",
+          "san": "Qd2"
+        },
+        {
+          "label": "Ke8",
+          "san": "Ke8"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00jPw",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r3r1k1/ppp2R2/1b5Q/3PP2n/2B3bq/2N5/PP4PP/R6K b - - 0 18",
+      "options": [
+        {
+          "label": "Ng3#",
+          "san": "Ng3#"
+        },
+        {
+          "label": "Ng7",
+          "san": "Ng7"
+        },
+        {
+          "label": "Re7",
+          "san": "Re7"
+        },
+        {
+          "label": "Be2",
+          "san": "Be2"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00jd8",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "4b2k/R7/p4q2/2P1r2p/3QP1pP/1B6/P5pR/6K1 b - - 1 36",
+      "options": [
+        {
+          "label": "Qf1#",
+          "san": "Qf1#"
+        },
+        {
+          "label": "Re7",
+          "san": "Re7"
+        },
+        {
+          "label": "Qf2+",
+          "san": "Qf2+"
+        },
+        {
+          "label": "Qc6",
+          "san": "Qc6"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00kT1",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r2q1rk1/pb2bpp1/2p1p3/4P3/3P3p/P1PQnN1P/2B2PP1/R4RK1 w - - 0 19",
+      "options": [
+        {
+          "label": "Qf5",
+          "san": "Qf5"
+        },
+        {
+          "label": "Qb5",
+          "san": "Qb5"
+        },
+        {
+          "label": "Rfb1",
+          "san": "Rfb1"
+        },
+        {
+          "label": "Qh7#",
+          "san": "Qh7#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00kyA",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "k2r3r/pp6/6R1/3P2Pp/2P2B1n/P1N4q/1P3P2/R4QK1 b - - 2 24",
+      "options": [
+        {
+          "label": "Nf3#",
+          "san": "Nf3#"
+        },
+        {
+          "label": "Rdg8",
+          "san": "Rdg8"
+        },
+        {
+          "label": "Qg2+",
+          "san": "Qg2+"
+        },
+        {
+          "label": "b5",
+          "san": "b5"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00l3p",
+      "title": "Loose Piece",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "3q4/1p6/p4N2/5QP1/4Pn1k/2P4r/1P3K2/8 w - - 5 41",
+      "options": [
+        {
+          "label": "c4",
+          "san": "c4"
+        },
+        {
+          "label": "Qxf4#",
+          "san": "Qxf4#"
+        },
+        {
+          "label": "Qa5",
+          "san": "Qa5"
+        },
+        {
+          "label": "e5",
+          "san": "e5"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00lio",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r4k2/1p4R1/3pQ3/pP2p3/4q3/4Pr2/8/7K w - - 5 39",
+      "options": [
+        {
+          "label": "Qxd6+",
+          "san": "Qxd6+"
+        },
+        {
+          "label": "Qd5",
+          "san": "Qd5"
+        },
+        {
+          "label": "Rh7",
+          "san": "Rh7"
+        },
+        {
+          "label": "Qg8#",
+          "san": "Qg8#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00luA",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r2q1rk1/1b3pp1/p3p3/6b1/1pnN1n2/3Q4/PPP1NB2/1K1R1B1R w - - 0 21",
+      "options": [
+        {
+          "label": "Rg1",
+          "san": "Rg1"
+        },
+        {
+          "label": "Qd2",
+          "san": "Qd2"
+        },
+        {
+          "label": "Qh7#",
+          "san": "Qh7#"
+        },
+        {
+          "label": "Bh4",
+          "san": "Bh4"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00mLm",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "4Q1nk/p6p/3P2pb/4p3/4Pq2/1B5P/6P1/7K w - - 3 36",
+      "options": [
+        {
+          "label": "Be6",
+          "san": "Be6"
+        },
+        {
+          "label": "h4",
+          "san": "h4"
+        },
+        {
+          "label": "Qxg8#",
+          "san": "Qxg8#"
+        },
+        {
+          "label": "Bd5",
+          "san": "Bd5"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00n6z",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "R3rk1q/p3Np2/1pp5/8/P1Q1P1pP/2P2P2/1P3bP1/3R3K b - - 0 34",
+      "options": [
+        {
+          "label": "Qd4",
+          "san": "Qd4"
+        },
+        {
+          "label": "Qxh4#",
+          "san": "Qxh4#"
+        },
+        {
+          "label": "Bc5",
+          "san": "Bc5"
+        },
+        {
+          "label": "a6",
+          "san": "a6"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00nCq",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r3k2r/ppp2p1p/3b1p2/4p3/8/1PPB4/b1PQ1PPP/2KR3R b kq - 0 14",
+      "options": [
+        {
+          "label": "h5",
+          "san": "h5"
+        },
+        {
+          "label": "b6",
+          "san": "b6"
+        },
+        {
+          "label": "a6",
+          "san": "a6"
+        },
+        {
+          "label": "Ba3#",
+          "san": "Ba3#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00nNa",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "8/2k3pp/4p3/1R2Kp2/1Pr4P/6P1/5P2/8 b - - 8 37",
+      "options": [
+        {
+          "label": "Kd8",
+          "san": "Kd8"
+        },
+        {
+          "label": "Rc3",
+          "san": "Rc3"
+        },
+        {
+          "label": "Re4#",
+          "san": "Re4#"
+        },
+        {
+          "label": "Rg4",
+          "san": "Rg4"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00ndv",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r1bq1rk1/pp2npp1/4p3/3p4/3P2n1/2P2NP1/PPQN1PP1/R3K2R w KQ - 0 14",
+      "options": [
+        {
+          "label": "Qh7#",
+          "san": "Qh7#"
+        },
+        {
+          "label": "Rh5",
+          "san": "Rh5"
+        },
+        {
+          "label": "Rg1",
+          "san": "Rg1"
+        },
+        {
+          "label": "Kf1",
+          "san": "Kf1"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00nlD",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "1r2r3/pp3pk1/2pp2p1/1P2p2p/2P3nq/3PP1N1/P2Q1PB1/1R3RK1 b - - 1 23",
+      "options": [
+        {
+          "label": "Qe7",
+          "san": "Qe7"
+        },
+        {
+          "label": "a6",
+          "san": "a6"
+        },
+        {
+          "label": "Kh7",
+          "san": "Kh7"
+        },
+        {
+          "label": "Qh2#",
+          "san": "Qh2#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00pCr",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "6nk/pRQ4p/6p1/5p2/3bp3/5nP1/q4PKP/5B2 w - - 4 32",
+      "options": [
+        {
+          "label": "Qc3",
+          "san": "Qc3"
+        },
+        {
+          "label": "Qc5",
+          "san": "Qc5"
+        },
+        {
+          "label": "Rb4",
+          "san": "Rb4"
+        },
+        {
+          "label": "Qxh7#",
+          "san": "Qxh7#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00pDE",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r3k2r/pp3p2/1qN1p2p/3p4/P7/8/1PPK1bPP/R2Q1B1R b kq - 1 17",
+      "options": [
+        {
+          "label": "Qd8",
+          "san": "Qd8"
+        },
+        {
+          "label": "Qe3#",
+          "san": "Qe3#"
+        },
+        {
+          "label": "d4",
+          "san": "d4"
+        },
+        {
+          "label": "Rd8",
+          "san": "Rd8"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00pHb",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r6k/4qp1p/p4NrQ/1p2p3/3pP3/1P1P3P/1PP3P1/5RK1 w - - 3 24",
+      "options": [
+        {
+          "label": "Ng4",
+          "san": "Ng4"
+        },
+        {
+          "label": "Qxh7#",
+          "san": "Qxh7#"
+        },
+        {
+          "label": "Rf5",
+          "san": "Rf5"
+        },
+        {
+          "label": "g3",
+          "san": "g3"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00pmn",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "8/P6p/6p1/1k6/3Qq3/1PP5/6PP/6K1 b - - 0 35",
+      "options": [
+        {
+          "label": "Qe6",
+          "san": "Qe6"
+        },
+        {
+          "label": "Qe8",
+          "san": "Qe8"
+        },
+        {
+          "label": "Qe7",
+          "san": "Qe7"
+        },
+        {
+          "label": "Qe1#",
+          "san": "Qe1#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00qoE",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "1n1q2rk/p3b3/1pr1p1Rp/2p1P3/4N3/2PP1N1P/P3B2K/6R1 w - - 0 29",
+      "options": [
+        {
+          "label": "R6g4",
+          "san": "R6g4"
+        },
+        {
+          "label": "Rxh6#",
+          "san": "Rxh6#"
+        },
+        {
+          "label": "R6g3",
+          "san": "R6g3"
+        },
+        {
+          "label": "R1g5",
+          "san": "R1g5"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00qyT",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "2rq1rk1/pb2bppp/np2p3/3pP3/3P4/P1nQB3/1P1N1PPP/1BR2RK1 w - - 0 17",
+      "options": [
+        {
+          "label": "Rxc3",
+          "san": "Rxc3"
+        },
+        {
+          "label": "Ba2",
+          "san": "Ba2"
+        },
+        {
+          "label": "Qe2",
+          "san": "Qe2"
+        },
+        {
+          "label": "Qxh7#",
+          "san": "Qxh7#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00rTX",
+      "title": "Back Rank Crush",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "3r2k1/pp3ppp/4p3/2N5/7q/1Q3P2/PP1R2PP/4R2K b - - 0 24",
+      "options": [
+        {
+          "label": "e5",
+          "san": "e5"
+        },
+        {
+          "label": "Qxe1#",
+          "san": "Qxe1#"
+        },
+        {
+          "label": "Qf6",
+          "san": "Qf6"
+        },
+        {
+          "label": "g6",
+          "san": "g6"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00sMF",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r1bqr1k1/p4pPp/2p1p3/2bp3Q/8/2Nn4/PPP3PP/R1B2R1K w - - 0 16",
+      "options": [
+        {
+          "label": "Qxf7#",
+          "san": "Qxf7#"
+        },
+        {
+          "label": "Qf3",
+          "san": "Qf3"
+        },
+        {
+          "label": "a4",
+          "san": "a4"
+        },
+        {
+          "label": "Qf5",
+          "san": "Qf5"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00swU",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "3rkb1r/pppqp1pp/2n5/1QN2p2/8/1P2P3/PBP2PPP/R3KB1R b KQk - 1 12",
+      "options": [
+        {
+          "label": "Na5",
+          "san": "Na5"
+        },
+        {
+          "label": "f4",
+          "san": "f4"
+        },
+        {
+          "label": "Qd2#",
+          "san": "Qd2#"
+        },
+        {
+          "label": "e6",
+          "san": "e6"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00t3g",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r2q1rk1/pp1n3p/2p3pb/5N2/2P1p3/1P2P1P1/PB3PBP/R2R2K1 w - - 0 20",
+      "options": [
+        {
+          "label": "Kh1",
+          "san": "Kh1"
+        },
+        {
+          "label": "Bh1",
+          "san": "Bh1"
+        },
+        {
+          "label": "Nxh6#",
+          "san": "Nxh6#"
+        },
+        {
+          "label": "Bf6",
+          "san": "Bf6"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00u3h",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "8/2p2r1p/1p4pk/p2PQ3/2P3P1/1P1q1B1P/P1n3K1/8 w - - 8 42",
+      "options": [
+        {
+          "label": "g5#",
+          "san": "g5#"
+        },
+        {
+          "label": "Qg3",
+          "san": "Qg3"
+        },
+        {
+          "label": "a4",
+          "san": "a4"
+        },
+        {
+          "label": "Kh2",
+          "san": "Kh2"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00uQY",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "1r5r/3b4/pk2P3/1p2Q1Np/4BP2/1P5n/P5PP/6RK b - - 0 36",
+      "options": [
+        {
+          "label": "Rb7",
+          "san": "Rb7"
+        },
+        {
+          "label": "Rbc8",
+          "san": "Rbc8"
+        },
+        {
+          "label": "Nf2#",
+          "san": "Nf2#"
+        },
+        {
+          "label": "Rbf8",
+          "san": "Rbf8"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00uid",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r2qkbr1/pp2pp1p/5n2/2p1Nb2/2Q5/4B3/PP1N1PPP/n2K1B1R w q - 0 13",
+      "options": [
+        {
+          "label": "Qxf7#",
+          "san": "Qxf7#"
+        },
+        {
+          "label": "Be2",
+          "san": "Be2"
+        },
+        {
+          "label": "a3",
+          "san": "a3"
+        },
+        {
+          "label": "Qc1",
+          "san": "Qc1"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00xDa",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "R7/3kbpp1/4p3/1p1pP3/2pPb1P1/1PP1B3/1Q3P1r/6K1 b - - 0 28",
+      "options": [
+        {
+          "label": "Bh7",
+          "san": "Bh7"
+        },
+        {
+          "label": "Rh1#",
+          "san": "Rh1#"
+        },
+        {
+          "label": "Kc7",
+          "san": "Kc7"
+        },
+        {
+          "label": "Bd3",
+          "san": "Bd3"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00xgi",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "rnb1qrk1/pp4pp/4p3/3pNp1Q/2pPn3/2PBP1P1/PP1N1PP1/R3K2R w KQ - 2 12",
+      "options": [
+        {
+          "label": "Nb1",
+          "san": "Nb1"
+        },
+        {
+          "label": "Qxh7#",
+          "san": "Qxh7#"
+        },
+        {
+          "label": "Qh6",
+          "san": "Qh6"
+        },
+        {
+          "label": "Qxf5",
+          "san": "Qxf5"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00ySR",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "4rk2/pprR3p/1b4p1/6B1/4p2P/1B6/PP3PP1/6K1 w - - 1 32",
+      "options": [
+        {
+          "label": "Rd5",
+          "san": "Rd5"
+        },
+        {
+          "label": "Bh6#",
+          "san": "Bh6#"
+        },
+        {
+          "label": "Rd1",
+          "san": "Rd1"
+        },
+        {
+          "label": "Rd4",
+          "san": "Rd4"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00yxD",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "3r2r1/1b3p1k/p1q2Pp1/1p6/6P1/P2BR3/1PP2R1P/6K1 w - - 0 29",
+      "options": [
+        {
+          "label": "h4",
+          "san": "h4"
+        },
+        {
+          "label": "Re8",
+          "san": "Re8"
+        },
+        {
+          "label": "Be2",
+          "san": "Be2"
+        },
+        {
+          "label": "Rh3#",
+          "san": "Rh3#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00zDW",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "1r1r3k/p3R1pp/b1p5/2pq2Q1/8/2PPR2P/PP3PP1/6K1 w - - 3 27",
+      "options": [
+        {
+          "label": "R7e6",
+          "san": "R7e6"
+        },
+        {
+          "label": "Qxg7#",
+          "san": "Qxg7#"
+        },
+        {
+          "label": "R3e6",
+          "san": "R3e6"
+        },
+        {
+          "label": "c4",
+          "san": "c4"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-00zUZ",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r1q2rk1/1p1b1pbp/p2p4/2p2N2/P3Pn2/2NP2QP/1PP3BK/R7 w - - 0 21",
+      "options": [
+        {
+          "label": "Ra2",
+          "san": "Ra2"
+        },
+        {
+          "label": "Qg4",
+          "san": "Qg4"
+        },
+        {
+          "label": "Qxg7#",
+          "san": "Qxg7#"
+        },
+        {
+          "label": "d4",
+          "san": "d4"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-0104L",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "6k1/pQ3pp1/7p/8/3P4/6Pb/PPR2r1P/6K1 b - - 0 25",
+      "options": [
+        {
+          "label": "Kf8",
+          "san": "Kf8"
+        },
+        {
+          "label": "Kh8",
+          "san": "Kh8"
+        },
+        {
+          "label": "Rf1#",
+          "san": "Rf1#"
+        },
+        {
+          "label": "Rd2",
+          "san": "Rd2"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-0109N",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r2qkbnr/1p2pppp/p1n5/4N3/2BP4/8/PP3PPP/RNBb1RK1 w kq - 0 9",
+      "options": [
+        {
+          "label": "Bxf7#",
+          "san": "Bxf7#"
+        },
+        {
+          "label": "Na3",
+          "san": "Na3"
+        },
+        {
+          "label": "Nd7",
+          "san": "Nd7"
+        },
+        {
+          "label": "Ng4",
+          "san": "Ng4"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-012uA",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r4r2/p1p4R/6k1/3n1pB1/1q1Pb3/8/1P2Q1PP/6K1 w - - 0 36",
+      "options": [
+        {
+          "label": "g4",
+          "san": "g4"
+        },
+        {
+          "label": "Qh5#",
+          "san": "Qh5#"
+        },
+        {
+          "label": "Qxe4",
+          "san": "Qxe4"
+        },
+        {
+          "label": "Qe3",
+          "san": "Qe3"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-013fd",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "8/1P6/6p1/3B3p/R3P3/5PkP/1q4P1/R6K b - - 0 46",
+      "options": [
+        {
+          "label": "Qh8",
+          "san": "Qh8"
+        },
+        {
+          "label": "Qxg2#",
+          "san": "Qxg2#"
+        },
+        {
+          "label": "Qb6",
+          "san": "Qb6"
+        },
+        {
+          "label": "Qb5",
+          "san": "Qb5"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-013gO",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "2r5/p3b1k1/8/4pp1K/2Pp2p1/6P1/P1P2R1P/R2Q4 b - - 0 29",
+      "options": [
+        {
+          "label": "Rh8#",
+          "san": "Rh8#"
+        },
+        {
+          "label": "Kg8",
+          "san": "Kg8"
+        },
+        {
+          "label": "Kf6",
+          "san": "Kf6"
+        },
+        {
+          "label": "f4",
+          "san": "f4"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01485",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r2qrk2/p2n2p1/b1pb1n1p/8/1p1P1N2/1Q3N1P/PP3PP1/R1B1R1K1 w - - 2 17",
+      "options": [
+        {
+          "label": "Ng5",
+          "san": "Ng5"
+        },
+        {
+          "label": "Ng6#",
+          "san": "Ng6#"
+        },
+        {
+          "label": "d5",
+          "san": "d5"
+        },
+        {
+          "label": "Rb1",
+          "san": "Rb1"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-014gw",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r2qkb1r/1p2pppp/p2p1n2/2p1N3/P1B1P3/3P3P/1PPN1PP1/R1Bb1RK1 w kq - 0 10",
+      "options": [
+        {
+          "label": "b4",
+          "san": "b4"
+        },
+        {
+          "label": "Bxf7#",
+          "san": "Bxf7#"
+        },
+        {
+          "label": "Nef3",
+          "san": "Nef3"
+        },
+        {
+          "label": "Nb3",
+          "san": "Nb3"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-0156I",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "2k5/1p5R/3K4/Pr6/8/1p6/8/8 w - - 2 47",
+      "options": [
+        {
+          "label": "Rh5",
+          "san": "Rh5"
+        },
+        {
+          "label": "Re7",
+          "san": "Re7"
+        },
+        {
+          "label": "Rh8#",
+          "san": "Rh8#"
+        },
+        {
+          "label": "Ke7",
+          "san": "Ke7"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-0158e",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "4k3/4p2R/1pp1P1p1/8/3pN3/4b3/1rP3PP/5K2 w - - 0 26",
+      "options": [
+        {
+          "label": "Rh8#",
+          "san": "Rh8#"
+        },
+        {
+          "label": "Nc5",
+          "san": "Nc5"
+        },
+        {
+          "label": "Nc3",
+          "san": "Nc3"
+        },
+        {
+          "label": "Ke1",
+          "san": "Ke1"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-015i1",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r2q1rk1/pp1b1pp1/2n1p1n1/2b1P1NQ/3p4/P7/1P3PPP/RNB2RK1 w - - 4 14",
+      "options": [
+        {
+          "label": "Re1",
+          "san": "Re1"
+        },
+        {
+          "label": "b3",
+          "san": "b3"
+        },
+        {
+          "label": "Bd2",
+          "san": "Bd2"
+        },
+        {
+          "label": "Qh7#",
+          "san": "Qh7#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-015mX",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r3k2r/1ppqb2p/p1b1N3/3pPp2/3P2Q1/2P5/PP4PP/RNB3K1 w kq - 0 15",
+      "options": [
+        {
+          "label": "Nd2",
+          "san": "Nd2"
+        },
+        {
+          "label": "Qh4",
+          "san": "Qh4"
+        },
+        {
+          "label": "Qh5#",
+          "san": "Qh5#"
+        },
+        {
+          "label": "Qe2",
+          "san": "Qe2"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-016I9",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "8/1b2R2p/p5k1/3p2P1/PP1n2KP/2r5/3N4/8 w - - 6 47",
+      "options": [
+        {
+          "label": "a5",
+          "san": "a5"
+        },
+        {
+          "label": "h5#",
+          "san": "h5#"
+        },
+        {
+          "label": "Rc7",
+          "san": "Rc7"
+        },
+        {
+          "label": "Nb3",
+          "san": "Nb3"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-016ow",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "1B3k2/5P2/5K2/7p/P4P1P/8/8/2q5 w - - 0 48",
+      "options": [
+        {
+          "label": "a5",
+          "san": "a5"
+        },
+        {
+          "label": "Ke5",
+          "san": "Ke5"
+        },
+        {
+          "label": "f5",
+          "san": "f5"
+        },
+        {
+          "label": "Bd6#",
+          "san": "Bd6#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-0184P",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "1r6/3R2p1/p5kp/4p2N/2pn2K1/1P6/P5PP/8 w - - 0 31",
+      "options": [
+        {
+          "label": "Rd8",
+          "san": "Rd8"
+        },
+        {
+          "label": "Nxg7",
+          "san": "Nxg7"
+        },
+        {
+          "label": "Rxg7#",
+          "san": "Rxg7#"
+        },
+        {
+          "label": "Rb7",
+          "san": "Rb7"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-018Bi",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "4k3/5r2/p7/1p3p1P/3Q1PPB/P1n4K/1b1p4/3q4 w - - 11 56",
+      "options": [
+        {
+          "label": "Qa4",
+          "san": "Qa4"
+        },
+        {
+          "label": "Qe4+",
+          "san": "Qe4+"
+        },
+        {
+          "label": "Qd8#",
+          "san": "Qd8#"
+        },
+        {
+          "label": "Kg3",
+          "san": "Kg3"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-018YV",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "b4rk1/p1q2pbp/4p1p1/1PPp4/7r/1Q3P2/P1N2BPP/4RR1K b - - 6 31",
+      "options": [
+        {
+          "label": "Bc6",
+          "san": "Bc6"
+        },
+        {
+          "label": "Qb7",
+          "san": "Qb7"
+        },
+        {
+          "label": "Qxh2#",
+          "san": "Qxh2#"
+        },
+        {
+          "label": "Rd4",
+          "san": "Rd4"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-018b0",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r4r1k/1ppqn1p1/1p1p1nQp/4pN2/4P3/3PB2P/PPP2RP1/R5K1 w - - 12 19",
+      "options": [
+        {
+          "label": "Bc1",
+          "san": "Bc1"
+        },
+        {
+          "label": "Bxh6",
+          "san": "Bxh6"
+        },
+        {
+          "label": "Qxg7#",
+          "san": "Qxg7#"
+        },
+        {
+          "label": "Re2",
+          "san": "Re2"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-019i4",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "6rk/1R6/6Pp/p1p5/6K1/8/3b4/7r w - - 6 44",
+      "options": [
+        {
+          "label": "Rf7",
+          "san": "Rf7"
+        },
+        {
+          "label": "Rh7#",
+          "san": "Rh7#"
+        },
+        {
+          "label": "Kf5",
+          "san": "Kf5"
+        },
+        {
+          "label": "Kg3",
+          "san": "Kg3"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-019tx",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "4Q2r/pp2b1k1/2pq1p2/8/3p4/1BP4P/PP1B2P1/6K1 w - - 0 33",
+      "options": [
+        {
+          "label": "Qd8",
+          "san": "Qd8"
+        },
+        {
+          "label": "Qf7#",
+          "san": "Qf7#"
+        },
+        {
+          "label": "a3",
+          "san": "a3"
+        },
+        {
+          "label": "Bc1",
+          "san": "Bc1"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01A6Y",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "2r4Q/p6R/1p2p1k1/3b1rq1/3P4/P1P5/3n1PPP/R5K1 w - - 5 29",
+      "options": [
+        {
+          "label": "Rb7",
+          "san": "Rb7"
+        },
+        {
+          "label": "Qg7#",
+          "san": "Qg7#"
+        },
+        {
+          "label": "Qd8",
+          "san": "Qd8"
+        },
+        {
+          "label": "Rd7",
+          "san": "Rd7"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01AYq",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r1b4r/p1B1ppbp/k1p2np1/1p6/N2RP3/8/PPP2PPP/2K2B1R w - - 2 14",
+      "options": [
+        {
+          "label": "Bf4",
+          "san": "Bf4"
+        },
+        {
+          "label": "Nc5#",
+          "san": "Nc5#"
+        },
+        {
+          "label": "f4",
+          "san": "f4"
+        },
+        {
+          "label": "Nc3",
+          "san": "Nc3"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01BI2",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "3R4/2p2k2/4p1p1/1p2P2p/1P6/8/4rr2/3R2K1 w - - 8 42",
+      "options": [
+        {
+          "label": "Rg8",
+          "san": "Rg8"
+        },
+        {
+          "label": "R1d7#",
+          "san": "R1d7#"
+        },
+        {
+          "label": "Re8",
+          "san": "Re8"
+        },
+        {
+          "label": "Rb1",
+          "san": "Rb1"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01BKZ",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "2kr1bnr/ppp2ppp/8/8/8/P4N2/b1PBPPPP/2KR1B1R b - - 0 11",
+      "options": [
+        {
+          "label": "Bxa3#",
+          "san": "Bxa3#"
+        },
+        {
+          "label": "Rd6",
+          "san": "Rd6"
+        },
+        {
+          "label": "b5",
+          "san": "b5"
+        },
+        {
+          "label": "b6",
+          "san": "b6"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01BTN",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "5Bk1/pp5p/1n4b1/2p5/2P5/2N1bB1P/PP2K1P1/Q2R2q1 b - - 10 29",
+      "options": [
+        {
+          "label": "Bf5",
+          "san": "Bf5"
+        },
+        {
+          "label": "Bd3+",
+          "san": "Bd3+"
+        },
+        {
+          "label": "Qf2#",
+          "san": "Qf2#"
+        },
+        {
+          "label": "Nd7",
+          "san": "Nd7"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01BjV",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "1r6/8/3bk3/2p5/P2pN3/3P3P/R4PP1/6K1 b - - 0 47",
+      "options": [
+        {
+          "label": "Rb1#",
+          "san": "Rb1#"
+        },
+        {
+          "label": "Kd5",
+          "san": "Kd5"
+        },
+        {
+          "label": "Rc8",
+          "san": "Rc8"
+        },
+        {
+          "label": "Kf5",
+          "san": "Kf5"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01BnQ",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r1b1kb1r/p2n1ppp/p3p3/1NppP1B1/3P4/3B1N2/1qP2PPP/3QK2R w Kkq - 0 12",
+      "options": [
+        {
+          "label": "Nxa7",
+          "san": "Nxa7"
+        },
+        {
+          "label": "Nc7#",
+          "san": "Nc7#"
+        },
+        {
+          "label": "dxc5",
+          "san": "dxc5"
+        },
+        {
+          "label": "Bc4",
+          "san": "Bc4"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01D1x",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r4q1k/7p/p3p1BQ/1p2P3/P7/2p2b2/1P3P1K/6R1 w - - 1 32",
+      "options": [
+        {
+          "label": "Be8",
+          "san": "Be8"
+        },
+        {
+          "label": "Qxh7#",
+          "san": "Qxh7#"
+        },
+        {
+          "label": "Qc1",
+          "san": "Qc1"
+        },
+        {
+          "label": "b4",
+          "san": "b4"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01EFz",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "2r2rk1/p2bbpp1/2n1p2p/q2nP1N1/3P1B1P/2PQ4/P2N1PP1/R3K2R w KQ - 1 17",
+      "options": [
+        {
+          "label": "Qc2",
+          "san": "Qc2"
+        },
+        {
+          "label": "Rh2",
+          "san": "Rh2"
+        },
+        {
+          "label": "Qh7#",
+          "san": "Qh7#"
+        },
+        {
+          "label": "Rg1",
+          "san": "Rg1"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01EKU",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "rn1q1k2/p1pp2pB/1p2pb2/6NQ/3P4/2P5/PP3P2/R3K2b w Q - 6 21",
+      "options": [
+        {
+          "label": "b4",
+          "san": "b4"
+        },
+        {
+          "label": "Qf7#",
+          "san": "Qf7#"
+        },
+        {
+          "label": "Qe8+",
+          "san": "Qe8+"
+        },
+        {
+          "label": "Kf1",
+          "san": "Kf1"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01Esj",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "2r5/p2b2Q1/1p1kp3/3nN3/3P4/8/Pq3PPP/4R1K1 w - - 1 26",
+      "options": [
+        {
+          "label": "Qxd7#",
+          "san": "Qxd7#"
+        },
+        {
+          "label": "Nf3",
+          "san": "Nf3"
+        },
+        {
+          "label": "a4",
+          "san": "a4"
+        },
+        {
+          "label": "g3",
+          "san": "g3"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01F7L",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r3kb1r/ppp2ppp/8/2p1Pb2/3Pn2q/3B1P2/PPP1K1PP/RNBQ3R b kq - 2 9",
+      "options": [
+        {
+          "label": "Qe1+",
+          "san": "Qe1+"
+        },
+        {
+          "label": "Bg6",
+          "san": "Bg6"
+        },
+        {
+          "label": "Rd8",
+          "san": "Rd8"
+        },
+        {
+          "label": "Qf2#",
+          "san": "Qf2#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01H4V",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r5k1/6p1/2N3pp/3p4/P2P4/1P5n/6PP/6RK b - - 0 34",
+      "options": [
+        {
+          "label": "h5",
+          "san": "h5"
+        },
+        {
+          "label": "Nf2#",
+          "san": "Nf2#"
+        },
+        {
+          "label": "Kf8",
+          "san": "Kf8"
+        },
+        {
+          "label": "Nxg1",
+          "san": "Nxg1"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01HI3",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "Q3R3/5Rpk/7p/8/2p5/2P5/1Pr4r/4K3 b - - 0 54",
+      "options": [
+        {
+          "label": "Rh5",
+          "san": "Rh5"
+        },
+        {
+          "label": "Rcf2",
+          "san": "Rcf2"
+        },
+        {
+          "label": "Rhe2+",
+          "san": "Rhe2+"
+        },
+        {
+          "label": "Rc1#",
+          "san": "Rc1#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01HV2",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "3rk2r/p3nppp/1pp5/3q4/1B2QRP1/4P2P/P7/4KR2 w k - 12 31",
+      "options": [
+        {
+          "label": "Qe5",
+          "san": "Qe5"
+        },
+        {
+          "label": "Qxe7#",
+          "san": "Qxe7#"
+        },
+        {
+          "label": "Qg6",
+          "san": "Qg6"
+        },
+        {
+          "label": "Rh1",
+          "san": "Rh1"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01InH",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "4k1nr/r1pp1ppq/1p2p3/2b5/2P1PP2/pPNP1QP1/P2B1N1P/R4RKB b k - 0 21",
+      "options": [
+        {
+          "label": "Qxh2#",
+          "san": "Qxh2#"
+        },
+        {
+          "label": "f5",
+          "san": "f5"
+        },
+        {
+          "label": "d5",
+          "san": "d5"
+        },
+        {
+          "label": "Nf6",
+          "san": "Nf6"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01Ivs",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r1k4r/pp3Qp1/2Bb3p/4q3/4N3/8/PP3PPP/R4RK1 b - - 0 18",
+      "options": [
+        {
+          "label": "Rf8",
+          "san": "Rf8"
+        },
+        {
+          "label": "Qxh2#",
+          "san": "Qxh2#"
+        },
+        {
+          "label": "Qf4",
+          "san": "Qf4"
+        },
+        {
+          "label": "g6",
+          "san": "g6"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01J49",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "6R1/p4q2/2p4p/6p1/6Pk/8/P4r1P/6QK w - - 1 43",
+      "options": [
+        {
+          "label": "Qg3#",
+          "san": "Qg3#"
+        },
+        {
+          "label": "Re8",
+          "san": "Re8"
+        },
+        {
+          "label": "Qg2",
+          "san": "Qg2"
+        },
+        {
+          "label": "a4",
+          "san": "a4"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01J8c",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r1bqk2r/pp2bpp1/2p1p2p/4N3/3PnQ2/2P3P1/PP3PBP/R3K2R w KQkq - 0 14",
+      "options": [
+        {
+          "label": "Qc1",
+          "san": "Qc1"
+        },
+        {
+          "label": "Kd1",
+          "san": "Kd1"
+        },
+        {
+          "label": "Bxe4",
+          "san": "Bxe4"
+        },
+        {
+          "label": "Qxf7#",
+          "san": "Qxf7#"
+        }
+      ],
+      "correctIndex": 3,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01KVi",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "2r5/1p6/p2p3R/3qpkP1/4np2/3B4/PP6/1K4R1 w - - 0 32",
+      "options": [
+        {
+          "label": "Rf6#",
+          "san": "Rf6#"
+        },
+        {
+          "label": "Rh5",
+          "san": "Rh5"
+        },
+        {
+          "label": "a3",
+          "san": "a3"
+        },
+        {
+          "label": "Bxa6",
+          "san": "Bxa6"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01KmU",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "5k2/5pp1/3P2p1/2pP4/5bP1/4nB1P/2r5/BR5K w - - 0 36",
+      "options": [
+        {
+          "label": "Rd1",
+          "san": "Rd1"
+        },
+        {
+          "label": "Rf1",
+          "san": "Rf1"
+        },
+        {
+          "label": "Rb8#",
+          "san": "Rb8#"
+        },
+        {
+          "label": "Rg1",
+          "san": "Rg1"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01L59",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "rnb2rk1/pp1p1ppp/4p3/4P3/3b1Pnq/2N3P1/PPPNB2P/R1BQ1R1K b - - 0 12",
+      "options": [
+        {
+          "label": "Qxh2#",
+          "san": "Qxh2#"
+        },
+        {
+          "label": "Qh5",
+          "san": "Qh5"
+        },
+        {
+          "label": "Rd8",
+          "san": "Rd8"
+        },
+        {
+          "label": "Na6",
+          "san": "Na6"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01LBw",
+      "title": "Loose Piece",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "r6r/ppp1kBp1/2np4/4p3/4P1Q1/P2P3q/1PPN1P2/R4RK1 b - - 0 17",
+      "options": [
+        {
+          "label": "Nd4",
+          "san": "Nd4"
+        },
+        {
+          "label": "Qxg4#",
+          "san": "Qxg4#"
+        },
+        {
+          "label": "a5",
+          "san": "a5"
+        },
+        {
+          "label": "Qh6",
+          "san": "Qh6"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01Ldf",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "rn1q2r1/pb3p2/1p2pPk1/3pP3/8/2p2N2/PPP2P2/R3KB1R w KQ - 0 18",
+      "options": [
+        {
+          "label": "Bh3",
+          "san": "Bh3"
+        },
+        {
+          "label": "Ba6",
+          "san": "Ba6"
+        },
+        {
+          "label": "Bd3#",
+          "san": "Bd3#"
+        },
+        {
+          "label": "a4",
+          "san": "a4"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01LoE",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "r1b2k1r/pppp2p1/2n4p/4q1N1/2Q1P3/8/P4PPP/R1B2RK1 w - - 0 16",
+      "options": [
+        {
+          "label": "Qf7#",
+          "san": "Qf7#"
+        },
+        {
+          "label": "Qb3",
+          "san": "Qb3"
+        },
+        {
+          "label": "Qd5",
+          "san": "Qd5"
+        },
+        {
+          "label": "Bd2",
+          "san": "Bd2"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01Lyl",
+      "title": "Checkmate Spot",
+      "prompt": "Black to move. Checkmate in one.",
+      "fen": "3r1rk1/pp4b1/2p2p2/5P1p/6n1/2N2B2/PPP1Q1Pq/3RRK2 b - - 3 26",
+      "options": [
+        {
+          "label": "Ne3+",
+          "san": "Ne3+"
+        },
+        {
+          "label": "Qh1#",
+          "san": "Qh1#"
+        },
+        {
+          "label": "Kf7",
+          "san": "Kf7"
+        },
+        {
+          "label": "Kh7",
+          "san": "Kh7"
+        }
+      ],
+      "correctIndex": 1,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01Mgn",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "1r5Q/3b1k2/3qp1p1/3p3R/p2P3P/2P3P1/P4P2/6K1 w - - 2 33",
+      "options": [
+        {
+          "label": "Rh7#",
+          "san": "Rh7#"
+        },
+        {
+          "label": "Rxd5",
+          "san": "Rxd5"
+        },
+        {
+          "label": "f4",
+          "san": "f4"
+        },
+        {
+          "label": "Rf5+",
+          "san": "Rf5+"
+        }
+      ],
+      "correctIndex": 0,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    },
+    {
+      "id": "lichess-01Mwq",
+      "title": "Checkmate Spot",
+      "prompt": "White to move. Checkmate in one.",
+      "fen": "2r2b2/1p3R2/3kp1p1/1B1p1b2/P2P4/8/1PP1N2r/2K1R3 w - - 2 28",
+      "options": [
+        {
+          "label": "c4",
+          "san": "c4"
+        },
+        {
+          "label": "Rxf8",
+          "san": "Rxf8"
+        },
+        {
+          "label": "Rd7#",
+          "san": "Rd7#"
+        },
+        {
+          "label": "b4",
+          "san": "b4"
+        }
+      ],
+      "correctIndex": 2,
+      "wrongFeedback": "That move is not checkmate — look for a forcing finish."
+    }
+  ]
+}

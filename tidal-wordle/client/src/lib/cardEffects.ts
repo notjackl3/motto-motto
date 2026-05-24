@@ -41,6 +41,10 @@ import { playCardSfx, startPlaylistForTheme, stopPlaylist } from './cardAudio';
 import { suggestWordFromPattern } from './cardContent/suggestWord';
 import { isValidProbeWord } from './cardContent/probeWords';
 import { pickRandomChessPuzzle, getChessPuzzleById } from './chessPuzzles';
+import {
+  applyChessBlunderPenalty,
+  type ChessBlunderPenaltyResult,
+} from './chessBlunderPenalties';
 
 export { CARD_IDS };
 
@@ -545,13 +549,16 @@ export function dismissOverlay(overlayId: string): void {
   });
 }
 
-const CHESS_WRONG_PENALTY_MS = 5000;
-const CHESS_WRONG_COOLDOWN_BUMP_MS = 4000;
+const CHESS_WRONG_DISMISS_MS = 1600;
+
+export type ChessPuzzleAnswerResult =
+  | { result: 'correct' }
+  | { result: 'wrong'; penalty: ChessBlunderPenaltyResult };
 
 export function answerChessPuzzle(
   puzzleId: string,
   chosenIndex: number
-): 'correct' | 'wrong' {
+): ChessPuzzleAnswerResult {
   const puzzle = getChessPuzzleById(puzzleId);
   const correct = puzzle !== undefined && chosenIndex === puzzle.correctIndex;
 
@@ -564,31 +571,27 @@ export function answerChessPuzzle(
         .getState()
         .overlays.filter((o) => o.type !== 'chess-gambit'),
     });
-    return 'correct';
+    return { result: 'correct' };
   }
 
-  const state = useGameStore.getState();
-  const penaltyEndsAt = Date.now() + CHESS_WRONG_PENALTY_MS;
-  const cooldownBase = Math.max(state.myCooldownEndsAt ?? 0, Date.now());
+  const mode = useGameStore.getState().mode;
+  const penalty = applyChessBlunderPenalty(mode);
+
   useGameStore.setState({
-    inputLocked: true,
-    chessLockUntil: penaltyEndsAt,
-    myCooldownEndsAt: cooldownBase + CHESS_WRONG_COOLDOWN_BUMP_MS,
+    inputLocked: false,
+    chessLockUntil: null,
   });
 
   window.setTimeout(() => {
-    const s = useGameStore.getState();
-    if (s.chessLockUntil && Date.now() >= s.chessLockUntil) {
-      useGameStore.setState({
-        inputLocked: false,
-        chessPuzzleActive: false,
-        chessLockUntil: null,
-        overlays: s.overlays.filter((o) => o.type !== 'chess-gambit'),
-      });
-    }
-  }, CHESS_WRONG_PENALTY_MS);
+    useGameStore.setState({
+      chessPuzzleActive: false,
+      overlays: useGameStore
+        .getState()
+        .overlays.filter((o) => o.type !== 'chess-gambit'),
+    });
+  }, CHESS_WRONG_DISMISS_MS);
 
-  return 'wrong';
+  return { result: 'wrong', penalty };
 }
 
 export function applyCriticsAtRoundEnd(): {
@@ -596,23 +599,16 @@ export function applyCriticsAtRoundEnd(): {
   oppStars: number;
 } {
   const state = useGameStore.getState();
-  const bonus = resolveCriticsRating(
+  const stars = resolveCriticsRating(
     state.mode,
     state.myGuesses,
     state.opponentGuesses
   );
-  const updates: Partial<ReturnType<typeof useGameStore.getState>> = {
-    lastCriticsRatings: { me: bonus.myStars, opponent: bonus.oppStars },
+  useGameStore.setState({
+    lastCriticsRatings: { me: stars.myStars, opponent: stars.oppStars },
     criticsRatingPending: false,
-  };
-  if (state.criticsRatingPending) {
-    updates.roundScore = {
-      me: state.roundScore.me + bonus.me,
-      opponent: state.roundScore.opponent + bonus.opponent,
-    };
-  }
-  useGameStore.setState(updates);
-  return { myStars: bonus.myStars, oppStars: bonus.oppStars };
+  });
+  return { myStars: stars.myStars, oppStars: stars.oppStars };
 }
 
 export function fireCardAfterGuess(): void {

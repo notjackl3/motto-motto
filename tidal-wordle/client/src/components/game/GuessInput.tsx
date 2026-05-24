@@ -1,21 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useGameStore } from '../../stores/gameStore';
 import { selectIsInputDisabled } from '../../stores/gameSelectors';
 import { getSubmitFeedbackMessage } from '../../lib/submitFeedback';
+
 export default function GuessInput() {
   const [value, setValue] = useState('');
   const [shake, setShake] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [now, setNow] = useState(Date.now());
 
   const submitGuess = useGameStore((s) => s.submitGuess);
   const knownLength = useGameStore((s) => s.answerLength);
-  const myCooldownEndsAt = useGameStore((s) => s.myCooldownEndsAt);
   const inputLocked = useGameStore((s) => s.inputLocked);
   const roundOver = useGameStore((s) => s.roundOver);
   const matchWinner = useGameStore((s) => s.matchWinner);
   const chessPuzzleActive = useGameStore((s) => s.chessPuzzleActive);
-  const cooldownFrozen = useGameStore((s) => s.cooldownFrozen);
   const distractionBlocking = useGameStore((s) => s.distractionBlocking);
   const cardDetailPopupDraw = useGameStore(
     (s) => s.cardDetailPopup?.source === 'draw'
@@ -23,33 +21,22 @@ export default function GuessInput() {
   const playfulInsultActive = useGameStore((s) =>
     s.overlays.some((o) => o.type === 'playful-insult')
   );
-  useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 100);
-    return () => clearInterval(t);
-  }, []);
 
-  const disabled = selectIsInputDisabled(
-    {
-      myCooldownEndsAt,
-      inputLocked,
-      chessPuzzleActive,
-      cooldownFrozen,
-      roundOver,
-      matchWinner,
-      distractionBlocking,
-      cardDetailPopupDraw,
-      playfulInsultActive,
-    },
-    now
-  );
-  const onCooldown =
-    myCooldownEndsAt !== null && now < myCooldownEndsAt && !cooldownFrozen;
+  const disabled = selectIsInputDisabled({
+    inputLocked,
+    chessPuzzleActive,
+    roundOver,
+    matchWinner,
+    distractionBlocking,
+    cardDetailPopupDraw,
+    playfulInsultActive,
+  });
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const result = submitGuess(value);
     if (!result.ok) {
-      setFeedback(getSubmitFeedbackMessage(result, onCooldown));
+      setFeedback(getSubmitFeedbackMessage(result));
       if (result.reason === 'length') {
         setShake(true);
         setTimeout(() => setShake(false), 500);
@@ -62,7 +49,7 @@ export default function GuessInput() {
 
   const placeholder = knownLength
     ? `Type a ${knownLength}-letter word (or any guess)...`
-    : 'Type any word — length unknown';
+    : '';
 
   const ready = !disabled;
 
@@ -70,7 +57,7 @@ export default function GuessInput() {
     <div className="flex flex-col gap-1">
       <form
         onSubmit={handleSubmit}
-        className={`relative flex gap-2 rounded-lg p-2 transition-all
+        className={`relative flex gap-1.5 min-w-0 rounded-lg p-1.5 transition-all
           ${shake ? 'animate-shake' : ''}
           ${
             ready
@@ -95,7 +82,7 @@ export default function GuessInput() {
           placeholder={placeholder}
           disabled={disabled}
           aria-describedby={feedback ? 'guess-feedback' : undefined}
-          className="flex-1 bg-transparent rounded pl-6 pr-3 py-1.5 outline-none text-white placeholder-white/35 disabled:opacity-50 uppercase font-mono tracking-[0.16em] text-[15px] caret-seafoam"
+          className="flex-1 min-w-0 bg-transparent rounded pl-6 pr-3 py-1.5 outline-none text-white placeholder-white/35 disabled:opacity-50 uppercase font-mono tracking-[0.12em] text-[14px] caret-seafoam"
           autoComplete="off"
           autoCorrect="off"
           spellCheck={false}

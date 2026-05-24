@@ -3,7 +3,6 @@ import { selectSoloRoundLossLabel } from '../../stores/gameSelectors';
 
 export default function ScorePanel() {
   const mode = useGameStore((s) => s.mode);
-  const roundScore = useGameStore((s) => s.roundScore.me);
   const myGuesses = useGameStore((s) => s.myGuesses);
   const roundOver = useGameStore((s) => s.roundOver);
   const matchWinner = useGameStore((s) => s.matchWinner);
@@ -19,11 +18,7 @@ export default function ScorePanel() {
           <div className="font-mono text-[8.5px] tracking-[0.22em] uppercase text-seafoam/90 mb-0.5">
             R{String(currentRoundNumber).padStart(2, '0')} · IN PROGRESS
           </div>
-          <div className="text-[11px] space-y-0.5">
-            <div className="flex justify-between">
-              <span className="opacity-70">Round score</span>
-              <span className="font-mono font-medium text-sand">{roundScore}</span>
-            </div>
+          <div className="text-[11px]">
             <div className="flex justify-between">
               <span className="opacity-70">Guesses</span>
               <span className="font-mono">{myGuesses.length}</span>
@@ -66,10 +61,6 @@ export default function ScorePanel() {
                   ) : (
                     <span className="text-coral/90">Opponent</span>
                   )}
-                  <span className="opacity-60 font-mono">
-                    {' '}
-                    +{r.pointsBanked}
-                  </span>
                 </div>
                 <div className="font-mono text-[9px] opacity-50 mt-0.5">
                   {r.myGuessCount} guess{r.myGuessCount === 1 ? '' : 'es'}

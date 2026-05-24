@@ -1,9 +1,6 @@
 import type { SubmitGuessResult } from '../types';
 
-export function getSubmitFeedbackMessage(
-  result: SubmitGuessResult,
-  onCooldown: boolean
-): string | null {
+export function getSubmitFeedbackMessage(result: SubmitGuessResult): string | null {
   if (result.ok) return null;
   switch (result.reason) {
     case 'length':
@@ -11,7 +8,7 @@ export function getSubmitFeedbackMessage(
     case 'not_in_list':
       return 'Invalid guess.';
     case 'locked':
-      return onCooldown ? 'Cooldown — wait a moment.' : 'Input locked (card effect).';
+      return 'Input locked (card effect).';
     case 'round_over':
       return 'Round is over.';
     case 'no_answer':

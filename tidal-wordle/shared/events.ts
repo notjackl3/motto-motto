@@ -8,17 +8,14 @@ export const SocketEvents = {
   GameStart: 'game:start',
   GameGuess: 'game:guess',
   GameCardPlayed: 'game:cardPlayed',
-  GameCooldownViolation: 'game:cooldownViolation',
   GameRoundEnd: 'game:roundEnd',
   GameMatchEnd: 'game:matchEnd',
   OpponentLeft: 'opponent:left',
+  /** Chess Gambit blunder: leaker's client emits; opponent applies revealed letter. */
+  GameChessBlunderInfoLeak: 'game:chessBlunderInfoLeak',
 } as const;
 
 export type SocketEventName = (typeof SocketEvents)[keyof typeof SocketEvents];
-
-// 3 seconds between guesses per player. Server is authoritative; clients
-// should mirror this for their optimistic cooldown display.
-export const GUESS_COOLDOWN_MS = 3000;
 
 // Best of 3 = first to win 2 rounds.
 export const ROUNDS_TO_WIN = 2;
@@ -48,8 +45,7 @@ export interface RoomJoinedPayload {
 export interface GameStartPayload {
   answerLength: number;
   roundIndex: number;
-  // Authoritative match score so a late-joining client can render correctly.
-  matchScore: { me: number; opponent: number };
+  roundsWon: { me: number; opponent: number };
 }
 
 export interface GameGuessPayload {
@@ -58,7 +54,6 @@ export interface GameGuessPayload {
   guess: string;
   evaluation: WireLetterResult[];
   isCorrect: boolean;
-  cooldownEndsAt: number;
   timestamp: number;
 }
 
@@ -70,21 +65,17 @@ export interface GameCardPlayedPayload {
   timestamp: number;
 }
 
-export interface GameCooldownViolationPayload {
-  cooldownEndsAt: number;
-}
-
 export interface GameRoundEndPayload {
   winner: 'me' | 'opponent' | null;
   answer: string;
   roundIndex: number;
-  matchScore: { me: number; opponent: number };
+  roundsWon: { me: number; opponent: number };
   nextRoundAt: number | null;
 }
 
 export interface GameMatchEndPayload {
   winner: 'me' | 'opponent' | null;
-  matchScore: { me: number; opponent: number };
+  roundsWon: { me: number; opponent: number };
 }
 
 export interface OpponentLeftPayload {
