@@ -24,12 +24,14 @@ interface MainMenuProps {
 
 type WardrobeTab = 'shirt' | 'shorts' | 'board' | 'hat';
 
-// Beach island welcome screen.
-//   - 3D wooden menu signs (PLAY SOLO / MULTIPLAYER / SETTINGS) live IN the
-//     scene on the left side of the island.
-//   - A 3D wooden wardrobe rack stands on the right; the HTML wardrobe panel
-//     is positioned to visually nest into it (carved-wood styling, solid
-//     wood-tone colors, no emojis or gradients).
+// Welcome screen.
+// Layer stack (back → front):
+//   1. <WardrobeScene/> — full-screen 3D scene with animated wave, sky,
+//      palm trees, mannequin on a sandy island, and 3D wooden sign post +
+//      wardrobe display rack as decorative meshes.
+//   2. HTML wooden sign buttons positioned over the 3D sign post (so the
+//      labels are crisp text and the clicks are reliable HTML clicks).
+//   3. HTML wardrobe panel positioned over the 3D display rack.
 
 export default function MainMenu({ onSolo, onMultiplayer }: MainMenuProps) {
   const [showSettings, setShowSettings] = useState(false);
@@ -52,19 +54,26 @@ export default function MainMenu({ onSolo, onMultiplayer }: MainMenuProps) {
   const currentHat = getHat(hatId);
 
   return (
-    <div className="relative h-full w-full overflow-hidden text-white">
-      <WardrobeScene
-        onSolo={onSolo}
-        onMultiplayer={onMultiplayer}
-        onSettings={() => setShowSettings((v) => !v)}
-      />
+    <div className="relative h-full w-full overflow-hidden">
+      {/* 3D scene fills the entire viewport. */}
+      <WardrobeScene />
 
-      {/* Settings drawer — appears near the SETTINGS sign in the scene. */}
+      {/* LEFT: wooden sign menu — sits over the 3D sign post. */}
+      <div className="absolute left-[5%] top-[14%] z-10 flex flex-col gap-3 items-start pointer-events-auto">
+        <WoodenTitleSign label="TIDAL WORDLE" subtitle="ride the swell" />
+        <WoodenButton label="PLAY SOLO" onClick={onSolo} />
+        <WoodenButton label="MULTIPLAYER" onClick={onMultiplayer} />
+        <WoodenButton
+          label="SETTINGS"
+          onClick={() => setShowSettings((v) => !v)}
+        />
+      </div>
+
       {showSettings && (
-        <div className="absolute left-6 bottom-10 z-20">
-          <WoodPanel className="w-72 p-4">
+        <div className="absolute left-[5%] top-[78%] z-20 w-72">
+          <WoodPanel className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <div className="text-base font-bold text-[#3a2a14] tracking-[0.2em]">
+              <div className="text-base font-bold text-[#3a2a14] tracking-[0.18em]">
                 SETTINGS
               </div>
               <button
@@ -88,24 +97,15 @@ export default function MainMenu({ onSolo, onMultiplayer }: MainMenuProps) {
         </div>
       )}
 
-      {/* Footer attribution. */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-[10px] text-white/70 italic select-none pointer-events-none">
-        Tide data: NOAA CO-OPS · La Jolla #9410230
-      </div>
-
-      {/* RIGHT: wardrobe panel — sits over the 3D wooden rack in the scene. */}
-      <div className="absolute right-6 top-1/2 -translate-y-1/2 w-[min(420px,38vw)] pointer-events-auto z-10">
-        <WoodPanel className="w-full">
-          {/* Banner header */}
+      {/* RIGHT: wardrobe panel — sits over the 3D display rack. */}
+      <div className="absolute right-[4%] top-[18%] z-10 w-[min(400px,34vw)] pointer-events-auto">
+        <WoodPanel>
           <div
             className="px-4 pt-3 pb-2 flex items-baseline justify-between border-b-2"
-            style={{
-              backgroundColor: '#caa078',
-              borderColor: '#7a4d24',
-            }}
+            style={{ backgroundColor: '#caa078', borderColor: '#7a4d24' }}
           >
             <div>
-              <div className="text-[10px] uppercase tracking-[0.35em] text-[#3a2a14]/80">
+              <div className="text-[10px] uppercase tracking-[0.3em] text-[#3a2a14]/80">
                 Beach Cabana
               </div>
               <div className="text-lg font-extrabold text-[#3a2a14] tracking-[0.15em]">
@@ -114,7 +114,6 @@ export default function MainMenu({ onSolo, onMultiplayer }: MainMenuProps) {
             </div>
           </div>
 
-          {/* Wooden tabs */}
           <div
             className="flex border-b-2"
             style={{ backgroundColor: '#a07a52', borderColor: '#7a4d24' }}
@@ -125,7 +124,6 @@ export default function MainMenu({ onSolo, onMultiplayer }: MainMenuProps) {
             <Tab label="HAT" active={tab === 'hat'} onClick={() => setTab('hat')} />
           </div>
 
-          {/* Body */}
           <div className="p-4" style={{ backgroundColor: '#f4e1c1' }}>
             {tab === 'shirt' && (
               <CurrentSelection
@@ -151,8 +149,7 @@ export default function MainMenu({ onSolo, onMultiplayer }: MainMenuProps) {
                 description={currentHat.description}
               />
             )}
-
-            <div className="grid grid-cols-4 gap-2 mt-3 max-h-64 overflow-y-auto pr-1">
+            <div className="grid grid-cols-4 gap-2 mt-3 max-h-52 overflow-y-auto pr-1">
               {tab === 'shirt' &&
                 SHIRTS.map((s) => (
                   <ShirtSwatch
@@ -200,11 +197,124 @@ export default function MainMenu({ onSolo, onMultiplayer }: MainMenuProps) {
           </div>
         </WoodPanel>
       </div>
+
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-[10px] text-white/80 italic select-none pointer-events-none">
+        Tide data: NOAA CO-OPS · La Jolla #9410230
+      </div>
     </div>
   );
 }
 
-// --- WoodPanel: a wood-tone carved board with iron nail studs ---
+// ============================================================
+// Wooden signs / panel
+// ============================================================
+
+function WoodenTitleSign({
+  label,
+  subtitle,
+}: {
+  label: string;
+  subtitle?: string;
+}) {
+  return (
+    <div
+      className="relative w-72 px-5 py-3 mb-1"
+      style={{
+        backgroundColor: '#d6b07a',
+        border: '4px solid #7a4d24',
+        borderRadius: '8px',
+        boxShadow:
+          '0 10px 22px rgba(0,0,0,0.4), inset 0 0 0 2px #f4e1c1, inset 0 -3px 0 rgba(122,77,36,0.5)',
+        textAlign: 'center',
+      }}
+    >
+      <div
+        className="absolute -top-6 left-4 w-1.5 h-6"
+        style={{
+          background:
+            'repeating-linear-gradient(0deg, #caa078 0 4px, #8a5a2a 4px 8px)',
+        }}
+      />
+      <div
+        className="absolute -top-6 right-4 w-1.5 h-6"
+        style={{
+          background:
+            'repeating-linear-gradient(0deg, #caa078 0 4px, #8a5a2a 4px 8px)',
+        }}
+      />
+      <div className="absolute top-1.5 left-2 w-2 h-2 rounded-full bg-[#2a2a2a]" />
+      <div className="absolute top-1.5 right-2 w-2 h-2 rounded-full bg-[#2a2a2a]" />
+      <div className="absolute bottom-1.5 left-2 w-2 h-2 rounded-full bg-[#2a2a2a]" />
+      <div className="absolute bottom-1.5 right-2 w-2 h-2 rounded-full bg-[#2a2a2a]" />
+      <div
+        style={{
+          color: '#2a1a0a',
+          fontFamily: 'Georgia, serif',
+          fontWeight: 800,
+          fontSize: '28px',
+          letterSpacing: '0.18em',
+          textShadow: '0 2px 0 #f4e1c1',
+          lineHeight: 1,
+        }}
+      >
+        {label}
+      </div>
+      {subtitle && (
+        <div
+          style={{
+            marginTop: '4px',
+            color: '#5a3a1a',
+            fontFamily: 'Georgia, serif',
+            fontStyle: 'italic',
+            fontSize: '12px',
+            letterSpacing: '0.06em',
+          }}
+        >
+          {subtitle}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function WoodenButton({
+  label,
+  onClick,
+}: {
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="relative block w-60 px-5 py-3 font-extrabold tracking-[0.18em] text-base transition hover:scale-[1.04] hover:brightness-[1.08] active:scale-[0.97]"
+      style={{
+        color: '#3a2a14',
+        fontFamily: 'Georgia, serif',
+        backgroundColor: '#c08a52',
+        border: '4px solid #7a4d24',
+        borderRadius: '8px',
+        textShadow: '0 2px 0 #f4e1c1',
+        boxShadow:
+          '0 8px 18px rgba(0,0,0,0.4), inset 0 0 0 2px #d6b07a, inset 0 -3px 0 rgba(58,42,20,0.35)',
+        textAlign: 'center',
+      }}
+    >
+      <div
+        className="absolute -top-4 left-1/2 -translate-x-1/2 w-1.5 h-4"
+        style={{
+          background:
+            'repeating-linear-gradient(0deg, #caa078 0 4px, #8a5a2a 4px 8px)',
+        }}
+      />
+      <div className="absolute top-1.5 left-1.5 w-2 h-2 rounded-full bg-[#2a2a2a]" />
+      <div className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#2a2a2a]" />
+      <div className="absolute bottom-1.5 left-1.5 w-2 h-2 rounded-full bg-[#2a2a2a]" />
+      <div className="absolute bottom-1.5 right-1.5 w-2 h-2 rounded-full bg-[#2a2a2a]" />
+      {label}
+    </button>
+  );
+}
 
 function WoodPanel({
   children,
@@ -262,8 +372,8 @@ function Tab({
       className="flex-1 py-2.5 text-xs font-extrabold tracking-[0.2em] transition border-b-4"
       style={{
         backgroundColor: active ? '#caa078' : 'transparent',
-        color: active ? '#3a2a14' : '#3a2a14',
-        opacity: active ? 1 : 0.65,
+        color: '#3a2a14',
+        opacity: active ? 1 : 0.6,
         borderColor: active ? '#3a2a14' : 'transparent',
       }}
     >
@@ -294,7 +404,9 @@ function CurrentSelection({
   );
 }
 
-// --- Swatches with pattern previews (carved wood frames, no emoji) ---
+// ============================================================
+// Swatches with pattern previews
+// ============================================================
 
 function SwatchFrame({
   selected,
@@ -332,12 +444,6 @@ function SwatchFrame({
           ✓
         </span>
       )}
-      <span
-        className="absolute inset-x-0 -bottom-5 text-[9px] text-center truncate opacity-0 group-hover:opacity-100 transition"
-        style={{ color: '#3a2a14' }}
-      >
-        {title}
-      </span>
     </button>
   );
 }
@@ -368,9 +474,13 @@ function ShirtPatternPreview({ shirt }: { shirt: ShirtOption }) {
   if (shirt.pattern === 'stripes-h') {
     return (
       <div className="absolute inset-0 flex flex-col justify-around py-2">
-        <div className="h-1 mx-1" style={{ backgroundColor: shirt.accent }} />
-        <div className="h-1 mx-1" style={{ backgroundColor: shirt.accent }} />
-        <div className="h-1 mx-1" style={{ backgroundColor: shirt.accent }} />
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div
+            key={i}
+            className="h-1 mx-1"
+            style={{ backgroundColor: shirt.accent }}
+          />
+        ))}
       </div>
     );
   }
@@ -494,7 +604,7 @@ function ShortsPatternPreview({ shorts }: { shorts: ShortsOption }) {
   }
   if (shorts.pattern === 'floral') {
     return (
-      <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 gap-1 p-1.5">
+      <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 gap-1 p-1.5 place-items-center">
         {Array.from({ length: 9 }).map((_, i) => (
           <Hibiscus key={i} color={shorts.accent} />
         ))}
@@ -505,9 +615,8 @@ function ShortsPatternPreview({ shorts }: { shorts: ShortsOption }) {
 }
 
 function Hibiscus({ color }: { color: string }) {
-  // 5-petal flower built from CSS pseudo-circles.
   return (
-    <div className="relative w-3 h-3 mx-auto my-auto">
+    <div className="relative w-3 h-3">
       {Array.from({ length: 5 }).map((_, i) => {
         const angle = (i / 5) * 360;
         return (
@@ -551,10 +660,9 @@ function BoardSwatch({
 }
 
 function BoardShapePreview({ board }: { board: BoardOption }) {
-  const shape = board.shape;
-  const isLong = shape === 'longboard';
-  const isGun = shape === 'gun';
-  const isFish = shape === 'fish';
+  const isLong = board.shape === 'longboard';
+  const isGun = board.shape === 'gun';
+  const isFish = board.shape === 'fish';
   const widthPct = isLong ? 32 : isGun ? 22 : isFish ? 36 : 30;
   const heightPct = isLong ? 90 : isGun ? 92 : 80;
 
@@ -580,17 +688,11 @@ function BoardShapePreview({ board }: { board: BoardOption }) {
           <>
             <div
               className="absolute top-2 bottom-2 w-1"
-              style={{
-                backgroundColor: board.stripe,
-                left: 'calc(50% - 4px)',
-              }}
+              style={{ backgroundColor: board.stripe, left: 'calc(50% - 4px)' }}
             />
             <div
               className="absolute top-2 bottom-2 w-1"
-              style={{
-                backgroundColor: board.stripe,
-                left: 'calc(50% + 2px)',
-              }}
+              style={{ backgroundColor: board.stripe, left: 'calc(50% + 2px)' }}
             />
           </>
         )}
@@ -693,7 +795,7 @@ function HatShapePreview({ hat }: { hat: HatOption }) {
             }}
           />
           <div
-            className="absolute top-0 left-1/2 -translate-x-1/2"
+            className="absolute"
             style={{
               backgroundColor: color,
               width: '16px',
@@ -702,22 +804,11 @@ function HatShapePreview({ hat }: { hat: HatOption }) {
               borderTopRightRadius: '50%',
               border: '1.5px solid #3a2a14',
               borderBottom: 'none',
-              transform: 'translate(-50%, -8px)',
+              top: '-12px',
+              left: '50%',
+              transform: 'translateX(-50%)',
             }}
           />
-          {hat.accent && (
-            <div
-              className="absolute"
-              style={{
-                backgroundColor: hat.accent,
-                width: '16px',
-                height: '3px',
-                top: '-2px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-              }}
-            />
-          )}
         </div>
       </div>
     );
@@ -744,16 +835,6 @@ function HatShapePreview({ hat }: { hat: HatOption }) {
               border: '1.5px solid #3a2a14',
             }}
           />
-          {hat.accent && (
-            <div
-              className="absolute left-0 right-0"
-              style={{
-                backgroundColor: hat.accent,
-                top: '60%',
-                height: '3px',
-              }}
-            />
-          )}
         </div>
       </div>
     );
@@ -783,12 +864,6 @@ function HatShapePreview({ hat }: { hat: HatOption }) {
               borderRadius: '0 0 4px 4px',
             }}
           />
-          {hat.accent && (
-            <div
-              className="absolute top-1.5 left-1/2 -translate-x-1/2 w-2 h-1.5"
-              style={{ backgroundColor: hat.accent }}
-            />
-          )}
         </div>
       </div>
     );

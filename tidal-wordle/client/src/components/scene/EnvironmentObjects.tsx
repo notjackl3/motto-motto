@@ -63,22 +63,18 @@ interface Rock {
   color: string;
 }
 
-// Only big rocks — small ones (scale < 2.0) read as floating debris rather
-// than solid seafloor outcroppings.
+// Mix of medium and large rocks — varied sizes so the seascape doesn't read
+// as a uniform row of identical landmarks. Z and X spread so they never
+// stack on top of each other in the viewport.
 const ROCKS: Rock[] = [
-  { baseZ: -18, laneX: -22, scale: 2.6, rot: 0.4, color: '#404040' },
-  { baseZ: -45, laneX: 14, scale: 2.4, rot: 1.2, color: '#525252' },
-  { baseZ: -55, laneX: -28, scale: 3.2, rot: 0.8, color: '#3a3a3a' },
-  { baseZ: -78, laneX: 26, scale: 2.4, rot: 1.5, color: '#484848' },
-  { baseZ: -90, laneX: -22, scale: 3.4, rot: -0.7, color: '#3f3f3f' },
-  { baseZ: -105, laneX: 32, scale: 2.4, rot: 0.5, color: '#555' },
-  { baseZ: -130, laneX: 24, scale: 2.8, rot: 2.1, color: '#4f4f4f' },
-  { baseZ: -148, laneX: -34, scale: 3.6, rot: 0.3, color: '#3a3a3a' },
-  { baseZ: -170, laneX: -8, scale: 2.6, rot: 0.9, color: '#5a5a5a' },
-  { baseZ: -180, laneX: 38, scale: 3.0, rot: 1.8, color: '#444' },
-  { baseZ: -195, laneX: -19, scale: 2.4, rot: -0.4, color: '#4a4a4a' },
-  { baseZ: -205, laneX: 18, scale: 2.8, rot: 1.6, color: '#444' },
-  { baseZ: -218, laneX: -30, scale: 3.4, rot: 0.6, color: '#3f3f3f' },
+  { baseZ: -22, laneX: -26, scale: 2.2, rot: 0.4, color: '#404040' },  // medium
+  { baseZ: -50, laneX: 18, scale: 3.8, rot: 1.2, color: '#525252' },  // large
+  { baseZ: -78, laneX: -34, scale: 2.4, rot: 0.8, color: '#3a3a3a' },  // medium
+  { baseZ: -105, laneX: 28, scale: 4.2, rot: 1.5, color: '#484848' }, // large
+  { baseZ: -130, laneX: -16, scale: 2.0, rot: -0.7, color: '#3f3f3f' }, // medium
+  { baseZ: -158, laneX: 36, scale: 3.5, rot: 0.5, color: '#555' },    // large
+  { baseZ: -182, laneX: -10, scale: 2.8, rot: 2.1, color: '#4f4f4f' }, // medium-large
+  { baseZ: -210, laneX: 22, scale: 4.0, rot: 0.3, color: '#3a3a3a' }, // large
 ];
 
 // Rocks sit on bedrock far below the water and DO NOT bob with the swell.
@@ -87,7 +83,7 @@ const ROCKS: Rock[] = [
 // than the visible cap so the rock looks like a real outcropping rooted
 // to the seafloor. Splash effects fire on whichever face the wave is
 // hitting from.
-const ROCK_BASE_Y = -14; // bedrock anchor, well below any possible trough
+const ROCK_BASE_Y = -22; // bedrock anchor — deep enough that even the lowest wave trough never exposes the base
 const ROCK_SPLASH_PROBE = 1.6;
 const ROCK_SPLASH_THRESHOLD = 0.45;
 
@@ -128,68 +124,46 @@ function Rock({ rock }: { rock: Rock }) {
     }
   });
 
-  // Anchoring math: rock spans from ROCK_BASE_Y up to a visible cap height
-  // above WATER_LEVEL. Underwater portion is much wider so the rock looks
-  // like a sturdy seafloor outcropping; visible portion narrows.
-  const visibleAbove = rock.scale * 1.5 + 0.5;
-  const topY = WATER_LEVEL + visibleAbove; // local y, since group is at ROCK_BASE_Y
-  const totalH = topY - 0; // group origin is at ROCK_BASE_Y, so totalH = topY - 0
-  const radiusTop = rock.scale;
-  const radiusMid = rock.scale * 1.5;
-  const radiusBase = rock.scale * 2.6;
-  // Pedestal: huge wide block at the bottom 60% of the rock.
-  const pedestalH = totalH * 0.6;
-  const pedestalY = pedestalH / 2; // center of pedestal
-  // Mid section: tapers from base radius to mid radius.
-  const midH = totalH * 0.3;
-  const midY = pedestalH + midH / 2;
-  // Visible cap: from mid up to top.
-  const capH = totalH - pedestalH - midH;
-  const capY = pedestalH + midH + capH / 2;
+  // Single tapered rock body — wide base narrowing to a peak — so the rock
+  // reads as ONE outcropping rather than three boulders stacked on top of
+  // each other. A small outcropping fragment provides asymmetric character
+  // without breaking the unified silhouette.
+  const visibleAbove = rock.scale * 1.6 + 1.0;
+  const topWorldY = WATER_LEVEL + visibleAbove;
+  const totalH = topWorldY - ROCK_BASE_Y;
+  const radiusTop = rock.scale * 0.7;
+  const radiusMid = rock.scale * 1.4; // used for splash anchoring
+  const radiusBase = rock.scale * 2.4;
 
   return (
     <group ref={ref} position={[rock.laneX, ROCK_BASE_Y, rock.baseZ]} rotation={[0, rock.rot, 0]}>
-      {/* Wide underwater pedestal — anchors the rock to the seafloor. */}
-      <mesh receiveShadow position={[0, pedestalY, 0]} scale={[radiusBase, pedestalH / 2, radiusBase]}>
-        <dodecahedronGeometry args={[1, 0]} />
-        <meshStandardMaterial color={rock.color} flatShading roughness={0.95} />
+      {/* Single tapered body — chunky low-poly cylinder, wide base → narrow
+          top. One mesh, no stacked pieces. */}
+      <mesh castShadow receiveShadow position={[0, totalH / 2, 0]}>
+        <cylinderGeometry args={[radiusTop, radiusBase, totalH, 7, 1]} />
+        <meshStandardMaterial color={rock.color} flatShading roughness={0.92} />
       </mesh>
-      {/* Tapered mid-section, partially underwater. */}
+      {/* Asymmetric outcropping fragment near the top — breaks the symmetry
+          of the main cylinder without adding a separate "stacked" silhouette. */}
       <mesh
         castShadow
-        receiveShadow
-        position={[0, midY, 0]}
-        scale={[radiusMid, midH / 2, radiusMid]}
-        rotation={[0, rock.rot * 0.4, 0]}
-      >
-        <dodecahedronGeometry args={[1, 0]} />
-        <meshStandardMaterial color={rock.color} flatShading roughness={0.9} />
-      </mesh>
-      {/* Visible cap above water — jagged top with mossy crown. */}
-      <mesh castShadow position={[0, capY, 0]} scale={[radiusTop, capH / 2, radiusTop]}>
-        <dodecahedronGeometry args={[1, 0]} />
-        <meshStandardMaterial color={rock.color} flatShading roughness={0.85} />
-      </mesh>
-      {/* Side outcropping for asymmetric character. */}
-      <mesh
-        castShadow
-        position={[radiusTop * 0.6, capY * 0.85, 0]}
+        position={[radiusTop * 0.9, totalH - rock.scale * 0.9, rock.scale * 0.2]}
         rotation={[0.3, 0.7, 0.2]}
-        scale={[radiusTop * 0.5, radiusTop * 0.6, radiusTop * 0.5]}
       >
-        <dodecahedronGeometry args={[1, 0]} />
+        <dodecahedronGeometry args={[rock.scale * 0.55, 0]} />
         <meshStandardMaterial color={rock.color} flatShading roughness={0.9} />
       </mesh>
       {/* Mossy crown — sits at the top above any wave peak. */}
-      <mesh position={[0, topY - rock.scale * 0.35, 0]} castShadow>
-        <dodecahedronGeometry args={[rock.scale * 0.55, 0]} />
+      <mesh position={[0, totalH - rock.scale * 0.25, 0]} castShadow>
+        <dodecahedronGeometry args={[rock.scale * 0.5, 0]} />
         <meshStandardMaterial color="#2c5e36" flatShading />
       </mesh>
-      {/* Splash foam on whichever face the wave is hitting. Anchored just
-          above the local water surface relative to the rock base. */}
+      {/* Splash foam on whichever face the wave is hitting. Anchored at the
+          local water surface and at the rock's mid-radius (which is the
+          width at the waterline). */}
       <mesh
         ref={splashFrontRef}
-        position={[0, -ROCK_BASE_Y + WATER_LEVEL + 0.3, radiusTop * 1.0]}
+        position={[0, WATER_LEVEL - ROCK_BASE_Y + 0.3, radiusMid * 1.0]}
         visible={false}
       >
         <sphereGeometry args={[1, 8, 6]} />
@@ -197,7 +171,7 @@ function Rock({ rock }: { rock: Rock }) {
       </mesh>
       <mesh
         ref={splashBackRef}
-        position={[0, -ROCK_BASE_Y + WATER_LEVEL + 0.3, -radiusTop * 1.0]}
+        position={[0, WATER_LEVEL - ROCK_BASE_Y + 0.3, -radiusMid * 1.0]}
         visible={false}
       >
         <sphereGeometry args={[1, 8, 6]} />
@@ -205,7 +179,7 @@ function Rock({ rock }: { rock: Rock }) {
       </mesh>
       <mesh
         ref={splashRightRef}
-        position={[radiusTop * 1.0, -ROCK_BASE_Y + WATER_LEVEL + 0.3, 0]}
+        position={[radiusMid * 1.0, WATER_LEVEL - ROCK_BASE_Y + 0.3, 0]}
         visible={false}
       >
         <sphereGeometry args={[1, 8, 6]} />
@@ -213,11 +187,67 @@ function Rock({ rock }: { rock: Rock }) {
       </mesh>
       <mesh
         ref={splashLeftRef}
-        position={[-radiusTop * 1.0, -ROCK_BASE_Y + WATER_LEVEL + 0.3, 0]}
+        position={[-radiusMid * 1.0, WATER_LEVEL - ROCK_BASE_Y + 0.3, 0]}
         visible={false}
       >
         <sphereGeometry args={[1, 8, 6]} />
         <meshStandardMaterial color="#ffffff" flatShading transparent opacity={0.7} />
+      </mesh>
+    </group>
+  );
+}
+
+// ---------- Small floating rocks (boulders that bob on the wave surface) ----------
+
+interface SmallRockTrack {
+  baseZ: number;
+  laneX: number;
+  scale: number; // 0.4–1.0
+  rot: number;
+  color: string;
+}
+
+const SMALL_ROCKS: SmallRockTrack[] = [
+  { baseZ: -14, laneX: 12, scale: 0.7, rot: 0.5, color: '#4a4a4a' },
+  { baseZ: -32, laneX: -15, scale: 0.9, rot: 1.2, color: '#525252' },
+  { baseZ: -62, laneX: 22, scale: 0.5, rot: 0.3, color: '#484848' },
+  { baseZ: -88, laneX: -8, scale: 0.85, rot: -0.6, color: '#3f3f3f' },
+  { baseZ: -115, laneX: 14, scale: 0.6, rot: 1.5, color: '#4f4f4f' },
+  { baseZ: -142, laneX: -24, scale: 0.95, rot: 0.9, color: '#3a3a3a' },
+  { baseZ: -168, laneX: 18, scale: 0.55, rot: 2.1, color: '#525252' },
+  { baseZ: -195, laneX: -12, scale: 0.8, rot: 0.4, color: '#4a4a4a' },
+];
+
+function SmallRock({ rock }: { rock: SmallRockTrack }) {
+  const ref = useRef<THREE.Group>(null);
+  useFrame((state) => {
+    if (!ref.current) return;
+    const t = state.clock.elapsedTime;
+    const z = driftedZ(rock.baseZ, t);
+    ref.current.position.x = rock.laneX;
+    ref.current.position.z = z;
+    // Float partially submerged — origin sits a hair BELOW the water surface
+    // so the bottom half of the boulder is always underwater. Top half is
+    // visible.
+    ref.current.position.y = waveYAt(rock.laneX, z, t) - rock.scale * 0.15;
+    // Tilt slightly with the wave slope so the boulder rolls in the swell.
+    const slopeX = waveYAt(rock.laneX + 0.5, z, t) - waveYAt(rock.laneX - 0.5, z, t);
+    const slopeZ = waveYAt(rock.laneX, z + 0.5, t) - waveYAt(rock.laneX, z - 0.5, t);
+    ref.current.rotation.z = rock.rot * 0.3 - slopeX * 0.4;
+    ref.current.rotation.x = -slopeZ * 0.3;
+    ref.current.rotation.y = rock.rot;
+  });
+
+  return (
+    <group ref={ref} position={[rock.laneX, WATER_LEVEL, rock.baseZ]} rotation={[0, rock.rot, 0]}>
+      <mesh castShadow>
+        <dodecahedronGeometry args={[rock.scale, 0]} />
+        <meshStandardMaterial color={rock.color} flatShading roughness={0.95} />
+      </mesh>
+      {/* Small mossy cap on top */}
+      <mesh position={[0, rock.scale * 0.4, 0]} castShadow>
+        <dodecahedronGeometry args={[rock.scale * 0.45, 0]} />
+        <meshStandardMaterial color="#2c5e36" flatShading />
       </mesh>
     </group>
   );
@@ -401,7 +431,9 @@ const BOATS: BoatTrack[] = [
 function Boat({ track }: { track: BoatTrack }) {
   const ref = useRef<THREE.Group>(null);
   const s = track.scale;
-  const DRAFT = 1.4 * s;
+  // Hull half-submerged: center sits just above water so the bottom of the
+  // hull (and the keel cone) are underwater while deck + cabin stay visible.
+  const DRAFT = 0.25 * s;
   useFrame((state) => {
     if (!ref.current) return;
     const t = state.clock.elapsedTime;
@@ -464,7 +496,8 @@ function Speedboat({ track }: { track: SpeedboatTrack }) {
     const z = driftedZ(track.baseZ, t);
     ref.current.position.x = track.laneX;
     ref.current.position.z = z;
-    ref.current.position.y = waveYAt(track.laneX, z, t) + 0.35;
+    // Half-submerged speedboat: capsule center sits just above water.
+    ref.current.position.y = waveYAt(track.laneX, z, t) + 0.05;
     const slopeX = waveYAt(track.laneX + 1, z, t) - waveYAt(track.laneX - 1, z, t);
     ref.current.rotation.z = -slopeX * 0.4;
     // Nose-up planing pose — boats run with the bow lifted at speed.
@@ -558,7 +591,8 @@ function Kayak({ track }: { track: KayakTrack }) {
     const z = driftedZ(track.baseZ, t);
     ref.current.position.x = track.laneX;
     ref.current.position.z = z;
-    ref.current.position.y = waveYAt(track.laneX, z, t) + 0.18;
+    // Half-submerged kayak: capsule sits with bottom under water.
+    ref.current.position.y = waveYAt(track.laneX, z, t) - 0.02;
     const slopeX = waveYAt(track.laneX + 0.6, z, t) - waveYAt(track.laneX - 0.6, z, t);
     const slopeZ = waveYAt(track.laneX, z + 0.6, t) - waveYAt(track.laneX, z - 0.6, t);
     ref.current.rotation.z = -slopeX * 0.6;
@@ -776,8 +810,8 @@ function Turtle({ track }: { track: TurtleTrack }) {
     const z = driftedZ(track.baseZ, ct);
     ref.current.position.x = x;
     ref.current.position.z = z;
-    // Float on the wave surface — shell sits ~0.6m above water.
-    ref.current.position.y = waveYAt(x, z, ct) + 0.6;
+    // Half-submerged turtle — shell visible above water, body below.
+    ref.current.position.y = waveYAt(x, z, ct) + 0.1;
     const slopeX = waveYAt(x + 0.7, z, ct) - waveYAt(x - 0.7, z, ct);
     const slopeZ = waveYAt(x, z + 0.7, ct) - waveYAt(x, z - 0.7, ct);
     ref.current.rotation.y = Math.sin(t * 0.3) * 0.25;
@@ -1458,8 +1492,8 @@ function Jelly({ track }: { track: JellyTrack }) {
     const z = driftedZ(track.baseZ, ct);
     ref.current.position.x = x;
     ref.current.position.z = z;
-    // Drift just below the wave surface — pulse keeps bobbing.
-    ref.current.position.y = waveYAt(x, z, ct) + 0.3 + Math.sin(t * 0.6) * 0.15;
+    // Half-submerged jellyfish — bell breaks the surface, tentacles dangle.
+    ref.current.position.y = waveYAt(x, z, ct) - 0.05 + Math.sin(t * 0.6) * 0.1;
     const pulse = 1 + Math.sin(t * 1.8) * 0.18;
     if (bellRef.current) {
       bellRef.current.scale.set(pulse, 1 / pulse, pulse);
@@ -1528,8 +1562,9 @@ function Buoy({ track }: { track: BuoyTrack }) {
     const z = driftedZ(track.baseZ, t);
     ref.current.position.x = track.laneX;
     ref.current.position.z = z;
-    // Float on the wave — buoy center sits 0.6m above water surface.
-    ref.current.position.y = waveYAt(track.laneX, z, t) + 0.6;
+    // Half-submerged buoy — float body straddles the water surface, stand
+    // and flashing light visible above.
+    ref.current.position.y = waveYAt(track.laneX, z, t) + 0.0;
     const slopeX = waveYAt(track.laneX + 0.5, z, t) - waveYAt(track.laneX - 0.5, z, t);
     const slopeZ = waveYAt(track.laneX, z + 0.5, t) - waveYAt(track.laneX, z - 0.5, t);
     ref.current.rotation.z = -slopeX * 0.6;
@@ -1591,8 +1626,8 @@ function Driftwood({ track }: { track: DriftTrack }) {
     const z = driftedZ(track.baseZ, t);
     ref.current.position.x = track.laneX;
     ref.current.position.z = z;
-    // Float on the wave — log centerline sits 0.3m above water surface.
-    ref.current.position.y = waveYAt(track.laneX, z, t) + 0.3;
+    // Half-submerged log — sits along the waterline, slightly sunk in.
+    ref.current.position.y = waveYAt(track.laneX, z, t) - 0.05;
     const slopeX = waveYAt(track.laneX + 0.6, z, t) - waveYAt(track.laneX - 0.6, z, t);
     const slopeZ = waveYAt(track.laneX, z + 0.6, t) - waveYAt(track.laneX, z - 0.6, t);
     ref.current.rotation.z = track.rot - slopeX * 0.5;
@@ -2089,8 +2124,8 @@ function Floatie({ track }: { track: FloatieTrack }) {
     const z = driftedZ(track.baseZ, t);
     ref.current.position.x = track.laneX;
     ref.current.position.z = z;
-    // Inflatables ride lightly on top of the wave.
-    ref.current.position.y = waveYAt(track.laneX, z, t) + 0.35;
+    // Half-submerged inflatable — bottom dips into the water, top above.
+    ref.current.position.y = waveYAt(track.laneX, z, t) + 0.0;
     const slopeX = waveYAt(track.laneX + 0.4, z, t) - waveYAt(track.laneX - 0.4, z, t);
     const slopeZ = waveYAt(track.laneX, z + 0.4, t) - waveYAt(track.laneX, z - 0.4, t);
     ref.current.rotation.y = t * 0.5;
@@ -2183,8 +2218,8 @@ function Crab({ track }: { track: CrabTrack }) {
     const z = driftedZ(track.baseZ, t);
     ref.current.position.x = track.laneX;
     ref.current.position.z = z;
-    // Ride the wave on the driftwood raft.
-    ref.current.position.y = waveYAt(track.laneX, z, t) + 0.5;
+    // Crab on a half-submerged driftwood raft — log sits in water, crab on top.
+    ref.current.position.y = waveYAt(track.laneX, z, t) + 0.1;
     const slopeX = waveYAt(track.laneX + 0.4, z, t) - waveYAt(track.laneX - 0.4, z, t);
     const slopeZ = waveYAt(track.laneX, z + 0.4, t) - waveYAt(track.laneX, z - 0.4, t);
     ref.current.rotation.y = Math.sin(t * 0.7) * 0.3;
@@ -2473,6 +2508,9 @@ export default function EnvironmentObjects() {
       <WaveSync />
       {ROCKS.map((r, i) => (
         <Rock key={`r${i}`} rock={r} />
+      ))}
+      {SMALL_ROCKS.map((r, i) => (
+        <SmallRock key={`sr${i}`} rock={r} />
       ))}
       {DOLPHINS.map((d, i) => (
         <Dolphin key={`d${i}`} track={d} />
