@@ -1,9 +1,33 @@
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
-import { Server } from 'socket.io';
-import { SocketEvents } from '../../shared/events.js';
-import { createRoom, joinRoom, removeSocket } from './rooms.js';
+import { Server, type Socket } from 'socket.io';
+import {
+  SocketEvents,
+  GUESS_COOLDOWN_MS,
+  ROUNDS_TO_WIN,
+  ROUND_TRANSITION_MS,
+  type GameCardPlayedPayload,
+  type GameGuessPayload,
+  type GameMatchEndPayload,
+  type GameRoundEndPayload,
+  type GameStartPayload,
+  type OpponentLeftPayload,
+  type RoomCreatedPayload,
+  type RoomJoinedPayload,
+} from '../../shared/events.js';
+import {
+  createRoom,
+  destroyRoom,
+  getRoomForSocket,
+  joinRoom,
+  opponentOf,
+  removeSocket,
+} from './rooms.js';
+import type { Room } from './types.js';
+import { getTideSnapshot } from './tides.js';
+import { pickAnswer } from './words.js';
+import { evaluateGuess, isCorrect } from './evaluate.js';
 
 const PORT = Number(process.env.PORT ?? 3001);
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? 'http://localhost:5173';
@@ -12,10 +36,177 @@ const app = express();
 app.use(cors({ origin: CLIENT_ORIGIN }));
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
+app.get('/api/tides', async (req, res) => {
+  const station = (req.query.station as string | undefined)?.trim() || '9410230';
+  try {
+    const snapshot = await getTideSnapshot(station);
+    res.json(snapshot);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn('[tides] proxy failed:', message);
+    res.status(502).json({ error: message });
+  }
+});
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: { origin: CLIENT_ORIGIN },
 });
+
+function startRound(room: Room) {
+  room.answer = pickAnswer();
+  room.roundActive = true;
+  room.lastGuessAt = {};
+
+  // Emit a per-socket payload so each client gets its own match score
+  // perspective without us shipping socket ids around.
+  for (const player of room.players) {
+    const opponent = opponentOf(room, player.socketId);
+    const payload: GameStartPayload = {
+      answerLength: room.answer.length,
+      roundIndex: room.roundIndex,
+      matchScore: {
+        me: room.matchScore[player.socketId] ?? 0,
+        opponent: opponent ? (room.matchScore[opponent] ?? 0) : 0,
+      },
+    };
+    io.to(player.socketId).emit(SocketEvents.GameStart, payload);
+  }
+  console.log(`[room ${room.id}] round ${room.roundIndex + 1} start — answer="${room.answer}"`);
+}
+
+function finishRound(room: Room, winnerSocketId: string | null) {
+  if (!room.answer) return;
+  room.roundActive = false;
+  if (winnerSocketId) {
+    room.matchScore[winnerSocketId] = (room.matchScore[winnerSocketId] ?? 0) + 1;
+  }
+
+  const matchWinner = room.players.find(
+    (p) => (room.matchScore[p.socketId] ?? 0) >= ROUNDS_TO_WIN,
+  );
+  const isMatchOver = !!matchWinner;
+  const answer = room.answer;
+  const finishedIndex = room.roundIndex;
+
+  // Per-recipient round-end payload (me/opponent perspective).
+  for (const player of room.players) {
+    const opponent = opponentOf(room, player.socketId);
+    const myWins = room.matchScore[player.socketId] ?? 0;
+    const oppWins = opponent ? (room.matchScore[opponent] ?? 0) : 0;
+    const winnerLabel: 'me' | 'opponent' | null =
+      winnerSocketId === null
+        ? null
+        : winnerSocketId === player.socketId
+          ? 'me'
+          : 'opponent';
+
+    const payload: GameRoundEndPayload = {
+      winner: winnerLabel,
+      answer,
+      roundIndex: finishedIndex,
+      matchScore: { me: myWins, opponent: oppWins },
+      nextRoundAt: isMatchOver ? null : Date.now() + ROUND_TRANSITION_MS,
+    };
+    io.to(player.socketId).emit(SocketEvents.GameRoundEnd, payload);
+  }
+  console.log(`[room ${room.id}] round ${finishedIndex + 1} end — winner=${winnerSocketId ?? 'none'}`);
+
+  if (isMatchOver && matchWinner) {
+    room.matchEnded = true;
+    room.answer = null;
+    for (const player of room.players) {
+      const opponent = opponentOf(room, player.socketId);
+      const matchPayload: GameMatchEndPayload = {
+        winner:
+          matchWinner.socketId === player.socketId
+            ? 'me'
+            : 'opponent',
+        matchScore: {
+          me: room.matchScore[player.socketId] ?? 0,
+          opponent: opponent ? (room.matchScore[opponent] ?? 0) : 0,
+        },
+      };
+      io.to(player.socketId).emit(SocketEvents.GameMatchEnd, matchPayload);
+    }
+    console.log(`[room ${room.id}] match end — winner=${matchWinner.socketId}`);
+    return;
+  }
+
+  // Schedule next round.
+  room.roundIndex += 1;
+  room.answer = null;
+  if (room.roundEndTimerHandle) clearTimeout(room.roundEndTimerHandle);
+  room.roundEndTimerHandle = setTimeout(() => {
+    room.roundEndTimerHandle = null;
+    if (room.players.length < 2) return;
+    startRound(room);
+  }, ROUND_TRANSITION_MS);
+}
+
+function handleGuess(socket: Socket, raw: unknown) {
+  const room = getRoomForSocket(socket.id);
+  if (!room || !room.roundActive || !room.answer) return;
+
+  const word = typeof raw === 'string' ? raw : (raw as { word?: string })?.word;
+  if (typeof word !== 'string' || word.length !== room.answer.length) {
+    return;
+  }
+
+  const now = Date.now();
+  const last = room.lastGuessAt[socket.id] ?? 0;
+  const earliestNextGuess = last + GUESS_COOLDOWN_MS;
+  if (now < earliestNextGuess) {
+    socket.emit(SocketEvents.GameCooldownViolation, {
+      cooldownEndsAt: earliestNextGuess,
+    });
+    return;
+  }
+  room.lastGuessAt[socket.id] = now;
+  const cooldownEndsAt = now + GUESS_COOLDOWN_MS;
+
+  const evaluation = evaluateGuess(word, room.answer);
+  const correct = isCorrect(evaluation);
+
+  for (const player of room.players) {
+    const payload: GameGuessPayload = {
+      playerId: socket.id,
+      fromSelf: player.socketId === socket.id,
+      guess: word.toLowerCase(),
+      evaluation,
+      isCorrect: correct,
+      cooldownEndsAt,
+      timestamp: now,
+    };
+    io.to(player.socketId).emit(SocketEvents.GameGuess, payload);
+  }
+
+  if (correct) {
+    finishRound(room, socket.id);
+  }
+}
+
+function handleCardPlayed(socket: Socket, raw: unknown) {
+  const room = getRoomForSocket(socket.id);
+  if (!room) return;
+
+  const payloadIn = (raw ?? {}) as { cardId?: unknown; target?: unknown };
+  const cardId = typeof payloadIn.cardId === 'string' ? payloadIn.cardId : null;
+  const target = payloadIn.target === 'self' ? 'self' : 'opponent';
+  if (!cardId) return;
+
+  const now = Date.now();
+  for (const player of room.players) {
+    const payload: GameCardPlayedPayload = {
+      playerId: socket.id,
+      fromSelf: player.socketId === socket.id,
+      cardId,
+      target,
+      timestamp: now,
+    };
+    io.to(player.socketId).emit(SocketEvents.GameCardPlayed, payload);
+  }
+}
 
 io.on('connection', (socket) => {
   console.log('[socket] connected', socket.id);
@@ -23,46 +214,62 @@ io.on('connection', (socket) => {
   socket.on(SocketEvents.RoomCreate, () => {
     const room = createRoom(socket.id);
     socket.join(room.id);
-    socket.emit(SocketEvents.RoomJoined, { roomId: room.id, isHost: true });
+    const payload: RoomCreatedPayload = { roomId: room.id };
+    socket.emit(SocketEvents.RoomCreated, payload);
     console.log('[socket] room:create', room.id, 'by', socket.id);
   });
 
-  socket.on(SocketEvents.RoomJoin, (payload: { roomId: string }) => {
+  socket.on(SocketEvents.RoomJoin, (payload: { roomId?: string }) => {
     const { room, status } = joinRoom(payload?.roomId ?? '', socket.id);
     if (status === 'joined' && room) {
       socket.join(room.id);
-      io.to(room.id).emit(SocketEvents.RoomJoined, {
-        roomId: room.id,
-        playerCount: room.players.length,
-      });
+      for (const player of room.players) {
+        const joinedPayload: RoomJoinedPayload = {
+          roomId: room.id,
+          isHost: player.isHost,
+          playerCount: room.players.length,
+        };
+        io.to(player.socketId).emit(SocketEvents.RoomJoined, joinedPayload);
+      }
       console.log('[socket] room:join', room.id, 'by', socket.id);
+
+      // Both players present — kick off the first round.
+      if (room.players.length === 2 && !room.roundActive && !room.matchEnded) {
+        startRound(room);
+      }
     } else if (status === 'full') {
       socket.emit(SocketEvents.RoomFull, { roomId: payload?.roomId });
     } else {
-      socket.emit(SocketEvents.RoomFull, { roomId: payload?.roomId, missing: true });
+      socket.emit(SocketEvents.RoomNotFound, { roomId: payload?.roomId });
     }
   });
 
-  // Stub handlers — echo / broadcast within room.
-  socket.on(SocketEvents.GameStart, (payload) => {
-    socket.broadcast.emit(SocketEvents.GameStart, payload);
-  });
-  socket.on(SocketEvents.GameGuess, (payload) => {
-    socket.broadcast.emit(SocketEvents.GameGuess, payload);
-  });
-  socket.on(SocketEvents.GameCardPlayed, (payload) => {
-    socket.broadcast.emit(SocketEvents.GameCardPlayed, payload);
-  });
-  socket.on(SocketEvents.GameRoundEnd, (payload) => {
-    socket.broadcast.emit(SocketEvents.GameRoundEnd, payload);
-  });
-  socket.on(SocketEvents.GameMatchEnd, (payload) => {
-    socket.broadcast.emit(SocketEvents.GameMatchEnd, payload);
-  });
+  socket.on(SocketEvents.GameGuess, (payload) => handleGuess(socket, payload));
+  socket.on(SocketEvents.GameCardPlayed, (payload) => handleCardPlayed(socket, payload));
 
   socket.on('disconnect', () => {
     console.log('[socket] disconnected', socket.id);
-    removeSocket(socket.id);
+    const { room, wasInRoom } = removeSocket(socket.id);
+    if (!wasInRoom || !room) return;
+
+    if (room.players.length === 0) {
+      destroyRoom(room.id);
+      return;
+    }
+
+    if (room.roundEndTimerHandle) {
+      clearTimeout(room.roundEndTimerHandle);
+      room.roundEndTimerHandle = null;
+    }
+    room.roundActive = false;
+
+    const payload: OpponentLeftPayload = { reason: 'disconnect' };
+    for (const remaining of room.players) {
+      io.to(remaining.socketId).emit(SocketEvents.OpponentLeft, payload);
+    }
+    // Keep the room around briefly in case the user reconnects? For now we
+    // tear it down — reconnection handling is a later phase.
+    destroyRoom(room.id);
   });
 });
 

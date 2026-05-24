@@ -8,4 +8,60 @@ body,
   height: 100%;
   margin: 0;
   font-family: ui-sans-serif, system-ui, sans-serif;
+  background: #013a63;
+}
+
+/* Wave-crash flourish: a horizontal sheet that sweeps once. */
+@keyframes wave-crash-sweep {
+  0% {
+    transform: translateX(-30%) scaleY(0.6);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(30%) scaleY(1.1);
+    opacity: 0;
+  }
+}
+.wave-crash {
+  animation: wave-crash-sweep 1.2s ease-out forwards;
+}
+
+/* Confetti pieces fall + tumble. */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+.confetti-piece {
+  animation-name: confetti-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+/* Card draw entrance. */
+@keyframes card-deal {
+  0% {
+    transform: translateY(40px) rotate(-8deg) scale(0.8);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(-4px) rotate(2deg) scale(1.04);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+}
+.card-deal {
+  animation: card-deal 420ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
 }
