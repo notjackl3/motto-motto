@@ -1,6 +1,17 @@
 import { useEffect, useState } from 'react';
 import { getRandomStation, type NoaaStation } from '../../lib/noaaStations';
 import { fetchTideData, type TideSnapshot } from '../../lib/api/noaa';
+import { useWeatherStore } from '../../stores/weatherStore';
+import type { WeatherCondition } from '../../lib/weatherSources';
+
+const CONDITION_ICON: Record<WeatherCondition, string> = {
+  clear: '☀',
+  cloudy: '☁',
+  fog: '🌫',
+  rain: '🌧',
+  snow: '❄',
+  thunder: '⛈',
+};
 
 // Big tide-data marquee for the main menu. Picks a random NOAA CO-OPS
 // station on each mount, fetches the latest reading via the server proxy,
@@ -35,6 +46,9 @@ export default function TideMarquee() {
     error: null,
   }));
 
+  const refreshWeather = useWeatherStore((s) => s.refreshForStation);
+  const weatherSnap = useWeatherStore((s) => s.snapshot);
+
   useEffect(() => {
     let cancelled = false;
     setState((s) => ({ ...s, loading: true, error: null }));
@@ -52,10 +66,21 @@ export default function TideMarquee() {
           error: err instanceof Error ? err.message : String(err),
         }));
       });
+    // Kick a parallel weather fetch for the same station.
+    void refreshWeather(state.station);
     return () => {
       cancelled = true;
     };
-  }, [state.station.id]);
+  }, [state.station, refreshWeather]);
+
+  function swapStation() {
+    setState((s) => ({
+      station: getRandomStation(s.station.id),
+      snap: null,
+      loading: true,
+      error: null,
+    }));
+  }
 
   const { station, snap, loading, error } = state;
   const waveHeight = snap?.waveHeightMeters;
@@ -77,9 +102,32 @@ export default function TideMarquee() {
             Station {station.id} · {station.region}
           </p>
         </div>
-        <span className="status-pill text-ocean shrink-0 !bg-white/60 !border-ocean/50">
-          {loading ? 'Sync…' : error ? 'Offline' : 'Live'}
-        </span>
+        <div className="flex items-center gap-2 shrink-0">
+          {weatherSnap && weatherSnap.stationId === station.id && (
+            <span
+              className="font-mono text-[11px] tabular-nums tracking-wider text-deep bg-white/70 border border-brass/40 rounded-full px-2.5 py-1"
+              title={`${weatherSnap.condition} · ${weatherSnap.isDay ? 'day' : 'night'}`}
+            >
+              {CONDITION_ICON[weatherSnap.condition]}{' '}
+              {typeof weatherSnap.temperatureC === 'number'
+                ? `${Math.round(weatherSnap.temperatureC)}°C`
+                : '—'}
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={swapStation}
+            disabled={loading}
+            aria-label="Swap to another tide station"
+            title="Pick another station"
+            className="font-mono text-[10px] tracking-[0.18em] uppercase text-ocean bg-white/60 border border-ocean/40 rounded-full px-2.5 py-1 hover:bg-white hover:border-ocean transition disabled:opacity-50"
+          >
+            ↻ Swap
+          </button>
+          <span className="status-pill text-ocean !bg-white/60 !border-ocean/50">
+            {loading ? 'Sync…' : error ? 'Offline' : 'Live'}
+          </span>
+        </div>
       </div>
       <div className="grid grid-cols-3 gap-3 mt-3 text-center">
         <div className="rounded-md border border-brass/30 bg-white/55 px-2 py-2">

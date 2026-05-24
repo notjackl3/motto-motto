@@ -25,6 +25,7 @@ export default function IpadUI() {
   const roomCode = useGameStore((s) => s.roomCode);
   const roundsWon = useGameStore((s) => s.roundsWon);
   const roundsToWin = useGameStore((s) => s.roundsToWin);
+  const matchScore = useGameStore((s) => s.matchScore);
   const activeEffectsCount = useGameStore((s) => s.activeEffects.length);
 
   const totalRounds = roundsToWin * 2 - 1;
@@ -47,6 +48,9 @@ export default function IpadUI() {
         </h1>
         <span className="font-mono text-[8px] tabular-nums tracking-[0.22em] uppercase text-black/55 w-[28%] text-right truncate">
           R{roundNumber}/{totalRounds} · {roundsWon.me}:{roundsWon.opponent}
+          <span className="ml-1 text-emerald-700 font-bold">
+            · {matchScore}
+          </span>
         </span>
       </header>
 

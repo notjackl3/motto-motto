@@ -5,6 +5,7 @@ import RainbowFlash from '../scene/RainbowFlash';
 import HintToast from '../scene/HintToast';
 import EffectOverlays from '../game/EffectOverlays';
 import RoundBanner from '../game/RoundBanner';
+import WeatherOverlay from '../scene/WeatherOverlay';
 import DevCardFilterPanel from '../dev/DevCardFilterPanel';
 import { useEffectExpiry } from '../../hooks/useEffectExpiry';
 import { useGameStore } from '../../stores/gameStore';
@@ -100,6 +101,7 @@ export default function GameLayout({ onQuit }: GameLayoutProps) {
       {/* Screen-level gameplay overlays (card effects, popups, round banner) */}
       <EffectOverlays />
       <RoundBanner />
+      <WeatherOverlay />
       <RainbowFlash />
       <HintToast />
       {import.meta.env.DEV && <DevCardFilterPanel />}

@@ -17,6 +17,7 @@ import {
 } from '../../stores/appearanceStore';
 import { useGameStore } from '../../stores/gameStore';
 import TideMarquee from './TideMarquee';
+import WeatherOverlay from '../scene/WeatherOverlay';
 
 interface MainMenuProps {
   onSolo: () => void;
@@ -210,6 +211,8 @@ export default function MainMenu({ onSolo, onMultiplayer }: MainMenuProps) {
       <div className="absolute bottom-4 right-4 z-20">
         <TideMarquee />
       </div>
+
+      <WeatherOverlay />
     </div>
   );
 }

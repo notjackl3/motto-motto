@@ -100,6 +100,8 @@ export interface RoundBannerState {
   winner: 'me' | 'opponent';
   roundNumber: number;
   criticsStars?: { me: number; opponent: number };
+  /** Score awarded for this round (0 if lost). See computeRoundScore. */
+  roundScore?: number;
 }
 
 /** Completed round snapshot for match history UI. */
@@ -117,6 +119,8 @@ export interface CompletedRoundRecord {
   myGuessCount: number;
   opponentGuessCount: number;
   winningGuess?: string;
+  /** Score earned this round (0 if lost). */
+  roundScore?: number;
 }
 
 /** Dev B: payload for SocketEvents.GameCardPlayed */

@@ -49,6 +49,32 @@ const app = express();
 app.use(cors({ origin: CLIENT_ORIGIN }));
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
+app.get('/api/weather', async (req, res) => {
+  const lat = (req.query.lat as string | undefined)?.trim();
+  const lon = (req.query.lon as string | undefined)?.trim();
+  if (!lat || !lon) {
+    res.status(400).json({ error: 'missing lat/lon' });
+    return;
+  }
+  try {
+    const upstream = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&current=temperature_2m,is_day,weather_code,cloud_cover,precipitation`
+    );
+    if (!upstream.ok) {
+      res
+        .status(upstream.status)
+        .json({ error: `upstream ${upstream.status}` });
+      return;
+    }
+    const data = await upstream.json();
+    res.json(data);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn('[weather] proxy failed:', message);
+    res.status(502).json({ error: message });
+  }
+});
+
 app.get('/api/words', async (req, res) => {
   const term = (req.query.term as string | undefined)?.trim();
   if (!term) {

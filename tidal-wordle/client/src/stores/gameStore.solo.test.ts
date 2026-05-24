@@ -101,6 +101,61 @@ describe('solo gameplay — single round', () => {
   });
 });
 
+describe('solo gameplay — score system', () => {
+  it('awards 1000 for a one-guess solve', () => {
+    useGameStore.getState().startMatch('solo');
+    setAnswer('BEACH');
+    submit('BEACH');
+    const s = useGameStore.getState();
+    expect(s.lastRoundScore).toBe(1000);
+    expect(s.matchScore).toBe(1000);
+  });
+
+  it('subtracts 100 per extra guess', () => {
+    useGameStore.getState().startMatch('solo');
+    setAnswer('BEACH');
+    submit('SANDY');
+    submit('OCEAN');
+    submit('BEACH');
+    const s = useGameStore.getState();
+    expect(s.lastRoundScore).toBe(800);
+    expect(s.matchScore).toBe(800);
+  });
+
+  it('accumulates score across multiple rounds', () => {
+    useGameStore.getState().startMatch('solo');
+
+    setAnswer('BEACH');
+    submit('BEACH'); // +1000
+    vi.advanceTimersByTime(2600);
+
+    setAnswer('OCEAN');
+    submit('SANDY');
+    submit('OCEAN'); // +900
+
+    const s = useGameStore.getState();
+    expect(s.matchScore).toBe(1900);
+  });
+
+  it('floors round score at 100 after many guesses', () => {
+    useGameStore.getState().startMatch('solo');
+    setAnswer('BEACH');
+    for (let i = 0; i < 15; i++) submit('SANDY');
+    submit('BEACH');
+    expect(useGameStore.getState().lastRoundScore).toBe(100);
+  });
+
+  it('resetMatch clears matchScore', () => {
+    useGameStore.getState().startMatch('solo');
+    setAnswer('BEACH');
+    submit('BEACH');
+    expect(useGameStore.getState().matchScore).toBe(1000);
+    useGameStore.getState().resetMatch();
+    expect(useGameStore.getState().matchScore).toBe(0);
+    expect(useGameStore.getState().lastRoundScore).toBeNull();
+  });
+});
+
 describe('solo gameplay — best-of-3 match', () => {
   it('advances to a new round after a win, then ends the match on the 2nd win', () => {
     const winnerEvents: Array<'me' | 'opponent'> = [];

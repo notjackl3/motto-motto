@@ -1,18 +1,42 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
+import { useFrame } from '@react-three/fiber';
+import {
+  DEFAULT_SKY_THEME,
+  skyThemeFor,
+  type SkyTheme,
+} from '../../stores/weatherStore';
+import { useWeatherStore } from '../../stores/weatherStore';
 
-// Gradient skydome: a large back-faced sphere with a custom shader that fades
-// from a warm peach near the horizon up to a clean blue overhead.
+// Skydome shader fades from horizon to overhead. Colours come from the
+// weatherStore (NOAA-station-driven Open-Meteo snapshot): day/night and
+// condition (clear/cloudy/fog/rain/snow/thunder) each pick a different
+// palette. Cloud cover dims the sun proportionally. The shader uniforms
+// lerp toward the target so weather changes fade in rather than snap.
 export default function SkyAndLighting() {
+  const snapshot = useWeatherStore((s) => s.snapshot);
+
+  const target = useMemo<SkyTheme>(() => {
+    if (!snapshot) return DEFAULT_SKY_THEME;
+    return skyThemeFor(snapshot.isDay, snapshot.condition);
+  }, [snapshot]);
+
+  const cloudDim = useMemo(() => {
+    const cc = snapshot?.cloudCover;
+    if (typeof cc !== 'number') return 1;
+    // 0% cloud → 1.0, 100% cloud → 0.55
+    return 1 - (cc / 100) * 0.45;
+  }, [snapshot?.cloudCover]);
+
   const skyMaterial = useMemo(
     () =>
       new THREE.ShaderMaterial({
         side: THREE.BackSide,
         depthWrite: false,
         uniforms: {
-          topColor: { value: new THREE.Color('#4ca7e8') },
-          midColor: { value: new THREE.Color('#f7c8a0') },
-          bottomColor: { value: new THREE.Color('#ffe6c2') },
+          topColor: { value: new THREE.Color(DEFAULT_SKY_THEME.top) },
+          midColor: { value: new THREE.Color(DEFAULT_SKY_THEME.mid) },
+          bottomColor: { value: new THREE.Color(DEFAULT_SKY_THEME.bottom) },
         },
         vertexShader: `
           varying vec3 vWorldPos;
@@ -42,6 +66,65 @@ export default function SkyAndLighting() {
     [],
   );
 
+  const ambientRef = useRef<THREE.AmbientLight>(null);
+  const hemiRef = useRef<THREE.HemisphereLight>(null);
+  const sunRef = useRef<THREE.DirectionalLight>(null);
+  const fogColor = useMemo(() => new THREE.Color(DEFAULT_SKY_THEME.fog), []);
+  const targetTopColor = useMemo(() => new THREE.Color(), []);
+  const targetMidColor = useMemo(() => new THREE.Color(), []);
+  const targetBottomColor = useMemo(() => new THREE.Color(), []);
+  const targetSunColor = useMemo(() => new THREE.Color(), []);
+  const targetHemiTopColor = useMemo(() => new THREE.Color(), []);
+  const targetHemiBottomColor = useMemo(() => new THREE.Color(), []);
+  const targetFogColor = useMemo(() => new THREE.Color(), []);
+
+  useEffect(() => {
+    targetTopColor.set(target.top);
+    targetMidColor.set(target.mid);
+    targetBottomColor.set(target.bottom);
+    targetSunColor.set(target.sun);
+    targetHemiTopColor.set(target.hemiTop);
+    targetHemiBottomColor.set(target.hemiBottom);
+    targetFogColor.set(target.fog);
+  }, [
+    target,
+    targetTopColor,
+    targetMidColor,
+    targetBottomColor,
+    targetSunColor,
+    targetHemiTopColor,
+    targetHemiBottomColor,
+    targetFogColor,
+  ]);
+
+  useFrame((_, dt) => {
+    const a = Math.min(1, dt * 1.6);
+    const u = skyMaterial.uniforms as Record<
+      string,
+      { value: THREE.Color }
+    >;
+    u.topColor.value.lerp(targetTopColor, a);
+    u.midColor.value.lerp(targetMidColor, a);
+    u.bottomColor.value.lerp(targetBottomColor, a);
+    if (ambientRef.current) {
+      ambientRef.current.intensity +=
+        (target.ambient - ambientRef.current.intensity) * a;
+    }
+    if (hemiRef.current) {
+      hemiRef.current.color.lerp(targetHemiTopColor, a);
+      hemiRef.current.groundColor.lerp(targetHemiBottomColor, a);
+      hemiRef.current.intensity +=
+        (target.hemiIntensity - hemiRef.current.intensity) * a;
+    }
+    if (sunRef.current) {
+      sunRef.current.color.lerp(targetSunColor, a);
+      const targetSunI = target.sunIntensity * cloudDim;
+      sunRef.current.intensity +=
+        (targetSunI - sunRef.current.intensity) * a;
+    }
+    fogColor.lerp(targetFogColor, a);
+  });
+
   return (
     <>
       <mesh scale={[200, 200, 200]}>
@@ -49,12 +132,20 @@ export default function SkyAndLighting() {
         <primitive object={skyMaterial} attach="material" />
       </mesh>
 
-      <ambientLight intensity={0.9} />
-      <hemisphereLight args={['#bfe6e8', '#6a8a9a', 1.1]} />
+      <ambientLight ref={ambientRef} intensity={DEFAULT_SKY_THEME.ambient} />
+      <hemisphereLight
+        ref={hemiRef}
+        args={[
+          DEFAULT_SKY_THEME.hemiTop,
+          DEFAULT_SKY_THEME.hemiBottom,
+          DEFAULT_SKY_THEME.hemiIntensity,
+        ]}
+      />
       <directionalLight
+        ref={sunRef}
         position={[10, 12, 6]}
-        intensity={0.9}
-        color="#fff1d6"
+        intensity={DEFAULT_SKY_THEME.sunIntensity}
+        color={DEFAULT_SKY_THEME.sun}
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
@@ -67,7 +158,7 @@ export default function SkyAndLighting() {
         shadow-bias={-0.0005}
         shadow-radius={6}
       />
-      <fog attach="fog" args={['#ffd9b4', 22, 55]} />
+      <fog attach="fog" args={[fogColor, 22, 55]} />
     </>
   );
 }

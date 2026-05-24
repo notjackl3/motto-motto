@@ -34,6 +34,7 @@ import {
 } from '../lib/wordSources';
 import {
   MIN_GUESS_LENGTH,
+  computeRoundScore,
   resolveCriticsRating,
   isMatchOver,
 } from '../lib/scoring';
@@ -139,6 +140,11 @@ interface GameStoreState {
   roomCode: string | null;
   /** Source label for the current solo round answer (e.g. 'beach', 'ocean', 'local'). */
   currentWordSource: string | null;
+  /** Accumulated score across the match; 1000 for solving in one guess,
+   *  -100 per extra guess, floored at 100 (see computeRoundScore). */
+  matchScore: number;
+  /** Most recently awarded round score (for the round banner). 0 if lost. */
+  lastRoundScore: number | null;
   /** Multiplayer bridge — written by useSocketBridge from server events. */
   myCooldownEndsAt: number | null;
   opponentCooldownEndsAt: number | null;
@@ -237,6 +243,8 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   roomCode: null,
   opponentLeft: false,
   currentWordSource: null,
+  matchScore: 0,
+  lastRoundScore: null,
 
   setMode: (mode) => set({ mode }),
   setMusicMuted: (musicMuted) => set({ musicMuted }),
@@ -254,6 +262,8 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       cardDetailPopup: null,
       cardDrawHistory: [],
       myHand: [],
+      matchScore: 0,
+      lastRoundScore: null,
       ...initialRoundState,
     });
     if (mode === 'solo') {
@@ -423,6 +433,12 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
             afterCritics.opponentGuesses.length - 1
           ]?.word;
 
+    const roundScore = computeRoundScore(
+      afterCritics.myGuesses.length,
+      winner === 'me'
+    );
+    const nextMatchScore = afterCritics.matchScore + roundScore;
+
     const historyEntry: CompletedRoundRecord = {
       roundIndex: roundNumber,
       answer: afterCritics.answer ?? '????',
@@ -430,12 +446,15 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       myGuessCount: afterCritics.myGuesses.length,
       opponentGuessCount: afterCritics.opponentGuesses.length,
       winningGuess,
+      roundScore,
     };
 
     set({
       roundOver: true,
       roundsWon: newRoundsWon,
       matchWinner,
+      matchScore: nextMatchScore,
+      lastRoundScore: roundScore,
       roundHistory: [...afterCritics.roundHistory, historyEntry],
       roundBanner: matchWinner
         ? null
@@ -443,6 +462,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
             winner,
             roundNumber,
             criticsStars: afterCritics.lastCriticsRatings ?? undefined,
+            roundScore,
           },
     });
 
@@ -482,6 +502,8 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       faceSwap: false,
       faceSwapImageUrl: null as string | null,
       currentWordSource: null,
+      matchScore: 0,
+      lastRoundScore: null,
       ...initialRoundState,
     });
   },

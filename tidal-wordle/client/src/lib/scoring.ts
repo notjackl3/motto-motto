@@ -3,6 +3,29 @@ import type { Guess, MatchWinner, GameMode } from '../types';
 /** Minimum letters per guess (any word allowed, not limited to word bank). */
 export const MIN_GUESS_LENGTH = 2;
 
+/**
+ * Per-round score: highest when you solve in one guess, decays with each
+ * extra guess, floors at MIN. Lost rounds award 0.
+ *
+ *   1 guess  → 1000
+ *   2 guesses → 900
+ *   …
+ *   10+ guesses → 100 (floor)
+ */
+export const ROUND_SCORE_BASE = 1000;
+export const ROUND_SCORE_PENALTY_PER_GUESS = 100;
+export const ROUND_SCORE_MIN = 100;
+
+export function computeRoundScore(
+  guessCount: number,
+  won: boolean
+): number {
+  if (!won || guessCount <= 0) return 0;
+  const raw =
+    ROUND_SCORE_BASE - (guessCount - 1) * ROUND_SCORE_PENALTY_PER_GUESS;
+  return Math.max(ROUND_SCORE_MIN, raw);
+}
+
 export function isMatchOver(
   roundsWon: { me: number; opponent: number },
   roundsToWin: number

@@ -15,6 +15,7 @@ export default function RoundBanner() {
   const dismissRoundBanner = useGameStore((s) => s.dismissRoundBanner);
   const startRound = useGameStore((s) => s.startRound);
   const matchWinner = useGameStore((s) => s.matchWinner);
+  const matchScore = useGameStore((s) => s.matchScore);
   const [remaining, setRemaining] = useState(AUTO_ADVANCE_MS);
 
   // Reset / tick countdown each time a new banner appears.
@@ -87,6 +88,19 @@ export default function RoundBanner() {
                 <CriticsStars count={banner.criticsStars.opponent} />
               </>
             )}
+          </p>
+        )}
+        {typeof banner.roundScore === 'number' && (
+          <p className="text-sm text-white/85 mt-2">
+            <span className="opacity-70">Round score</span>{' '}
+            <span className="font-bold text-seafoam tabular-nums">
+              +{banner.roundScore}
+            </span>{' '}
+            <span className="opacity-50">·</span>{' '}
+            <span className="opacity-70">Match</span>{' '}
+            <span className="font-bold text-sand tabular-nums">
+              {matchScore}
+            </span>
           </p>
         )}
         <div className="mt-4">
