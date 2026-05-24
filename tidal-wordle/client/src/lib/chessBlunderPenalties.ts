@@ -123,22 +123,21 @@ function applySoloWordleTax(): HalfGuessSide {
 }
 
 function applyMultiplayerInfoLeak(): ChessInfoLeakPayload | undefined {
-  const state = useGameStore.getState();
   const roomId = useMultiplayerStore.getState().roomCode;
   const socket = useMultiplayerStore.getState().socket;
-  if (!state.answer || !roomId || !socket?.id) {
-    console.warn('[chessBlunder] multiplayer leak skipped: missing answer or room');
+  if (!roomId || !socket?.id) {
+    console.warn('[chessBlunder] multiplayer leak skipped: missing room or socket');
     return undefined;
   }
 
-  const payload = buildChessInfoLeakPayload(
+  // Server picks position/letter from the authoritative answer; client only
+  // signals that a blunder happened.
+  const payload: ChessInfoLeakPayload = {
     roomId,
-    socket.id,
-    state.answer,
-    state.revealedLetters
-  );
-  if (!payload) return undefined;
-
+    fromPlayerId: socket.id,
+    position: -1,
+    letter: '',
+  };
   emitChessBlunderInfoLeak(payload);
   return payload;
 }

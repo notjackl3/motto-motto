@@ -13,13 +13,28 @@ export function getAllWords(): string[] {
   return [...WORDS];
 }
 
+export function getWordBankSize(): number {
+  return WORDS.length;
+}
+
 export function getRandomWord(): string {
-  if (WORDS.length === 0) {
+  const word = pickRandomWordExcluding(new Set());
+  if (!word) {
     throw new Error(
       `No beach words between ${MIN_WORD_LENGTH}-${MAX_WORD_LENGTH} letters in beachWords.json`
     );
   }
-  return WORDS[Math.floor(Math.random() * WORDS.length)];
+  return word;
+}
+
+/** Pick a random word not in `excluded` (uppercase keys). Returns null when the bank is exhausted. */
+export function pickRandomWordExcluding(
+  excluded: ReadonlySet<string>
+): string | null {
+  if (WORDS.length === 0) return null;
+  const pool = WORDS.filter((w) => !excluded.has(w));
+  if (pool.length === 0) return null;
+  return pool[Math.floor(Math.random() * pool.length)]!;
 }
 
 export function getRandomWordOfLength(n: number): string {

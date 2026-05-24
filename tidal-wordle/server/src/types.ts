@@ -21,9 +21,12 @@ export interface Room {
   roundNumber: number; // 1..3
   roundsWon: { host: number; guest: number };
 
-  // Guess + cooldown tracking
+  // Guess tracking
   guesses: { host: string[]; guest: string[] };
-  cooldowns: { host: number | null; guest: number | null }; // epoch ms when cooldown ends
+  /** Sequential turns: who may submit the next guess while status === 'playing'. */
+  activeTurn: Role | null;
+  /** Legacy cooldown fields (unused in sequential MP). */
+  cooldowns: { host: number | null; guest: number | null };
 
   // Persistent card effects (server tracks for routing only; client computes
   // visual / mechanical impact via existing cardEffects code).

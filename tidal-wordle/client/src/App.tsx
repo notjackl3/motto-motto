@@ -31,9 +31,12 @@ function RootLayout() {
 
   useSocketBridge();
 
-  // Match-end → /game-over.
+  // Match-end → /game-over (multiplayer only; solo runs infinitely).
   useEffect(() => {
-    return onMatchEnd(() => navigate('/game-over'));
+    return onMatchEnd(() => {
+      if (useGameStore.getState().mode === 'solo') return;
+      navigate('/game-over');
+    });
   }, [navigate]);
 
   function returnToMenuFromOpponentLeft() {

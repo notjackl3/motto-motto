@@ -21,6 +21,8 @@ export const Events = {
   GAME_GUESS_RESULT: 'game:guessResult', // server → both clients
   GAME_INVALID_GUESS: 'game:invalidGuess',
   GAME_COOLDOWN_VIOLATION: 'game:cooldownViolation',
+  /** Emitted when a player guesses out of turn (sequential multiplayer). */
+  GAME_TURN_VIOLATION: 'game:turnViolation',
   GAME_CARD_PLAYED: 'game:cardPlayed', // client → server
   GAME_CARD_EFFECT: 'game:cardEffect', // server → both clients
   GAME_ROUND_END: 'game:roundEnd',
@@ -97,6 +99,8 @@ export interface GameStartPayload {
   roundNumber: number; // 1, 2, or 3
   yourRole: Role;
   opponentName: string; // "Opponent" default; future: user-set
+  /** Role allowed to submit the next guess (sequential turns). */
+  activeTurn: Role;
 }
 
 // GAME_GUESS (client → server)
@@ -110,7 +114,10 @@ export interface GameGuessResultPayload {
   guess: string;
   evaluation: WireLetterResult[];
   isCorrect: boolean;
+  /** @deprecated Sequential MP uses activeTurn; kept for wire compat. */
   cooldownEndsAt: number;
+  /** Role allowed to submit the next guess (unchanged if the round ended). */
+  activeTurn: Role;
   answerLength: number; // first-guess-reveals-length to both
   timestamp: number;
 }
@@ -122,6 +129,10 @@ export interface GameInvalidGuessPayload {
 
 export interface GameCooldownViolationPayload {
   cooldownEndsAt: number;
+}
+
+export interface GameTurnViolationPayload {
+  activeTurn: Role;
 }
 
 // GAME_CARD_PLAYED (client → server)
@@ -150,6 +161,7 @@ export interface GameRoundEndPayload {
 // GAME_NEXT_ROUND → both players
 export interface GameNextRoundPayload {
   roundNumber: number;
+  activeTurn: Role;
 }
 
 // GAME_MATCH_END → both players

@@ -23,16 +23,31 @@ import type {
   CompletedRoundRecord,
   RoundBannerState,
   SubmitGuessResult,
+  StoryboardPage,
 } from '../types';
-import { isValidProbeWord } from '../lib/cardContent/probeWords';
-import { stopPlaylist } from '../lib/cardAudio';
-import { evaluateGuess, isSolvedGuess } from '../lib/guessEvaluator';
-import { getRandomWord, normalizeWord } from '../lib/wordList';
 import {
   MIN_GUESS_LENGTH,
   resolveCriticsRating,
   isMatchOver,
 } from '../lib/scoring';
+import { isValidProbeWord } from '../lib/cardContent/probeWords';
+import { stopPlaylist } from '../lib/cardAudio';
+import { evaluateGuess, isSolvedGuess } from '../lib/guessEvaluator';
+import {
+  getRandomWord,
+  normalizeWord,
+  pickRandomWordExcluding,
+} from '../lib/wordList';
+import {
+  loadSoloCompletedWords,
+  saveSoloCompletedWords,
+} from '../lib/soloWordProgress';
+import {
+  createStoryboardPageStub,
+  generateStoryboardPage,
+} from '../lib/storyboard';
+import type { Role } from '../../../shared/events';
+import { useMultiplayerStore } from './multiplayerStore';
 
 function applyCriticsAtRoundEnd(): void {
   const state = useGameStore.getState();
@@ -74,6 +89,33 @@ export function onMatchEnd(listener: MatchEndListener): () => void {
 
 function notifyMatchEnd(winner: MatchWinner): void {
   matchEndListeners.forEach((fn) => fn(winner));
+}
+
+function enqueueStoryboardPage(word: string, roundIndex: number): void {
+  const priorWords = useGameStore
+    .getState()
+    .storyboardPages.map((p) => p.word);
+  if (
+    useGameStore
+      .getState()
+      .storyboardPages.some((p) => p.roundIndex === roundIndex)
+  ) {
+    return;
+  }
+
+  const stub = createStoryboardPageStub(word, roundIndex, priorWords);
+  useGameStore.setState((state) => ({
+    storyboardPages: [...state.storyboardPages, stub],
+    storyboardHasUnread: true,
+  }));
+
+  void generateStoryboardPage(word, roundIndex, priorWords).then((result) => {
+    useGameStore.setState((state) => ({
+      storyboardPages: state.storyboardPages.map((p) =>
+        p.id === stub.id ? { ...p, ...result } : p
+      ),
+    }));
+  });
 }
 
 interface GameStoreState {
@@ -135,6 +177,18 @@ interface GameStoreState {
   opponentCooldownEndsAt: number | null;
   /** True when server emits opponent:left; UI may show a notice. */
   opponentLeft: boolean;
+  /** Sequential MP: server role that may submit the next guess. */
+  activeTurn: Role | null;
+  /** Manga storyboard pages — one panel per completed round. */
+  storyboardPages: StoryboardPage[];
+  /** Pull-out phone UI visible. */
+  phoneOpen: boolean;
+  /** New panel arrived while phone was stowed. */
+  storyboardHasUnread: boolean;
+  /** Solo: words cleared this run + persisted in localStorage. */
+  soloCompletedWords: string[];
+  /** Solo: every bank word has been cleared at least once. */
+  wordBankExhausted: boolean;
 
   setMode: (mode: GameMode | null) => void;
   setMusicMuted: (muted: boolean) => void;
@@ -153,6 +207,8 @@ interface GameStoreState {
   resetRound: () => void;
   resetMatch: () => void;
   clearDistractionBlock: () => void;
+  setPhoneOpen: (open: boolean) => void;
+  togglePhone: () => void;
 
   // ---- Multiplayer bridge surface (called from useSocketBridge) ----
   addOpponentGuess: (guess: Guess) => void;
@@ -161,10 +217,11 @@ interface GameStoreState {
   setOpponentCooldownEndsAt: (at: number | null) => void;
   setAnswerLengthFromServer: (length: number) => void;
   setOpponentLeft: (left: boolean) => void;
+  setActiveTurnFromServer: (turn: Role) => void;
   /** Server-authoritative submit: pre-check locally, then let server evaluate. */
   multiplayerSubmitGuess: (word: string) => SubmitGuessResult;
   applyRemoteRoundEnd: (winner: 'me' | 'opponent', answer: string) => void;
-  applyRemoteNextRound: (roundNumber: number) => void;
+  applyRemoteNextRound: (roundNumber: number, activeTurn?: Role) => void;
 }
 
 const initialRoundState = {
@@ -197,6 +254,7 @@ const initialRoundState = {
   distractionBlocking: false,
   myCooldownEndsAt: null as number | null,
   opponentCooldownEndsAt: null as number | null,
+  activeTurn: null as Role | null,
 };
 
 export const useGameStore = create<GameStoreState>((set, get) => ({
@@ -224,6 +282,12 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   musicMuted: false,
   roomCode: null,
   opponentLeft: false,
+  activeTurn: null,
+  storyboardPages: [],
+  phoneOpen: false,
+  storyboardHasUnread: false,
+  soloCompletedWords: [],
+  wordBankExhausted: false,
 
   setMode: (mode) => set({ mode }),
   setMusicMuted: (musicMuted) => set({ musicMuted }),
@@ -232,6 +296,8 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   setRoomCode: (roomCode) => set({ roomCode }),
 
   startMatch: (mode) => {
+    const soloCompletedWords =
+      mode === 'solo' ? loadSoloCompletedWords() : [];
     set({
       mode,
       roundsWon: { me: 0, opponent: 0 },
@@ -240,12 +306,47 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       cardDetailPopup: null,
       cardDrawHistory: [],
       myHand: [],
+      storyboardPages: [],
+      phoneOpen: false,
+      storyboardHasUnread: false,
+      soloCompletedWords,
+      wordBankExhausted: false,
       ...initialRoundState,
     });
     get().startRound();
   },
 
   startRound: () => {
+    const state = get();
+    if (state.mode === 'solo') {
+      const excluded = new Set(
+        state.soloCompletedWords.map((w) => w.toUpperCase())
+      );
+      const word = pickRandomWordExcluding(excluded);
+      if (!word) {
+        set({
+          ...initialRoundState,
+          answer: null,
+          answerLength: null,
+          roundOver: false,
+          roundBanner: null,
+          wordBankExhausted: true,
+        });
+        return;
+      }
+      set({
+        ...initialRoundState,
+        answer: word,
+        answerLength: null,
+        roundOver: false,
+        roundBanner: null,
+        cardDrawHistory: [],
+        wordBankExhausted: false,
+        soloCompletedWords: state.soloCompletedWords,
+      });
+      return;
+    }
+
     const word = getRandomWord();
     set({
       ...initialRoundState,
@@ -368,6 +469,57 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     const state = get();
     if (state.roundOver) return;
 
+    if (state.mode === 'solo') {
+      if (winner !== 'me' || !state.answer) return;
+
+      applyCriticsAtRoundEnd();
+      const afterCritics = get();
+      const answer = afterCritics.answer;
+      if (!answer) return;
+      const answerWord = answer.toLowerCase();
+      const soloCompletedWords = [
+        ...afterCritics.soloCompletedWords,
+        ...(afterCritics.soloCompletedWords.includes(answerWord)
+          ? []
+          : [answerWord]),
+      ];
+      saveSoloCompletedWords(soloCompletedWords);
+      const chapterIndex = soloCompletedWords.length;
+
+      const winningGuess =
+        afterCritics.myGuesses[afterCritics.myGuesses.length - 1]?.word;
+
+      const historyEntry: CompletedRoundRecord = {
+        roundIndex: chapterIndex,
+        answer,
+        winner: 'me',
+        myGuessCount: afterCritics.myGuesses.length,
+        opponentGuessCount: 0,
+        winningGuess,
+      };
+
+      set({
+        roundOver: true,
+        soloCompletedWords,
+        roundHistory: [...afterCritics.roundHistory, historyEntry],
+        roundBanner: {
+          winner: 'me',
+          roundNumber: chapterIndex,
+          criticsStars: afterCritics.lastCriticsRatings ?? undefined,
+        },
+      });
+
+      enqueueStoryboardPage(answerWord, chapterIndex);
+
+      setTimeout(() => {
+        const s = get();
+        if (s.mode !== 'solo' || !s.roundBanner) return;
+        get().dismissRoundBanner();
+        get().startRound();
+      }, 1500);
+      return;
+    }
+
     applyCriticsAtRoundEnd();
     const afterCritics = get();
 
@@ -410,6 +562,11 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
           },
     });
 
+    const answerWord = afterCritics.answer?.toLowerCase();
+    if (answerWord) {
+      enqueueStoryboardPage(answerWord, roundNumber);
+    }
+
     if (matchWinner) {
       notifyMatchEnd(matchWinner);
       return;
@@ -441,6 +598,11 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       cardDetailPopup: null,
       cardDrawHistory: [],
       myHand: [],
+      storyboardPages: [],
+      phoneOpen: false,
+      storyboardHasUnread: false,
+      soloCompletedWords: [],
+      wordBankExhausted: false,
       musicSwapActive: false,
       faceSwap: false,
   faceSwapImageUrl: null as string | null,
@@ -450,6 +612,20 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
 
   clearDistractionBlock: () =>
     set({ distractionBlocking: false, inputLocked: false }),
+
+  setPhoneOpen: (open) =>
+    set({
+      phoneOpen: open,
+      ...(open ? { storyboardHasUnread: false } : {}),
+    }),
+
+  togglePhone: () => {
+    const next = !get().phoneOpen;
+    set({
+      phoneOpen: next,
+      ...(next ? { storyboardHasUnread: false } : {}),
+    });
+  },
 
   // ─────────────────────────────────────────────────────────────────
   // Multiplayer bridge (called from useSocketBridge in useSocket.ts).
@@ -461,6 +637,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   setMyCooldownEndsAt: (at) => set({ myCooldownEndsAt: at }),
   setOpponentCooldownEndsAt: (at) => set({ opponentCooldownEndsAt: at }),
   setOpponentLeft: (left) => set({ opponentLeft: left }),
+  setActiveTurnFromServer: (turn) => set({ activeTurn: turn }),
   setAnswerLengthFromServer: (length) => {
     if (get().answerLength !== length) set({ answerLength: length });
   },
@@ -489,10 +666,13 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     if (state.inputLocked || state.chessPuzzleActive || state.distractionBlocking) {
       return { ok: false, reason: 'locked' };
     }
-    const cooldownEnd = state.myCooldownEndsAt;
-    if (cooldownEnd !== null && Date.now() < cooldownEnd) {
-      // No `cooldown` variant in SubmitGuessResult; treat as locked.
-      return { ok: false, reason: 'locked' };
+    const myRole = useMultiplayerStore.getState().role;
+    if (
+      myRole &&
+      state.activeTurn !== null &&
+      state.activeTurn !== myRole
+    ) {
+      return { ok: false, reason: 'not_your_turn' };
     }
     if (state.answerLength !== null && trimmed.length !== state.answerLength) {
       return { ok: false, reason: 'length' };
@@ -513,19 +693,25 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
           ? 'opponent'
           : null;
 
+    const roundNumber = nextRoundsWon.me + nextRoundsWon.opponent;
+
     set({
       roundOver: true,
       answer,
       roundsWon: nextRoundsWon,
       matchWinner,
     });
+
+    enqueueStoryboardPage(answer.toLowerCase(), roundNumber);
+
     if (matchWinner !== null) notifyMatchEnd(matchWinner);
   },
 
-  applyRemoteNextRound: (_roundNumber) => {
+  applyRemoteNextRound: (_roundNumber, activeTurn = 'host') => {
     set({
       ...initialRoundState,
       matchWinner: null,
+      activeTurn,
     });
   },
 }));

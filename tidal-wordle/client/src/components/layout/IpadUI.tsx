@@ -6,10 +6,15 @@ import OpponentBoard from '../game/OpponentBoard';
 import KnowledgePanel from '../game/KnowledgePanel';
 import CardDetailPopup from '../game/CardDetailPopup';
 import { useGameStore } from '../../stores/gameStore';
+import { useMultiplayerStore } from '../../stores/multiplayerStore';
+import { selectIsMyTurn } from '../../stores/gameSelectors';
 
 export default function IpadUI() {
   const mode = useGameStore((s) => s.mode);
   const roomCode = useGameStore((s) => s.roomCode);
+  const activeTurn = useGameStore((s) => s.activeTurn);
+  const myRole = useMultiplayerStore((s) => s.role);
+  const isMyTurn = selectIsMyTurn(mode, activeTurn, myRole);
 
   const isSolo = mode === 'solo';
   const rightRailClass = isSolo ? 'w-[22%]' : 'w-[26%]';
@@ -24,6 +29,15 @@ export default function IpadUI() {
           <span className="bracket-br" />
           <div className="flex items-center justify-between mb-1 shrink-0 gap-2">
             <span className="label-instrument">Decoder · Self</span>
+            {mode === 'multiplayer' && (
+              <span
+                className={`font-mono text-[9px] tracking-[0.2em] shrink-0 ${
+                  isMyTurn ? 'text-seafoam' : 'text-white/45'
+                }`}
+              >
+                {isMyTurn ? 'YOUR TURN' : 'OPPONENT TURN'}
+              </span>
+            )}
             {mode === 'multiplayer' && roomCode && (
               <span className="font-mono text-[9px] tracking-[0.28em] text-sand/60 shrink-0">
                 {roomCode}

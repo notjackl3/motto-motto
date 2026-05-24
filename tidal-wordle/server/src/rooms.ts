@@ -47,6 +47,7 @@ export function createRoom(hostSocketId: string): Room {
     roundNumber: 1,
     roundsWon: { host: 0, guest: 0 },
     guesses: { host: [], guest: [] },
+    activeTurn: null,
     cooldowns: { host: null, guest: null },
     activeEffects: { host: [], guest: [] },
     roundWinner: null,

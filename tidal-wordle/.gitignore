@@ -5,6 +5,8 @@ build/
 *.log
 .env
 .env.local
+server/.env
+server/.env.local
 .vite/
 coverage/
 .idea/

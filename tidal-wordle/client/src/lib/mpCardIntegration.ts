@@ -1,18 +1,8 @@
 /**
- * Multiplayer card integration for Dev B.
- *
- * On SocketEvents.GameCardPlayed:
- *   import { applyCardFromSocket } from './mpCardIntegration';
- *   // Incoming attack on local player:
- *   applyCardFromSocket(payload.cardId, 'self');
- *
- * When local player plays a card at opponent:
- *   applyCardFromSocket(payload.cardId, 'opponent');
- *
- * When opponent submits a guess (clears meme on their board view):
- *   clearMemeCannonForTarget('opponent');
+ * Multiplayer card integration entry point for Dev B docs / external imports.
  */
 export type { GameCardPlayedPayload } from '../types';
+export { emitMpCardPlay, registerMpCardPlay, unregisterMpCardPlay } from './mpCardEmit';
 export {
   applyCardFromSocket,
   applyEffect,

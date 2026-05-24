@@ -1,17 +1,16 @@
+import './loadEnv.js';
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import { Server, type Socket } from 'socket.io';
 import {
   Events,
-  GUESS_COOLDOWN_MS,
   ROUNDS_TO_WIN,
   ROUND_TRANSITION_MS,
   DISCONNECT_GRACE_MS,
   MATCH_END_PERSIST_MS,
   type GameCardEffectPayload,
   type GameCardPlayedInbound,
-  type GameCooldownViolationPayload,
   type GameGuessInbound,
   type GameGuessResultPayload,
   type GameInvalidGuessPayload,
@@ -19,6 +18,7 @@ import {
   type GameNextRoundPayload,
   type GameRoundEndPayload,
   type GameStartPayload,
+  type GameTurnViolationPayload,
   type OpponentLeftPayload,
   type Role,
   type RoomCreatedPayload,
@@ -41,12 +41,17 @@ import type { Room } from './types.js';
 import { getTideSnapshot } from './tides.js';
 import { pickAnswer } from './words.js';
 import { evaluateGuess, isCorrect } from './evaluate.js';
+import {
+  generateStoryboardImage,
+  parseStoryboardImageBody,
+} from './storyboardImage.js';
 
 const PORT = Number(process.env.PORT ?? 3001);
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? 'http://localhost:5173';
 
 const app = express();
 app.use(cors({ origin: CLIENT_ORIGIN }));
+app.use(express.json({ limit: '16kb' }));
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
 app.get('/api/tides', async (req, res) => {
@@ -57,6 +62,33 @@ app.get('/api/tides', async (req, res) => {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.warn('[tides] proxy failed:', message);
+    res.status(502).json({ error: message });
+  }
+});
+
+app.post('/api/storyboard/image', async (req, res) => {
+  const parsed = parseStoryboardImageBody(req.body);
+  if (!parsed) {
+    res.status(400).json({ error: 'Invalid storyboard image request' });
+    return;
+  }
+
+  if (!process.env.OPENAI_API_KEY?.trim()) {
+    res.status(503).json({
+      error: 'OPENAI_API_KEY is not configured on the server',
+    });
+    return;
+  }
+
+  try {
+    const result = await generateStoryboardImage(parsed);
+    res.json({
+      imageUrl: result.imageUrl,
+      revisedPrompt: result.revisedPrompt,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn('[storyboard] OpenAI image failed:', message);
     res.status(502).json({ error: message });
   }
 });
@@ -83,6 +115,7 @@ function startMatch(room: Room): void {
       roundNumber: room.roundNumber,
       yourRole: role,
       opponentName: 'Opponent',
+      activeTurn: room.activeTurn ?? 'host',
     };
     io.to(sid).emit(Events.GAME_START, payload);
   }
@@ -97,6 +130,7 @@ function startRound(room: Room): void {
   room.activeEffects = { host: [], guest: [] };
   room.roundWinner = null;
   room.status = 'playing';
+  room.activeTurn = 'host';
   touchRoom(room);
 }
 
@@ -143,7 +177,10 @@ function handleRoundEnd(room: Room, winner: Role | null): void {
     if (!room.hostSocketId || !room.guestSocketId) return;
     room.roundNumber += 1;
     startRound(room);
-    const nextPayload: GameNextRoundPayload = { roundNumber: room.roundNumber };
+    const nextPayload: GameNextRoundPayload = {
+      roundNumber: room.roundNumber,
+      activeTurn: room.activeTurn ?? 'host',
+    };
     broadcast(room, Events.GAME_NEXT_ROUND, nextPayload);
     console.log(`[room ${room.code}] round ${room.roundNumber} start — answer="${room.answer}"`);
   }, ROUND_TRANSITION_MS);
@@ -196,29 +233,31 @@ function handleGuess(socket: Socket, raw: unknown): void {
   }
 
   const now = Date.now();
-  const cooldownEnd = room.cooldowns[role];
-  if (cooldownEnd && now < cooldownEnd) {
-    const payload: GameCooldownViolationPayload = {
-      cooldownEndsAt: cooldownEnd,
+  if (room.activeTurn !== role) {
+    const payload: GameTurnViolationPayload = {
+      activeTurn: room.activeTurn ?? opponentRoleOf(role),
     };
-    socket.emit(Events.GAME_COOLDOWN_VIOLATION, payload);
+    socket.emit(Events.GAME_TURN_VIOLATION, payload);
     return;
   }
 
-  const nextCooldownEnd = now + GUESS_COOLDOWN_MS;
-  room.cooldowns[role] = nextCooldownEnd;
   room.guesses[role].push(guessLower);
   touchRoom(room);
 
   const evaluation = evaluateGuess(guessLower, room.answer);
   const correct = isCorrect(evaluation);
 
+  if (!correct) {
+    room.activeTurn = opponentRoleOf(role);
+  }
+
   const payload: GameGuessResultPayload = {
     role,
     guess: guessLower,
     evaluation,
     isCorrect: correct,
-    cooldownEndsAt: nextCooldownEnd,
+    cooldownEndsAt: 0,
+    activeTurn: room.activeTurn ?? opponentRoleOf(role),
     answerLength: room.answer.length,
     timestamp: now,
   };
@@ -351,6 +390,28 @@ io.on('connection', (socket) => {
   socket.on(Events.GAME_CARD_PLAYED, (payload) =>
     handleCardPlayed(socket, payload),
   );
+
+  socket.on(Events.GAME_CHESS_BLUNDER_INFO_LEAK, (raw: unknown) => {
+    const room = getRoomBySocket(socket.id);
+    if (!room?.answer) return;
+    const role = roleInRoom(room, socket.id);
+    if (!role) return;
+
+    const inbound = raw as { roomId?: string };
+    if (inbound?.roomId && inbound.roomId !== room.code) return;
+
+    const opponentSid = opponentSocketIdOf(room, role);
+    if (!opponentSid) return;
+
+    const position = Math.floor(Math.random() * room.answer.length);
+    const payload = {
+      roomId: room.code,
+      fromPlayerId: socket.id,
+      position,
+      letter: room.answer[position]!,
+    };
+    io.to(opponentSid).emit(Events.GAME_CHESS_BLUNDER_INFO_LEAK, payload);
+  });
 
   socket.on('disconnect', () => {
     console.log('[socket] disconnected', socket.id);

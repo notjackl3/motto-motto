@@ -9,6 +9,8 @@ export function getSubmitFeedbackMessage(result: SubmitGuessResult): string | nu
       return 'Invalid guess.';
     case 'locked':
       return 'Input locked (card effect).';
+    case 'not_your_turn':
+      return "Opponent's turn — wait for them to guess.";
     case 'round_over':
       return 'Round is over.';
     case 'no_answer':

@@ -4,6 +4,9 @@ import IpadUI from './IpadUI';
 import EffectOverlays from '../game/EffectOverlays';
 import RoundBanner from '../game/RoundBanner';
 import DevCardFilterPanel from '../dev/DevCardFilterPanel';
+import PhoneShell from '../storyboard/PhoneShell';
+import WordLexiconButton from '../game/WordLexiconButton';
+import WordLexiconOverlay from '../game/WordLexiconOverlay';
 import { useEffectExpiry } from '../../hooks/useEffectExpiry';
 import { useGameStore } from '../../stores/gameStore';
 import { playSfx } from '../../lib/audio';
@@ -15,31 +18,64 @@ interface GameLayoutProps {
 type ControlMode = 'ipad' | 'look';
 
 export default function GameLayout({ onQuit }: GameLayoutProps) {
+  const mode = useGameStore((s) => s.mode);
   const roundsWon = useGameStore((s) => s.roundsWon);
+  const soloCompletedCount = useGameStore((s) => s.soloCompletedWords.length);
   const myGuessCount = useGameStore((s) => s.myGuesses.length);
   const opponentGuessCount = useGameStore((s) => s.opponentGuesses.length);
+  const phoneOpen = useGameStore((s) => s.phoneOpen);
+  const togglePhone = useGameStore((s) => s.togglePhone);
+  const isSolo = mode === 'solo';
 
   useEffectExpiry();
 
   const [controlMode, setControlMode] = useState<ControlMode>('ipad');
+  const [lexiconOpen, setLexiconOpen] = useState(false);
   const [crashKey, setCrashKey] = useState<number | null>(null);
   const prevRoundsWonRef = useRef(roundsWon);
+  const prevSoloCompletedRef = useRef(soloCompletedCount);
   const prevMyGuessRef = useRef(myGuessCount);
   const prevOppGuessRef = useRef(opponentGuessCount);
+
+  const handleQuit = useCallback(() => {
+    if (document.pointerLockElement) document.exitPointerLock();
+    onQuit();
+  }, [onQuit]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.repeat) return;
+      const tag = (e.target as HTMLElement | null)?.tagName?.toLowerCase();
+      const typing = tag === 'input' || tag === 'textarea';
+
       if (e.key.toLowerCase() === 'e') {
-        const tag = (e.target as HTMLElement | null)?.tagName?.toLowerCase();
-        if (tag === 'input' || tag === 'textarea') return;
+        if (typing) return;
         setControlMode((m) => (m === 'ipad' ? 'look' : 'ipad'));
         e.preventDefault();
+      }
+      if (e.key.toLowerCase() === 'q') {
+        if (typing) return;
+        handleQuit();
+        e.preventDefault();
+      }
+      if (e.key.toLowerCase() === 'p') {
+        if (typing) return;
+        if (controlMode === 'ipad') {
+          togglePhone();
+          e.preventDefault();
+        }
+      }
+      if (e.key.toLowerCase() === 'l') {
+        if (typing) return;
+        if (controlMode === 'ipad' && isSolo) {
+          setLexiconOpen((open) => !open);
+          e.preventDefault();
+        }
       }
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
+  }, [controlMode, handleQuit, togglePhone, isSolo]);
 
   useEffect(() => {
     function onLockChange() {
@@ -52,6 +88,14 @@ export default function GameLayout({ onQuit }: GameLayoutProps) {
   }, []);
 
   useEffect(() => {
+    if (mode === 'solo') {
+      if (soloCompletedCount > prevSoloCompletedRef.current) {
+        setCrashKey(Date.now());
+        playSfx('correct');
+      }
+      prevSoloCompletedRef.current = soloCompletedCount;
+      return;
+    }
     const prev = prevRoundsWonRef.current;
     if (prev.me !== roundsWon.me || prev.opponent !== roundsWon.opponent) {
       setCrashKey(Date.now());
@@ -59,7 +103,7 @@ export default function GameLayout({ onQuit }: GameLayoutProps) {
       else if (roundsWon.opponent > prev.opponent) playSfx('lose');
     }
     prevRoundsWonRef.current = roundsWon;
-  }, [roundsWon]);
+  }, [mode, roundsWon, soloCompletedCount]);
 
   useEffect(() => {
     if (myGuessCount > prevMyGuessRef.current) playSfx('guessSubmit');
@@ -70,11 +114,6 @@ export default function GameLayout({ onQuit }: GameLayoutProps) {
     if (opponentGuessCount > prevOppGuessRef.current) playSfx('tick');
     prevOppGuessRef.current = opponentGuessCount;
   }, [opponentGuessCount]);
-
-  const handleQuit = useCallback(() => {
-    if (document.pointerLockElement) document.exitPointerLock();
-    onQuit();
-  }, [onQuit]);
 
   return (
     <div
@@ -92,8 +131,23 @@ export default function GameLayout({ onQuit }: GameLayoutProps) {
         Quit
       </button>
 
+      {isSolo && controlMode === 'ipad' && (
+        <div className="absolute top-3 left-3 z-30">
+          <WordLexiconButton onClick={() => setLexiconOpen((open) => !open)} />
+        </div>
+      )}
+
+      {lexiconOpen && isSolo && (
+        <WordLexiconOverlay onClose={() => setLexiconOpen(false)} />
+      )}
+
       {/* Gameplay UI projected onto the iPad screen face. */}
       <IpadOverlay controlMode={controlMode} />
+
+      {/* Pull-out phone — manga storyboard, separate from iPad */}
+      {controlMode === 'ipad' && (
+        <PhoneShell open={phoneOpen} onToggle={togglePhone} />
+      )}
 
       {/* Screen-level gameplay overlays (card effects, popups, round banner) */}
       <EffectOverlays />
@@ -118,7 +172,26 @@ export default function GameLayout({ onQuit }: GameLayoutProps) {
             <kbd className="px-1.5 py-0.5 rounded bg-white/15 text-white text-[11px] font-mono">
               E
             </kbd>{' '}
-            look around
+            look around ·{' '}
+            <kbd className="px-1.5 py-0.5 rounded bg-white/15 text-white text-[11px] font-mono">
+              P
+            </kbd>{' '}
+            manga
+            {isSolo && (
+              <>
+                {' '}
+                ·{' '}
+                <kbd className="px-1.5 py-0.5 rounded bg-white/15 text-white text-[11px] font-mono">
+                  L
+                </kbd>{' '}
+                lexicon
+              </>
+            )}{' '}
+            ·{' '}
+            <kbd className="px-1.5 py-0.5 rounded bg-white/15 text-white text-[11px] font-mono">
+              Q
+            </kbd>{' '}
+            quit
           </>
         ) : (
           <>
@@ -126,7 +199,11 @@ export default function GameLayout({ onQuit }: GameLayoutProps) {
             <kbd className="px-1.5 py-0.5 rounded bg-white/15 text-white text-[11px] font-mono">
               E
             </kbd>{' '}
-            (or Esc) to use the iPad
+            (or Esc) to use the iPad ·{' '}
+            <kbd className="px-1.5 py-0.5 rounded bg-white/15 text-white text-[11px] font-mono">
+              Q
+            </kbd>{' '}
+            quit
           </>
         )}
       </div>

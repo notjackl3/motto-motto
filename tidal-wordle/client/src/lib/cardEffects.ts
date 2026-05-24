@@ -11,6 +11,7 @@ import { getRelatedHint } from './relatedHints';
 import { buildLetterPattern, formatLetterPattern } from './playerKnowledge';
 import { resolveCriticsRating } from './scoring';
 import { getWordTheme, getThemeParentCategory, categoryLabel, getCategoryRelatedWord } from './wordMeta';
+import { emitMpCardPlay } from './mpCardEmit';
 import {
   pickMemeCannon,
   pickBrainrot,
@@ -77,9 +78,12 @@ function getGuessesForTarget(target: EffectTarget) {
 
 function getLastWrongGuess(target: EffectTarget, answer: string): string {
   const guesses = getGuessesForTarget(target);
-  const lastWrong = [...guesses]
-    .reverse()
-    .find((g) => !g.isProbe && answer && !isSolvedGuess(g.word, answer));
+  const lastWrong = [...guesses].reverse().find((g) => {
+    if (g.isProbe) return false;
+    if (answer) return !isSolvedGuess(g.word, answer);
+    // Multiplayer: no local answer — use tile evaluation from the server.
+    return !g.results.every((r) => r.state === 'correct');
+  });
   return lastWrong?.word ?? '???';
 }
 
@@ -234,6 +238,7 @@ export function applyEffect(
 
   const answer = state.answer?.toUpperCase() ?? '';
   const answerWord = state.answer?.toLowerCase() ?? '';
+  const boardCols = state.answerLength ?? answer.length ?? 5;
   const theme = answerWord ? getWordTheme(answerWord) : 'abstract-beach';
   const now = Date.now();
   const wrongGuess = getLastWrongGuess(target, answer);
@@ -261,7 +266,7 @@ export function applyEffect(
       const v = pickBrainrot(theme);
       const guesses = getGuessesForTarget(target);
       const rowCount = Math.max(guesses.length, 1);
-      const maxCols = answer.length || 5;
+      const maxCols = boardCols;
       const stickers = generateBrainrotStickers(rowCount, maxCols, v.stickerStyle);
       addActiveEffect('brainrot-glitch', target, undefined, {
         stickers,
@@ -309,16 +314,20 @@ export function applyEffect(
     case 'bored-distraction': {
       const v = pickBoredDistraction(theme);
       const headerUrls = getDistractionHeaderUrls(theme);
-      useGameStore.setState({
-        inputLocked: true,
-        distractionBlocking: true,
-      });
-      addOverlay('bored-distraction', v.title, undefined, true, {
-        title: v.title,
-        paragraphs: v.paragraphs,
-        headerImageUrl: headerUrls.primary,
-        headerImageFallbackUrl: headerUrls.fallback,
-      });
+      if (target === 'self') {
+        useGameStore.setState({
+          inputLocked: true,
+          distractionBlocking: true,
+        });
+        addOverlay('bored-distraction', v.title, undefined, true, {
+          title: v.title,
+          paragraphs: v.paragraphs,
+          headerImageUrl: headerUrls.primary,
+          headerImageFallbackUrl: headerUrls.fallback,
+        });
+      } else {
+        addHint(`Bored Distraction sent — opponent must scroll to dismiss.`);
+      }
       break;
     }
     case 'recipe-spam': {
@@ -344,19 +353,23 @@ export function applyEffect(
       const v = pickRejectionLetter(theme);
       const body = fillTemplate(v.body, wrongGuess);
       const letterUrls = getRejectionLetterheadUrls(theme);
-      useGameStore.setState({ inputLocked: true });
-      addOverlay('rejection-letter', body, undefined, false, {
-        letterhead: v.letterhead,
-        letterheadImageUrl: letterUrls.primary,
-        letterheadImageFallbackUrl: letterUrls.fallback,
-        paperTextureUrl: getRejectionPaperTextureUrl(),
-      });
+      if (target === 'self') {
+        useGameStore.setState({ inputLocked: true });
+        addOverlay('rejection-letter', body, undefined, false, {
+          letterhead: v.letterhead,
+          letterheadImageUrl: letterUrls.primary,
+          letterheadImageFallbackUrl: letterUrls.fallback,
+          paperTextureUrl: getRejectionPaperTextureUrl(),
+        });
+      } else {
+        addHint('Rejection Letter sent — opponent must probe a word to dismiss.');
+      }
       break;
     }
     case 'face-swap-glitch': {
       const v = pickFaceSwap(theme, answerWord);
       const faceUrls = getFaceSwapUrls(theme);
-      const durationSec = Math.max(3, answer.length || 5);
+      const durationSec = Math.max(3, boardCols);
       const tagline = fillTemplate(v.tagline, wrongGuess);
       replaceActiveEffectForTarget(
         'face-swap-glitch',
@@ -368,10 +381,12 @@ export function applyEffect(
           tagline,
         }
       );
-      useGameStore.setState({
-        faceSwap: true,
-        faceSwapImageUrl: faceUrls.primary,
-      });
+      if (target === 'self') {
+        useGameStore.setState({
+          faceSwap: true,
+          faceSwapImageUrl: faceUrls.primary,
+        });
+      }
       break;
     }
     case 'letter-reveal': {
@@ -470,14 +485,18 @@ export function applyEffect(
       break;
     }
     case 'chess-gambit': {
-      const puzzle = pickRandomChessPuzzle();
-      useGameStore.setState({
-        inputLocked: true,
-        chessPuzzleActive: true,
-      });
-      addOverlay('chess-gambit', undefined, undefined, true, {
-        puzzleId: puzzle.id,
-      });
+      if (target === 'self') {
+        const puzzle = pickRandomChessPuzzle();
+        useGameStore.setState({
+          inputLocked: true,
+          chessPuzzleActive: true,
+        });
+        addOverlay('chess-gambit', undefined, undefined, true, {
+          puzzleId: puzzle.id,
+        });
+      } else {
+        addHint('Chess Gambit sent — opponent must solve the puzzle.');
+      }
       break;
     }
     case 'dice-roll': {
@@ -611,12 +630,49 @@ export function applyCriticsAtRoundEnd(): {
   return { myStars: stars.myStars, oppStars: stars.oppStars };
 }
 
+function playCardInMultiplayer(
+  drawn: Card,
+  target: EffectTarget,
+  state: ReturnType<typeof useGameStore.getState>,
+): void {
+  let cardToPlay = drawn;
+  if (drawn.id === 'dice-roll') {
+    const pool = getCardDrawPool().filter((c) => c.id !== 'dice-roll');
+    cardToPlay = pickFromPool(pool);
+    const answerWord = state.answer?.toLowerCase() ?? '';
+    const theme = answerWord ? getWordTheme(answerWord) : 'abstract-beach';
+    addHint(pickDiceFlavor(theme));
+    addHint(`Dice Roll: rerolled to ${cardToPlay.name}!`);
+  }
+
+  const history = [
+    cardToPlay,
+    ...state.cardDrawHistory.filter((c) => c.id !== 'dice-roll'),
+  ].slice(0, 5);
+  useGameStore.setState({ cardDrawHistory: history });
+
+  const emitted = emitMpCardPlay(cardToPlay.id, target);
+  if (!emitted) {
+    console.warn('[cards] multiplayer emit failed — is the server running?');
+  }
+  // Apply locally for the player who drew the card. Incoming echo from the
+  // server is skipped in useSocketBridge (sourceRole === myRole).
+  applyEffect(cardToPlay.id, target, { skipDiceReroll: true });
+  showCardDetailOnDraw(cardToPlay);
+}
+
 export function fireCardAfterGuess(): void {
   const state = useGameStore.getState();
   if (state.roundOver || state.matchWinner) return;
 
   const card = drawCard();
   const target = getCardTarget(state.mode, card);
+
+  if (state.mode === 'multiplayer') {
+    playCardInMultiplayer(card, target, state);
+    return;
+  }
+
   if (card.id === 'dice-roll') {
     applyEffect(card.id, target);
     return;

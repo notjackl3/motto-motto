@@ -6,7 +6,6 @@ import {
   Events,
   type GameCardEffectPayload,
   type GameCardPlayedInbound,
-  type GameCooldownViolationPayload,
   type GameGuessInbound,
   type GameGuessResultPayload,
   type GameInvalidGuessPayload,
@@ -14,6 +13,7 @@ import {
   type GameNextRoundPayload,
   type GameRoundEndPayload,
   type GameStartPayload,
+  type GameTurnViolationPayload,
   type OpponentLeftPayload,
   type RoomCreatedPayload,
   type RoomFullPayload,
@@ -21,6 +21,17 @@ import {
   type RoomNotFoundPayload,
 } from '../../../shared/events';
 import type { Guess } from '../types';
+import {
+  registerChessBlunderInfoLeakListener,
+} from '../lib/chessBlunderPenalties';
+import {
+  applyCardFromSocket,
+  fireCardAfterGuess,
+} from '../lib/cardEffects';
+import {
+  registerMpCardPlay,
+  unregisterMpCardPlay,
+} from '../lib/mpCardEmit';
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL ?? 'http://localhost:3001';
 
@@ -30,6 +41,9 @@ function ensureSocket(): Socket {
   const existing = useMultiplayerStore.getState().socket;
   if (existing) return existing;
   const s = io(SERVER_URL, { autoConnect: true });
+  registerMpCardPlay((cardId, target) => {
+    s.emit(Events.GAME_CARD_PLAYED, { cardId, target });
+  });
   useMultiplayerStore.getState().setSocket(s);
   useMultiplayerStore.getState().setStatus('connecting');
   s.on('connect', () => useMultiplayerStore.getState().setStatus('connected'));
@@ -48,6 +62,7 @@ export function useSocket() {
 
   function disconnect() {
     const s = useMultiplayerStore.getState().socket;
+    unregisterMpCardPlay();
     s?.disconnect();
     useMultiplayerStore.getState().reset();
   }
@@ -146,8 +161,10 @@ export function useSocketBridge() {
       );
       mp.setOpponentConnected(true);
       mp.setLobbyStatus('inGame');
+      useGameStore.getState().setMode('multiplayer');
+      useGameStore.getState().setActiveTurnFromServer(payload.activeTurn);
       // Reset round state without picking a local word; server is authoritative.
-      useGameStore.getState().applyRemoteNextRound(payload.roundNumber);
+      useGameStore.getState().applyRemoteNextRound(payload.roundNumber, payload.activeTurn);
       useGameStore.getState().setOpponentLeft(false);
     };
 
@@ -170,23 +187,18 @@ export function useSocketBridge() {
 
       if (isSelf) {
         store.addMyGuess(guess);
-        store.setMyCooldownEndsAt(payload.cooldownEndsAt);
-        // Hybrid: card draws stay client-side per guess via Dev A's path.
+        store.setActiveTurnFromServer(payload.activeTurn);
         if (!payload.isCorrect) {
-          void import('../lib/cardEffects')
-            .then((m) => m.fireCardAfterGuess?.())
-            .catch(() => {
-              /* card draw optional; failure non-fatal */
-            });
+          fireCardAfterGuess();
         }
       } else {
         store.addOpponentGuess(guess);
-        store.setOpponentCooldownEndsAt(payload.cooldownEndsAt);
+        store.setActiveTurnFromServer(payload.activeTurn);
       }
     };
 
-    const onCooldownViolation = (payload: GameCooldownViolationPayload) => {
-      useGameStore.getState().setMyCooldownEndsAt(payload.cooldownEndsAt);
+    const onTurnViolation = (payload: GameTurnViolationPayload) => {
+      useGameStore.getState().setActiveTurnFromServer(payload.activeTurn);
     };
 
     const onInvalidGuess = (payload: GameInvalidGuessPayload) => {
@@ -200,15 +212,15 @@ export function useSocketBridge() {
     const onCardEffect = (payload: GameCardEffectPayload) => {
       const mp = useMultiplayerStore.getState();
       const myRole = mp.role;
+      // The player who drew the card already applied locally in fireCardAfterGuess.
+      if (payload.sourceRole === myRole) return;
+
       const targetsMe =
         payload.affectedRole === 'both' || payload.affectedRole === myRole;
-      void import('../lib/cardEffects')
-        .then((m) =>
-          m.applyCardFromSocket(payload.cardId, targetsMe ? 'self' : 'opponent'),
-        )
-        .catch(() => {
-          /* card module optional in scenes where it isn't loaded */
-        });
+      applyCardFromSocket(
+        payload.cardId,
+        targetsMe ? 'self' : 'opponent',
+      );
     };
 
     const onRoundEnd = (payload: GameRoundEndPayload) => {
@@ -220,7 +232,9 @@ export function useSocketBridge() {
     };
 
     const onNextRound = (payload: GameNextRoundPayload) => {
-      useGameStore.getState().applyRemoteNextRound(payload.roundNumber);
+      useGameStore
+        .getState()
+        .applyRemoteNextRound(payload.roundNumber, payload.activeTurn);
     };
 
     const onMatchEnd = (_payload: GameMatchEndPayload) => {
@@ -239,7 +253,7 @@ export function useSocketBridge() {
     socket.on(Events.ROOM_NOT_FOUND, onRoomNotFound);
     socket.on(Events.GAME_START, onGameStart);
     socket.on(Events.GAME_GUESS_RESULT, onGameGuessResult);
-    socket.on(Events.GAME_COOLDOWN_VIOLATION, onCooldownViolation);
+    socket.on(Events.GAME_TURN_VIOLATION, onTurnViolation);
     socket.on(Events.GAME_INVALID_GUESS, onInvalidGuess);
     socket.on(Events.GAME_CARD_EFFECT, onCardEffect);
     socket.on(Events.GAME_ROUND_END, onRoundEnd);
@@ -247,14 +261,17 @@ export function useSocketBridge() {
     socket.on(Events.GAME_MATCH_END, onMatchEnd);
     socket.on(Events.OPPONENT_LEFT, onOpponentLeft);
 
+    const offChessLeak = registerChessBlunderInfoLeakListener(socket);
+
     return () => {
+      offChessLeak();
       socket.off(Events.ROOM_CREATED, onRoomCreated);
       socket.off(Events.ROOM_JOINED, onRoomJoined);
       socket.off(Events.ROOM_FULL, onRoomFull);
       socket.off(Events.ROOM_NOT_FOUND, onRoomNotFound);
       socket.off(Events.GAME_START, onGameStart);
       socket.off(Events.GAME_GUESS_RESULT, onGameGuessResult);
-      socket.off(Events.GAME_COOLDOWN_VIOLATION, onCooldownViolation);
+      socket.off(Events.GAME_TURN_VIOLATION, onTurnViolation);
       socket.off(Events.GAME_INVALID_GUESS, onInvalidGuess);
       socket.off(Events.GAME_CARD_EFFECT, onCardEffect);
       socket.off(Events.GAME_ROUND_END, onRoundEnd);

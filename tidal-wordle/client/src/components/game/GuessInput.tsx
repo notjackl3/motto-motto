@@ -1,23 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useGameStore } from '../../stores/gameStore';
-import { selectIsInputDisabled } from '../../stores/gameSelectors';
+import { useMultiplayerStore } from '../../stores/multiplayerStore';
+import { selectIsInputDisabled, selectIsMyTurn } from '../../stores/gameSelectors';
 import { getSubmitFeedbackMessage } from '../../lib/submitFeedback';
-// Dev B touch: in multiplayer, dispatch via socket instead of running Dev A's
-// local evaluator (which doesn't know the server-side answer).
 import { useSocket } from '../../hooks/useSocket';
 
 export default function GuessInput() {
   const [value, setValue] = useState('');
   const [shake, setShake] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [now, setNow] = useState(Date.now());
 
   const submitGuess = useGameStore((s) => s.submitGuess);
   const multiplayerSubmitGuess = useGameStore((s) => s.multiplayerSubmitGuess);
   const mode = useGameStore((s) => s.mode);
+  const activeTurn = useGameStore((s) => s.activeTurn);
+  const myRole = useMultiplayerStore((s) => s.role);
   const { sendGuess } = useSocket();
   const knownLength = useGameStore((s) => s.answerLength);
-  const myCooldownEndsAt = useGameStore((s) => s.myCooldownEndsAt);
   const inputLocked = useGameStore((s) => s.inputLocked);
   const roundOver = useGameStore((s) => s.roundOver);
   const matchWinner = useGameStore((s) => s.matchWinner);
@@ -29,12 +28,15 @@ export default function GuessInput() {
   const playfulInsultActive = useGameStore((s) =>
     s.overlays.some((o) => o.type === 'playful-insult')
   );
-  useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 100);
-    return () => clearInterval(t);
-  }, []);
+  const wordBankExhausted = useGameStore((s) => s.wordBankExhausted);
+  const hasAnswer = useGameStore((s) => s.answer);
 
-  const disabled = selectIsInputDisabled({
+  const isMyTurn = selectIsMyTurn(mode, activeTurn, myRole);
+
+  const disabled =
+    wordBankExhausted ||
+    (mode === 'solo' && !hasAnswer) ||
+    selectIsInputDisabled({
     inputLocked,
     chessPuzzleActive,
     roundOver,
@@ -42,11 +44,8 @@ export default function GuessInput() {
     distractionBlocking,
     cardDetailPopupDraw,
     playfulInsultActive,
-  });
-  const onCooldown =
-    myCooldownEndsAt !== null && now < myCooldownEndsAt;
-  // Cooldown gates submission inside (multiplayer)submitGuess, not the input.
-  void onCooldown;
+    isMyTurn,
+    });
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -71,9 +70,13 @@ export default function GuessInput() {
     setValue('');
   }
 
-  const placeholder = knownLength
-    ? `Type a ${knownLength}-letter word (or any guess)...`
-    : 'Type any word — length unknown';
+  const placeholder = wordBankExhausted
+    ? 'All words cleared — epic complete'
+    : mode === 'multiplayer' && !isMyTurn
+      ? "Opponent's turn…"
+      : knownLength
+        ? `Type a ${knownLength}-letter word (or any guess)...`
+        : 'Type any word — length unknown';
 
   const ready = !disabled;
 

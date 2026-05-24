@@ -82,7 +82,7 @@ export type SubmitGuessResult =
   | { ok: true; solved: boolean }
   | {
       ok: false;
-      reason: 'length' | 'not_in_list' | 'locked' | 'round_over' | 'no_answer';
+      reason: 'length' | 'not_in_list' | 'locked' | 'round_over' | 'no_answer' | 'not_your_turn';
     };
 
 export interface RoundBannerState {
@@ -119,3 +119,18 @@ export type RoutingScreen = 'menu' | 'lobby' | 'game' | 'gameOver';
 
 /** Dev B scene can read this URL when faceSwap is true (optional HUD fallback in Dev A). */
 export type FaceSwapImageUrl = string | null;
+
+/** Manga storyboard panel — one page per completed round. */
+export type StoryboardPageStatus = 'generating' | 'ready' | 'error';
+
+export interface StoryboardPage {
+  id: string;
+  roundIndex: number;
+  word: string;
+  caption: string;
+  narrative: string;
+  imageUrl: string | null;
+  imageFallbackUrl: string | null;
+  status: StoryboardPageStatus;
+  createdAt: number;
+}

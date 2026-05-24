@@ -16,11 +16,14 @@ export default function RoundBanner() {
   }
 
   const won = banner.winner === 'me';
-  const title = won
-    ? 'Round won!'
-    : mode === 'solo'
-      ? 'Round lost'
-      : 'Opponent won the round';
+  const title =
+    mode === 'solo' && won
+      ? `Word cleared! · Ch. ${banner.roundNumber}`
+      : won
+        ? 'Round won!'
+        : mode === 'solo'
+          ? 'Round lost'
+          : 'Opponent won the round';
 
   return (
     <div
@@ -46,7 +49,9 @@ export default function RoundBanner() {
             )}
           </p>
         )}
-        <p className="text-xs text-white/50 mt-3">Next round starting…</p>
+        <p className="text-xs text-white/50 mt-3">
+          {mode === 'solo' ? 'Next word loading…' : 'Next round starting…'}
+        </p>
         <button
           type="button"
           onClick={skipWait}

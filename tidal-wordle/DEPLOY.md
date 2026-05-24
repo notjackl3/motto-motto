@@ -165,6 +165,36 @@ fly secrets set CLIENT_ORIGIN=https://<your-vercel-url>.vercel.app -a <your-app-
 
 Replace both placeholders with the real values. Fly will redeploy the machine with the new env var — takes ~30 seconds.
 
+### Step 12b. OpenAI manga storyboard (optional)
+
+The pull-out **manga phone** generates panel art via OpenAI **DALL·E 3** on the server. The API key never goes in the client or Vercel — only on Fly:
+
+```bash
+fly secrets set OPENAI_API_KEY=sk-... -a <your-app-name>
+```
+
+Optional tuning (defaults are fine for most cases):
+
+| Secret | Default | Purpose |
+|--------|---------|---------|
+| `OPENAI_IMAGE_MODEL` | `gpt-image-1` | Image model (`dall-e-3` if your account still has it) |
+| `OPENAI_IMAGE_SIZE` | `1024x1536` | Vertical manga panel |
+| `OPENAI_IMAGE_QUALITY` | `medium` | `low`, `medium`, or `high` for GPT image models |
+| `OPENAI_IMAGE_FORMAT` | `png` | `png`, `jpeg`, or `webp` |
+
+**Local dev:** copy the example env file and add your key:
+
+```bash
+cd tidal-wordle/server
+cp .env.example .env
+# Edit .env — set OPENAI_API_KEY=sk-...
+npm run dev
+```
+
+`.env` is gitignored; never commit it. Production still uses `fly secrets set OPENAI_API_KEY=...`.
+
+If the key is missing, panels fall back to static theme artwork — the game still works.
+
 ---
 
 ## Part E — Test the deployment
