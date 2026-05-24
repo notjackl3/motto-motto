@@ -1,0 +1,1 @@
+Read AGENTS.md at the repo root before making any changes. It is the shared grounding-truth document for both AI assistants working on this project (Claude Code and Cursor). Stick to the conventions, current phase, and working agreements described there. Keep AGENTS.md in sync with the code as you work — if you spot drift, update it as part of your change.
