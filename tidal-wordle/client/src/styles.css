@@ -7,8 +7,171 @@ body,
 #root {
   height: 100%;
   margin: 0;
-  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
   background: #013a63;
+  font-feature-settings: 'ss01', 'cv11';
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   Surf-instrument tablet — visual system
+   Used by IpadUI.tsx and gameplay HUD panels.
+   ─────────────────────────────────────────────────────────────────── */
+
+.ipad-tablet {
+  /* Layered marine console: depth + horizon haze + faint wave-grid */
+  background:
+    radial-gradient(120% 60% at 50% -10%, rgba(154, 212, 214, 0.18), transparent 60%),
+    radial-gradient(80% 50% at 50% 110%, rgba(212, 168, 87, 0.12), transparent 65%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.025) 0 1px,
+      transparent 1px 22px
+    ),
+    linear-gradient(180deg, #03182d 0%, #082b48 55%, #0a3658 100%);
+  background-size: auto, auto, 200px 100%, 100% 100%;
+  animation: tide-drift 22s linear infinite;
+  color: white;
+  border-radius: 1.2%;
+  box-shadow:
+    inset 0 0 0 2px rgba(212, 168, 87, 0.18),
+    inset 0 0 0 6px rgba(0, 0, 0, 0.45),
+    inset 0 -40px 80px rgba(0, 0, 0, 0.5),
+    inset 0 40px 80px rgba(154, 212, 214, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Scanline veil — barely-there, gives the panel a "screen" feel. */
+.ipad-tablet::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.025) 0 1px,
+    transparent 1px 3px
+  );
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  z-index: 1;
+}
+
+/* Brass hairline at the top — like the trim on a marine instrument */
+.ipad-tablet::after {
+  content: '';
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 168, 87, 0.85) 20%,
+    rgba(244, 225, 193, 0.95) 50%,
+    rgba(212, 168, 87, 0.85) 80%,
+    transparent
+  );
+  filter: drop-shadow(0 0 6px rgba(212, 168, 87, 0.4));
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Instrument panel — used for ScorePanel, OpponentBoard, etc. */
+.instrument-panel {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(10, 54, 88, 0.55), rgba(4, 22, 43, 0.7));
+  border: 1px solid rgba(154, 212, 214, 0.18);
+  border-radius: 10px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 6px 22px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+}
+
+/* Corner registration brackets — TL, TR, BL, BR */
+.bracket-corners::before,
+.bracket-corners::after,
+.bracket-corners > .bracket-bl,
+.bracket-corners > .bracket-br {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: rgba(212, 168, 87, 0.75);
+  border-style: solid;
+  border-width: 0;
+  pointer-events: none;
+}
+.bracket-corners::before {
+  top: 4px;
+  left: 4px;
+  border-top-width: 1.5px;
+  border-left-width: 1.5px;
+}
+.bracket-corners::after {
+  top: 4px;
+  right: 4px;
+  border-top-width: 1.5px;
+  border-right-width: 1.5px;
+}
+.bracket-corners > .bracket-bl {
+  bottom: 4px;
+  left: 4px;
+  border-bottom-width: 1.5px;
+  border-left-width: 1.5px;
+}
+.bracket-corners > .bracket-br {
+  bottom: 4px;
+  right: 4px;
+  border-bottom-width: 1.5px;
+  border-right-width: 1.5px;
+}
+
+/* Status pill — instrument readout */
+.status-pill {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  background: rgba(0, 0, 0, 0.35);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.status-pill::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor;
+}
+
+/* Heading style — small, instrument-grade label */
+.label-instrument {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(244, 225, 193, 0.65);
+}
+
+/* Display numerals — surf-poster scale */
+.display-numeral {
+  font-family: 'Unbounded', ui-sans-serif, sans-serif;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 0.9;
+}
+
+/* Glow ring for "ready" indicators */
+.ready-glow {
+  animation: pulse-glow 2.4s ease-in-out infinite;
 }
 
 /* Wave-crash flourish: a horizontal sheet that sweeps once. */
@@ -64,4 +227,112 @@ body,
 }
 .card-deal {
   animation: card-deal 420ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* Brainrot Glitch — all tiles cycle the same colors in sync (masks green/orange/gray) */
+@keyframes glitchColor {
+  0%, 100% {
+    background-color: rgb(139 92 246);
+    border-color: rgb(196 181 253);
+    color: rgb(255 255 255);
+  }
+  20% {
+    background-color: rgb(236 72 153);
+    border-color: rgb(251 207 232);
+    color: rgb(255 255 255);
+  }
+  40% {
+    background-color: rgb(34 211 238);
+    border-color: rgb(165 243 252);
+    color: rgb(15 23 42);
+  }
+  60% {
+    background-color: rgb(250 204 21);
+    border-color: rgb(254 240 138);
+    color: rgb(15 23 42);
+  }
+  80% {
+    background-color: rgb(74 222 128);
+    border-color: rgb(187 247 208);
+    color: rgb(15 23 42);
+  }
+}
+
+.glitch-tile {
+  animation: glitchColor 0.65s linear infinite;
+  transition: none !important;
+}
+
+.status-dog-tile {
+  background: #fef3c7 !important;
+  border-color: #f59e0b !important;
+}
+
+.half-masked-tile {
+  background: rgb(30 41 59 / 0.85) !important;
+  border-color: rgb(71 85 105) !important;
+  color: rgb(148 163 184) !important;
+}
+
+.recipe-half-mask-left {
+  background: linear-gradient(
+    to right,
+    rgb(0 0 0 / 0.55) 0%,
+    rgb(0 0 0 / 0.55) 50%,
+    transparent 50%
+  );
+}
+
+.recipe-half-mask-right {
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    transparent 50%,
+    rgb(0 0 0 / 0.55) 50%
+  );
+}
+
+@keyframes faceSwapGlitch {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    filter: hue-rotate(0deg);
+  }
+  15% {
+    transform: translate(-4px, 2px) scale(1.04) rotate(-2deg);
+    filter: hue-rotate(25deg);
+  }
+  30% {
+    transform: translate(3px, -3px) scale(0.98) rotate(2deg);
+    filter: hue-rotate(-20deg);
+  }
+  45% {
+    transform: translate(-2px, -1px) scale(1.02) rotate(-1deg);
+    filter: hue-rotate(40deg);
+  }
+  60% {
+    transform: translate(4px, 1px) scale(1.03) rotate(1deg);
+    filter: hue-rotate(-15deg);
+  }
+  75% {
+    transform: translate(-3px, 2px) scale(0.99) rotate(-2deg);
+    filter: hue-rotate(30deg);
+  }
+}
+
+.face-swap-glitch-face {
+  animation: faceSwapGlitch 0.55s steps(2, end) infinite;
+}
+
+.face-swap-glitch-overlay {
+  animation: shake 0.35s ease-in-out infinite;
 }

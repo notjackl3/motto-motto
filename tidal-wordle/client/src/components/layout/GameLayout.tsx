@@ -1,19 +1,26 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import PlayScene from '../scene/PlayScene';
 import IpadUI from './IpadUI';
+import EffectOverlays from '../game/EffectOverlays';
+import RoundBanner from '../game/RoundBanner';
+import CardDetailPopup from '../game/CardDetailPopup';
+import DevCardFilterPanel from '../dev/DevCardFilterPanel';
+import { useEffectExpiry } from '../../hooks/useEffectExpiry';
 import { useGameStore } from '../../stores/gameStore';
 import { playSfx } from '../../lib/audio';
 
 interface GameLayoutProps {
-  onBackToMenu: () => void;
+  onQuit: () => void;
 }
 
 type ControlMode = 'ipad' | 'look';
 
-export default function GameLayout({ onBackToMenu }: GameLayoutProps) {
+export default function GameLayout({ onQuit }: GameLayoutProps) {
   const matchScore = useGameStore((s) => s.matchScore);
   const myGuessCount = useGameStore((s) => s.myGuesses.length);
   const opponentGuessCount = useGameStore((s) => s.opponentGuesses.length);
+
+  useEffectExpiry();
 
   const [controlMode, setControlMode] = useState<ControlMode>('ipad');
   const [crashKey, setCrashKey] = useState<number | null>(null);
@@ -21,14 +28,10 @@ export default function GameLayout({ onBackToMenu }: GameLayoutProps) {
   const prevMyGuessRef = useRef(myGuessCount);
   const prevOppGuessRef = useRef(opponentGuessCount);
 
-  // E key toggles between ipad-interact and free-look. We also let Escape
-  // exit look mode for users who hit the browser's built-in pointer-lock
-  // exit before the toggle fires.
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.repeat) return;
       if (e.key.toLowerCase() === 'e') {
-        // Don't hijack E while the user is typing a guess.
         const tag = (e.target as HTMLElement | null)?.tagName?.toLowerCase();
         if (tag === 'input' || tag === 'textarea') return;
         setControlMode((m) => (m === 'ipad' ? 'look' : 'ipad'));
@@ -39,8 +42,6 @@ export default function GameLayout({ onBackToMenu }: GameLayoutProps) {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  // When the browser drops pointer lock (Escape, focus loss), reflect that
-  // in our control mode so the cursor reappears.
   useEffect(() => {
     function onLockChange() {
       if (!document.pointerLockElement) {
@@ -73,8 +74,8 @@ export default function GameLayout({ onBackToMenu }: GameLayoutProps) {
 
   const handleQuit = useCallback(() => {
     if (document.pointerLockElement) document.exitPointerLock();
-    onBackToMenu();
-  }, [onBackToMenu]);
+    onQuit();
+  }, [onQuit]);
 
   return (
     <div
@@ -84,12 +85,14 @@ export default function GameLayout({ onBackToMenu }: GameLayoutProps) {
     >
       <PlayScene lookMode={controlMode === 'look'} />
 
-      {/* Gameplay UI projected onto the iPad screen face. The iPad mesh in
-          IpadRig is camera-locked at IPAD_POS_IPAD (centered) in focus mode
-          and IPAD_POS_LOOK (pinned to the bottom + tilted back) in look
-          mode. The DOM overlay below mirrors those two poses, so the UI
-          always lands exactly on top of the 3D screen. */}
+      {/* Gameplay UI projected onto the iPad screen face. */}
       <IpadOverlay controlMode={controlMode} onQuit={handleQuit} />
+
+      {/* Screen-level gameplay overlays (card effects, popups, round banner) */}
+      <EffectOverlays />
+      <CardDetailPopup />
+      <RoundBanner />
+      {import.meta.env.DEV && <DevCardFilterPanel />}
 
       {/* Wave-crash transition between rounds */}
       {crashKey !== null && (
@@ -122,8 +125,6 @@ export default function GameLayout({ onBackToMenu }: GameLayoutProps) {
         )}
       </div>
 
-      {/* Center reticle while looking around — small dot so the player has a
-          fixed point of reference. */}
       {controlMode === 'look' && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <div className="w-1.5 h-1.5 rounded-full bg-white/70" />
@@ -134,21 +135,12 @@ export default function GameLayout({ onBackToMenu }: GameLayoutProps) {
 }
 
 // ---------- IpadOverlay ----------
-//
-// The iPad mesh in IpadRig is camera-locked, so its screen-space position
-// depends ONLY on its camera-local (xCam, yCam, zCam) and orientation —
-// camera pitch from mouse-look doesn't move it. We mirror the two iPad
-// poses from IpadRig here and project them with the standard NDC formula
-// using the live window aspect ratio, so the DOM UI always sits exactly
-// over the 3D iPad screen face in both modes.
 
 const IPAD_SCREEN_W = 0.72;
 const IPAD_SCREEN_H = 0.49;
-const HALF_FOV_Y = (70 * Math.PI) / 180 / 2; // 35° in radians
+const HALF_FOV_Y = (70 * Math.PI) / 180 / 2;
 const TAN_HALF_FOV_Y = Math.tan(HALF_FOV_Y);
 
-// Must mirror IPAD_POS_IPAD / IPAD_POS_LOOK / IPAD_TILT_LOOK / IPAD_YAW_LOOK
-// in IpadRig.tsx.
 const IPAD_CAM_IPAD: [number, number, number] = [0, 0, -0.7];
 const IPAD_CAM_LOOK: [number, number, number] = [0.7, -0.5, -1.25];
 const IPAD_TILT_LOOK = 0.32;
@@ -185,13 +177,11 @@ function IpadOverlay({
   const distance = -zCam;
   const tanHfovX = aspect * TAN_HALF_FOV_Y;
 
-  // Project iPad center to NDC, then to viewport %.
   const ndcX = xCam / (distance * tanHfovX);
   const ndcY = yCam / (distance * TAN_HALF_FOV_Y);
   const leftPct = ((1 + ndcX) / 2) * 100;
   const topPct = ((1 - ndcY) / 2) * 100;
 
-  // Foreshortened on-screen size. Width shrinks with yaw, height with tilt.
   const widthVw = ((IPAD_SCREEN_W * Math.cos(yawY)) / (2 * distance * tanHfovX)) * 100;
   const heightVh = ((IPAD_SCREEN_H * Math.cos(tiltX)) / (2 * distance * TAN_HALF_FOV_Y)) * 100;
 
@@ -208,9 +198,6 @@ function IpadOverlay({
         pointerEvents: isLook ? 'none' : 'auto',
         transition:
           'opacity 180ms ease, left 240ms ease, top 240ms ease, width 240ms ease, height 240ms ease',
-        // Drive mode hides the UI entirely — the player is surfing, not
-        // reading. `visibility: hidden` after the fade-out also kills any
-        // residual hit-testing and inner CSS animation cost.
         opacity: isLook ? 0 : 1,
         visibility: isLook ? 'hidden' : 'visible',
       }}

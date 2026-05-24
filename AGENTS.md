@@ -177,4 +177,4 @@ When picking up a task in this repo:
 
 ---
 
-*Last updated: 2026-05-24 (skeleton phase)*
+*Last updated: 2026-05-24 (67 theme keys for card visuals; v2 `beachWordCategories.json`)*

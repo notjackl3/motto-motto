@@ -1,21 +1,90 @@
+/**
+ * gameStore seam (Dev A / Dev B):
+ * - Dev B owns: mode (sync), opponentGuesses (write via socket), opponentCooldownEndsAt,
+ *   tide fields, and reads musicSwapActive + faceSwap from scene.
+ * - Dev A owns: answer, guesses (my), scoring, cards, hints, overlays, inputLocked,
+ *   glitchActive, halfGuessMask, bonusProbe*, forcedBreak*, distractionBlocking.
+ * - answerLength: player-known length only (null until a hint reveals it; never from guesses).
+ * - Coordinate before adding fields Dev B must read (document in PR).
+ */
 import { create } from 'zustand';
-import type { Card, GameMode, Guess } from '../types';
+import type {
+  ActiveEffect,
+  EffectTarget,
+  GameMode,
+  Guess,
+  HalfGuessMask,
+  Hint,
+  MatchWinner,
+  OverlayState,
+  Card,
+  CardDetailPopupState,
+  CardDetailSource,
+  CompletedRoundRecord,
+  RoundBannerState,
+  SubmitGuessResult,
+} from '../types';
+import { isValidProbeWord } from '../lib/cardContent/probeWords';
+import { stopPlaylist } from '../lib/cardAudio';
+import { evaluateGuess, isSolvedGuess } from '../lib/guessEvaluator';
+import { getRandomWord, normalizeWord } from '../lib/wordList';
+import {
+  DEFAULT_COOLDOWN_MS,
+  MIN_GUESS_LENGTH,
+  ROUND_START_SCORE,
+  applyRoundToMatch,
+  computeRoundScoreAfterGuess,
+  resolveCriticsRating,
+  isMatchOver,
+} from '../lib/scoring';
 
-export interface MatchEndPayload {
-  winner: 'me' | 'opponent' | null;
-  finalRoundScores: Array<{ me: number; opponent: number }>;
-  finalMatchScore: { me: number; opponent: number };
+function applyCriticsAtRoundEnd(): void {
+  const state = useGameStore.getState();
+  const bonus = resolveCriticsRating(
+    state.mode,
+    state.myGuesses,
+    state.opponentGuesses
+  );
+  const updates: Partial<ReturnType<typeof useGameStore.getState>> = {
+    lastCriticsRatings: { me: bonus.myStars, opponent: bonus.oppStars },
+    criticsRatingPending: false,
+  };
+  if (state.criticsRatingPending) {
+    updates.roundScore = {
+      me: state.roundScore.me + bonus.me,
+      opponent: state.roundScore.opponent + bonus.opponent,
+    };
+  }
+  useGameStore.setState(updates);
 }
 
-// Seam note (Dev B → Dev A): incoming card plays from the opponent are pushed
-// here by useSocket so Dev A's card-effect logic can consume them without us
-// taking a hard import dependency on Dev A's `cardEffects.ts`. Dev A should
-// subscribe (e.g. zustand `subscribe`) and call shift/clear after applying.
-export interface IncomingCardPlay {
-  cardId: string;
-  fromSelf: boolean;
-  target: 'self' | 'opponent';
-  timestamp: number;
+function triggerCardDrawAfterGuess(): void {
+  void import('../lib/cardEffects').then((m) => m.fireCardAfterGuess());
+}
+
+function withoutRecipeSpamOverlays(overlays: OverlayState[]): OverlayState[] {
+  return overlays.filter((o) => o.type !== 'recipe-spam');
+}
+
+function clearRecipeSpamState(
+  overlays: OverlayState[]
+): Pick<GameStoreState, 'overlays' | 'halfGuessMask'> {
+  return {
+    overlays: withoutRecipeSpamOverlays(overlays),
+    halfGuessMask: null,
+  };
+}
+
+type MatchEndListener = (winner: MatchWinner) => void;
+const matchEndListeners = new Set<MatchEndListener>();
+
+export function onMatchEnd(listener: MatchEndListener): () => void {
+  matchEndListeners.add(listener);
+  return () => matchEndListeners.delete(listener);
+}
+
+function notifyMatchEnd(winner: MatchWinner): void {
+  matchEndListeners.forEach((fn) => fn(winner));
 }
 
 interface GameStoreState {
@@ -26,121 +95,394 @@ interface GameStoreState {
   opponentGuesses: Guess[];
   myCooldownEndsAt: number | null;
   opponentCooldownEndsAt: number | null;
-  myHand: Card[];
-  activeEffects: Card[];
+  myHand: import('../types').Card[];
+  activeEffects: ActiveEffect[];
   roundScore: { me: number; opponent: number };
   matchScore: { me: number; opponent: number };
+  roundsWon: { me: number; opponent: number };
   roundsToWin: number;
-
-  // Dev B owned multiplayer + scene fields.
-  roomCode: string | null;
-  isConnected: boolean;
-  opponentLeft: boolean;
-  matchEnd: MatchEndPayload | null;
+  matchWinner: MatchWinner;
+  revealedLetters: Record<number, string>;
+  hints: Hint[];
+  cardDrawHistory: import('../types').Card[];
+  inputLocked: boolean;
+  glitchActive: EffectTarget | null;
+  glitchUntilNextGuess: boolean;
+  overlays: OverlayState[];
+  cooldownFrozen: boolean;
+  chessPuzzleActive: boolean;
+  chessLockUntil: number | null;
+  criticsRatingPending: boolean;
+  lastCriticsRatings: { me: number; opponent: number } | null;
+  roundOver: boolean;
+  roundBanner: RoundBannerState | null;
+  /** Completed rounds this match (word revealed after each round). */
+  roundHistory: CompletedRoundRecord[];
+  cardDetailPopup: CardDetailPopupState | null;
   musicSwapActive: boolean;
-  musicMuted: boolean;
   faceSwap: boolean;
-  incomingCardPlays: IncomingCardPlay[];
+  /** Set by face-swap-glitch; Dev B scene may read, Dev A shows HUD fallback. */
+  faceSwapImageUrl: string | null;
+  /** Recipe-spam: hide half of each guess row for this target until round ends. */
+  halfGuessMask: HalfGuessMask | null;
+  /** Rejection-letter: player may submit one probe word. */
+  bonusProbePending: boolean;
+  bonusProbeGuess: Guess | null;
+  /** Row index where bonusProbeGuess is pinned (myGuesses.length at submit time). */
+  bonusProbeRowIndex: number | null;
+  /** Forced-break: flavor label shown while color reveal is pending. */
+  forcedBreakLabel: string | null;
+  /** Forced-break: next self guess gets delayed tile colors. */
+  forcedBreakPending: boolean;
+  /** Forced-break: theme icon (primary URL). */
+  forcedBreakIconUrl: string | null;
+  forcedBreakIconFallbackUrl: string | null;
+  /** Bored-distraction: blocks input until scroll dismissed. */
+  distractionBlocking: boolean;
+  /** Audio settings consumed by scene + menu. */
+  musicMuted: boolean;
+  /** Multiplayer room code (kept for UI compatibility; multiplayer flow stubbed). */
+  roomCode: string | null;
 
   setMode: (mode: GameMode | null) => void;
-  setAnswer: (answer: string | null) => void;
-  addMyGuess: (guess: Guess) => void;
-  addOpponentGuess: (guess: Guess) => void;
-  setMyCooldownEndsAt: (at: number | null) => void;
-  setOpponentCooldownEndsAt: (at: number | null) => void;
-  setRoomCode: (code: string | null) => void;
-  setIsConnected: (connected: boolean) => void;
-  setOpponentLeft: (left: boolean) => void;
-  setMatchEnd: (m: MatchEndPayload | null) => void;
-  setMusicSwapActive: (active: boolean) => void;
   setMusicMuted: (muted: boolean) => void;
-  setFaceSwap: (on: boolean) => void;
-  pushIncomingCardPlay: (play: IncomingCardPlay) => void;
-  consumeIncomingCardPlay: () => IncomingCardPlay | null;
-  clearIncomingCardPlays: () => void;
+  setMusicSwapActive: (active: boolean) => void;
+  setFaceSwap: (active: boolean) => void;
+  setRoomCode: (code: string | null) => void;
+  startMatch: (mode: GameMode) => void;
+  startRound: () => void;
+  submitGuess: (word: string) => SubmitGuessResult;
+  endRound: (winner: 'me' | 'opponent') => void;
+  dismissRoundBanner: () => void;
+  /** Reveal answer length to the player (hint cards call this). */
+  revealAnswerLength: () => void;
+  showCardDetailPopup: (card: Card, source?: CardDetailSource) => void;
+  dismissCardDetailPopup: () => void;
   resetRound: () => void;
   resetMatch: () => void;
+  setMyCooldownEndsAt: (at: number | null) => void;
+  clearDistractionBlock: () => void;
 }
+
+const initialRoundState = {
+  answer: null as string | null,
+  answerLength: null as number | null,
+  myGuesses: [] as Guess[],
+  opponentGuesses: [] as Guess[],
+  myCooldownEndsAt: null as number | null,
+  opponentCooldownEndsAt: null as number | null,
+  activeEffects: [] as ActiveEffect[],
+  roundScore: { me: ROUND_START_SCORE, opponent: ROUND_START_SCORE },
+  revealedLetters: {} as Record<number, string>,
+  hints: [] as Hint[],
+  inputLocked: false,
+  glitchActive: null as EffectTarget | null,
+  glitchUntilNextGuess: false,
+  overlays: [] as OverlayState[],
+  cooldownFrozen: false,
+  chessPuzzleActive: false,
+  chessLockUntil: null as number | null,
+  criticsRatingPending: false,
+  lastCriticsRatings: null as { me: number; opponent: number } | null,
+  roundOver: false,
+  roundBanner: null as RoundBannerState | null,
+  halfGuessMask: null as HalfGuessMask | null,
+  bonusProbePending: false,
+  bonusProbeGuess: null as Guess | null,
+  bonusProbeRowIndex: null as number | null,
+  forcedBreakLabel: null as string | null,
+  forcedBreakPending: false,
+  forcedBreakIconUrl: null as string | null,
+  forcedBreakIconFallbackUrl: null as string | null,
+  distractionBlocking: false,
+};
 
 export const useGameStore = create<GameStoreState>((set, get) => ({
   mode: null,
-  answer: null,
-  answerLength: null,
-  myGuesses: [],
-  opponentGuesses: [],
-  myCooldownEndsAt: null,
-  opponentCooldownEndsAt: null,
+  ...initialRoundState,
   myHand: [],
-  activeEffects: [],
-  roundScore: { me: 0, opponent: 0 },
   matchScore: { me: 0, opponent: 0 },
+  roundsWon: { me: 0, opponent: 0 },
   roundsToWin: 2,
-
-  roomCode: null,
-  isConnected: false,
-  opponentLeft: false,
-  matchEnd: null,
+  matchWinner: null,
+  roundHistory: [],
+  cardDetailPopup: null,
+  cardDrawHistory: [],
   musicSwapActive: false,
-  musicMuted: false,
   faceSwap: false,
-  incomingCardPlays: [],
+  faceSwapImageUrl: null as string | null,
+  halfGuessMask: null,
+  bonusProbePending: false,
+  bonusProbeGuess: null,
+  bonusProbeRowIndex: null,
+  forcedBreakLabel: null,
+  forcedBreakPending: false,
+  forcedBreakIconUrl: null,
+  forcedBreakIconFallbackUrl: null,
+  distractionBlocking: false,
+  musicMuted: false,
+  roomCode: null,
 
   setMode: (mode) => set({ mode }),
-  setAnswer: (answer) =>
-    set({ answer, answerLength: answer ? answer.length : null }),
-  addMyGuess: (guess) =>
-    set((s) => ({ myGuesses: [...s.myGuesses, guess] })),
-  addOpponentGuess: (guess) =>
-    set((s) => ({ opponentGuesses: [...s.opponentGuesses, guess] })),
-  setMyCooldownEndsAt: (at) => set({ myCooldownEndsAt: at }),
-  setOpponentCooldownEndsAt: (at) => set({ opponentCooldownEndsAt: at }),
-  setRoomCode: (code) => set({ roomCode: code }),
-  setIsConnected: (connected) => set({ isConnected: connected }),
-  setOpponentLeft: (left) => set({ opponentLeft: left }),
-  setMatchEnd: (m) => set({ matchEnd: m }),
-  setMusicSwapActive: (active) => set({ musicSwapActive: active }),
-  setMusicMuted: (muted) => set({ musicMuted: muted }),
-  setFaceSwap: (on) => set({ faceSwap: on }),
-  pushIncomingCardPlay: (play) =>
-    set((s) => ({ incomingCardPlays: [...s.incomingCardPlays, play] })),
-  consumeIncomingCardPlay: () => {
-    const queue = get().incomingCardPlays;
-    if (queue.length === 0) return null;
-    const [next, ...rest] = queue;
-    set({ incomingCardPlays: rest });
-    return next;
-  },
-  clearIncomingCardPlays: () => set({ incomingCardPlays: [] }),
-  resetRound: () =>
+  setMusicMuted: (musicMuted) => set({ musicMuted }),
+  setMusicSwapActive: (musicSwapActive) => set({ musicSwapActive }),
+  setFaceSwap: (faceSwap) => set({ faceSwap }),
+  setRoomCode: (roomCode) => set({ roomCode }),
+
+  startMatch: (mode) => {
     set({
-      answer: null,
+      mode,
+      matchScore: { me: 0, opponent: 0 },
+      roundsWon: { me: 0, opponent: 0 },
+      matchWinner: null,
+      roundHistory: [],
+      cardDetailPopup: null,
+      cardDrawHistory: [],
+      myHand: [],
+      ...initialRoundState,
+      roundScore: { me: ROUND_START_SCORE, opponent: ROUND_START_SCORE },
+    });
+    get().startRound();
+  },
+
+  startRound: () => {
+    const word = getRandomWord();
+    set({
+      ...initialRoundState,
+      answer: word,
       answerLength: null,
-      myGuesses: [],
-      opponentGuesses: [],
-      myCooldownEndsAt: null,
-      opponentCooldownEndsAt: null,
-      activeEffects: [],
-      faceSwap: false,
-      musicSwapActive: false,
-    }),
-  resetMatch: () =>
+      roundScore: { me: ROUND_START_SCORE, opponent: ROUND_START_SCORE },
+      roundOver: false,
+      roundBanner: null,
+      cardDrawHistory: [],
+    });
+  },
+
+  submitGuess: (rawWord: string): SubmitGuessResult => {
+    const state = get();
+    if (!state.answer) return { ok: false, reason: 'no_answer' };
+    if (state.roundOver || state.matchWinner) {
+      return { ok: false, reason: 'round_over' };
+    }
+    if (
+      state.inputLocked ||
+      state.chessPuzzleActive ||
+      state.distractionBlocking
+    ) {
+      return { ok: false, reason: 'locked' };
+    }
+    const word = normalizeWord(rawWord);
+    if (!word || word.length < MIN_GUESS_LENGTH) {
+      return { ok: false, reason: 'length' };
+    }
+
+    const answerLen = state.answer.length;
+
+    if (state.bonusProbePending && !state.bonusProbeGuess) {
+      if (!isValidProbeWord(word, answerLen)) {
+        return { ok: false, reason: 'length' };
+      }
+      const results = evaluateGuess(word, state.answer);
+      const probeGuess: Guess = {
+        word,
+        results,
+        submittedAt: Date.now(),
+        isProbe: true,
+      };
+      set({
+        bonusProbeGuess: probeGuess,
+        bonusProbeRowIndex: state.myGuesses.length,
+        bonusProbePending: false,
+        ...clearRecipeSpamState(state.overlays),
+      });
+      return { ok: true, solved: false };
+    }
+
+    if (
+      state.myCooldownEndsAt &&
+      Date.now() < state.myCooldownEndsAt &&
+      !state.cooldownFrozen
+    ) {
+      return { ok: false, reason: 'locked' };
+    }
+    const results = evaluateGuess(word, state.answer);
+    const solved = isSolvedGuess(word, state.answer);
+    const guess: Guess = { word, results, submittedAt: Date.now() };
+
+    if (state.forcedBreakPending) {
+      guess.colorsRevealAt = Date.now() + answerLen * 1000;
+    }
+
+    let newRoundScore = state.roundScore.me;
+    if (!solved) {
+      newRoundScore = computeRoundScoreAfterGuess(state.roundScore.me, false);
+    }
+
+    const updates: Partial<GameStoreState> = {
+      myGuesses: [...state.myGuesses, guess],
+      roundScore: { ...state.roundScore, me: newRoundScore },
+      ...clearRecipeSpamState(state.overlays),
+    };
+
+    if (state.forcedBreakPending) {
+      updates.forcedBreakPending = false;
+    }
+
+    if (state.glitchUntilNextGuess) {
+      updates.glitchActive = null;
+      updates.glitchUntilNextGuess = false;
+    }
+    if (state.activeEffects.some((e) => e.cardId === 'brainrot-glitch')) {
+      updates.activeEffects = state.activeEffects.filter(
+        (e) => e.cardId !== 'brainrot-glitch'
+      );
+    }
+    if (
+      state.activeEffects.some(
+        (e) => e.cardId === 'meme-cannon' && e.target === 'self'
+      )
+    ) {
+      updates.activeEffects = (
+        updates.activeEffects ?? state.activeEffects
+      ).filter((e) => !(e.cardId === 'meme-cannon' && e.target === 'self'));
+    }
+
+    set(updates);
+
+    if (!state.cooldownFrozen) {
+      set({ myCooldownEndsAt: Date.now() + DEFAULT_COOLDOWN_MS });
+    }
+
+    if (!solved) {
+      triggerCardDrawAfterGuess();
+    }
+
+    if (solved) {
+      get().endRound('me');
+      return { ok: true, solved: true };
+    }
+
+    return { ok: true, solved: false };
+  },
+
+  revealAnswerLength: () => {
+    const answer = get().answer;
+    if (answer) set({ answerLength: answer.length });
+  },
+
+  showCardDetailPopup: (card, source = 'history') => {
+    set({ cardDetailPopup: { card, source } });
+  },
+
+  dismissCardDetailPopup: () => {
+    set({ cardDetailPopup: null });
+  },
+
+  endRound: (winner: 'me' | 'opponent') => {
+    const state = get();
+    if (state.roundOver) return;
+
+    applyCriticsAtRoundEnd();
+    const afterCritics = get();
+
+    const winnerScore =
+      winner === 'me'
+        ? afterCritics.roundScore.me
+        : afterCritics.roundScore.opponent;
+
+    const newMatchScore = applyRoundToMatch(
+      afterCritics.matchScore,
+      winner,
+      winnerScore
+    );
+    const newRoundsWon = {
+      me: afterCritics.roundsWon.me + (winner === 'me' ? 1 : 0),
+      opponent:
+        afterCritics.roundsWon.opponent + (winner === 'opponent' ? 1 : 0),
+    };
+    const matchWinner = isMatchOver(newRoundsWon, afterCritics.roundsToWin);
+    const roundNumber =
+      newRoundsWon.me + newRoundsWon.opponent;
+
+    const winningGuess =
+      winner === 'me'
+        ? afterCritics.myGuesses[afterCritics.myGuesses.length - 1]?.word
+        : afterCritics.opponentGuesses[
+            afterCritics.opponentGuesses.length - 1
+          ]?.word;
+
+    const historyEntry: CompletedRoundRecord = {
+      roundIndex: roundNumber,
+      answer: afterCritics.answer ?? '????',
+      winner,
+      pointsBanked: winnerScore,
+      myFinalRoundScore: afterCritics.roundScore.me,
+      myGuessCount: afterCritics.myGuesses.length,
+      opponentGuessCount: afterCritics.opponentGuesses.length,
+      winningGuess,
+    };
+
+    set({
+      roundOver: true,
+      matchScore: newMatchScore,
+      roundsWon: newRoundsWon,
+      matchWinner,
+      roundHistory: [...afterCritics.roundHistory, historyEntry],
+      roundBanner: matchWinner
+        ? null
+        : {
+            winner,
+            points: winnerScore,
+            roundNumber,
+            criticsStars: afterCritics.lastCriticsRatings ?? undefined,
+          },
+    });
+
+    if (matchWinner) {
+      notifyMatchEnd(matchWinner);
+      return;
+    }
+
+    setTimeout(() => {
+      const s = get();
+      if (!s.matchWinner && s.roundBanner) {
+        get().dismissRoundBanner();
+        get().startRound();
+      }
+    }, 2500);
+  },
+
+  dismissRoundBanner: () => set({ roundBanner: null }),
+
+  resetRound: () => {
+    set({
+      ...initialRoundState,
+      roundScore: { me: ROUND_START_SCORE, opponent: ROUND_START_SCORE },
+    });
+    get().startRound();
+  },
+
+  resetMatch: () => {
+    stopPlaylist();
     set({
       mode: null,
-      answer: null,
-      answerLength: null,
-      myGuesses: [],
-      opponentGuesses: [],
-      myCooldownEndsAt: null,
-      opponentCooldownEndsAt: null,
-      myHand: [],
-      activeEffects: [],
-      roundScore: { me: 0, opponent: 0 },
       matchScore: { me: 0, opponent: 0 },
-      roomCode: null,
-      opponentLeft: false,
-      matchEnd: null,
-      faceSwap: false,
+      roundsWon: { me: 0, opponent: 0 },
+      matchWinner: null,
+      roundHistory: [],
+      cardDetailPopup: null,
+      cardDrawHistory: [],
+      myHand: [],
       musicSwapActive: false,
-      incomingCardPlays: [],
-    }),
+      faceSwap: false,
+  faceSwapImageUrl: null as string | null,
+      ...initialRoundState,
+      roundScore: { me: ROUND_START_SCORE, opponent: ROUND_START_SCORE },
+    });
+  },
+
+  setMyCooldownEndsAt: (at) => set({ myCooldownEndsAt: at }),
+
+  clearDistractionBlock: () =>
+    set({ distractionBlocking: false, inputLocked: false }),
 }));

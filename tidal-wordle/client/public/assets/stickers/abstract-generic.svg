@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <circle cx="40" cy="40" r="30" fill="#fbbf24" stroke="#f59e0b" stroke-width="4"/>
+  <path d="M20 40 Q40 20 60 40 Q40 60 20 40" fill="#fde047" opacity="0.6"/>
+  <text x="40" y="46" text-anchor="middle" fill="#92400e" font-size="11" font-weight="bold">BEACH</text>
+</svg>

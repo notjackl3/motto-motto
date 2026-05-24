@@ -1,0 +1,1683 @@
+{
+  "version": 1,
+  "project": "tidal-wordle",
+  "generatedAt": "2026-05-24",
+  "styleGuide": "Flat cartoon beach, PG, transparent PNGs for stickers/icons, bright readable colors, simple generated audio loops and SFX.",
+  "generationMethod": "All visual assets are original programmatic vector-style drawings. Audio assets are synthesized from tones and filtered noise. No third-party images, samples, stock assets, or scraped assets are included.",
+  "assets": [
+    {
+      "path": "public/assets/stickers/marine-animal.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "marine-animal",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/marine-flora.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "marine-flora",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/water-weather.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "water-weather",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/shore-geology.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "shore-geology",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/places-geography.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "places-geography",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/boats-nautical.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "boats-nautical",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/beach-gear-activity.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "beach-gear-activity",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/beach-social-food.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "beach-social-food",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/sensory-descriptive.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "sensory-descriptive",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/abstract-generic.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "abstract-generic",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/brainrot-correct.png",
+      "cardIds": [
+        "brainrot"
+      ],
+      "category": null,
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/brainrot-present.png",
+      "cardIds": [
+        "brainrot"
+      ],
+      "category": null,
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/brainrot-absent.png",
+      "cardIds": [
+        "brainrot"
+      ],
+      "category": null,
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/brainrot-marine-animal.png",
+      "cardIds": [
+        "brainrot"
+      ],
+      "category": "marine-animal",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/brainrot-marine-flora.png",
+      "cardIds": [
+        "brainrot"
+      ],
+      "category": "marine-flora",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/brainrot-water-weather.png",
+      "cardIds": [
+        "brainrot"
+      ],
+      "category": "water-weather",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/brainrot-shore-geology.png",
+      "cardIds": [
+        "brainrot"
+      ],
+      "category": "shore-geology",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/brainrot-places-geography.png",
+      "cardIds": [
+        "brainrot"
+      ],
+      "category": "places-geography",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/brainrot-boats-nautical.png",
+      "cardIds": [
+        "brainrot"
+      ],
+      "category": "boats-nautical",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/brainrot-beach-gear-activity.png",
+      "cardIds": [
+        "brainrot"
+      ],
+      "category": "beach-gear-activity",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/brainrot-beach-social-food.png",
+      "cardIds": [
+        "brainrot"
+      ],
+      "category": "beach-social-food",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/brainrot-sensory-descriptive.png",
+      "cardIds": [
+        "brainrot"
+      ],
+      "category": "sensory-descriptive",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/stickers/brainrot-abstract-generic.png",
+      "cardIds": [
+        "brainrot"
+      ],
+      "category": "abstract-generic",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/status-dog/dog-marine-animal.png",
+      "cardIds": [
+        "status-dog"
+      ],
+      "category": "marine-animal",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/status-dog/dog-marine-flora.png",
+      "cardIds": [
+        "status-dog"
+      ],
+      "category": "marine-flora",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/status-dog/dog-water-weather.png",
+      "cardIds": [
+        "status-dog"
+      ],
+      "category": "water-weather",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/status-dog/dog-shore-geology.png",
+      "cardIds": [
+        "status-dog"
+      ],
+      "category": "shore-geology",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/status-dog/dog-places-geography.png",
+      "cardIds": [
+        "status-dog"
+      ],
+      "category": "places-geography",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/status-dog/dog-boats-nautical.png",
+      "cardIds": [
+        "status-dog"
+      ],
+      "category": "boats-nautical",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/status-dog/dog-beach-gear-activity.png",
+      "cardIds": [
+        "status-dog"
+      ],
+      "category": "beach-gear-activity",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/status-dog/dog-beach-social-food.png",
+      "cardIds": [
+        "status-dog"
+      ],
+      "category": "beach-social-food",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/status-dog/dog-sensory-descriptive.png",
+      "cardIds": [
+        "status-dog"
+      ],
+      "category": "sensory-descriptive",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/status-dog/dog-abstract-generic.png",
+      "cardIds": [
+        "status-dog"
+      ],
+      "category": "abstract-generic",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-marine-animal.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "marine-animal",
+      "type": "image/png",
+      "width": 480,
+      "height": 320,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-marine-flora.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "marine-flora",
+      "type": "image/png",
+      "width": 480,
+      "height": 320,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-water-weather.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "water-weather",
+      "type": "image/png",
+      "width": 480,
+      "height": 320,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-shore-geology.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "shore-geology",
+      "type": "image/png",
+      "width": 480,
+      "height": 320,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-places-geography.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "places-geography",
+      "type": "image/png",
+      "width": 480,
+      "height": 320,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-boats-nautical.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "boats-nautical",
+      "type": "image/png",
+      "width": 480,
+      "height": 320,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-beach-gear-activity.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "beach-gear-activity",
+      "type": "image/png",
+      "width": 480,
+      "height": 320,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-beach-social-food.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "beach-social-food",
+      "type": "image/png",
+      "width": 480,
+      "height": 320,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-sensory-descriptive.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "sensory-descriptive",
+      "type": "image/png",
+      "width": 480,
+      "height": 320,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/meme-cannon/meme-abstract-generic.png",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": "abstract-generic",
+      "type": "image/png",
+      "width": 480,
+      "height": 320,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/recipe-spam/recipe-header-marine-animal.png",
+      "cardIds": [
+        "recipe-spam"
+      ],
+      "category": "marine-animal",
+      "type": "image/png",
+      "width": 640,
+      "height": 360,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/recipe-spam/recipe-header-marine-flora.png",
+      "cardIds": [
+        "recipe-spam"
+      ],
+      "category": "marine-flora",
+      "type": "image/png",
+      "width": 640,
+      "height": 360,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/recipe-spam/recipe-header-water-weather.png",
+      "cardIds": [
+        "recipe-spam"
+      ],
+      "category": "water-weather",
+      "type": "image/png",
+      "width": 640,
+      "height": 360,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/recipe-spam/recipe-header-shore-geology.png",
+      "cardIds": [
+        "recipe-spam"
+      ],
+      "category": "shore-geology",
+      "type": "image/png",
+      "width": 640,
+      "height": 360,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/recipe-spam/recipe-header-places-geography.png",
+      "cardIds": [
+        "recipe-spam"
+      ],
+      "category": "places-geography",
+      "type": "image/png",
+      "width": 640,
+      "height": 360,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/recipe-spam/recipe-header-boats-nautical.png",
+      "cardIds": [
+        "recipe-spam"
+      ],
+      "category": "boats-nautical",
+      "type": "image/png",
+      "width": 640,
+      "height": 360,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/recipe-spam/recipe-header-beach-gear-activity.png",
+      "cardIds": [
+        "recipe-spam"
+      ],
+      "category": "beach-gear-activity",
+      "type": "image/png",
+      "width": 640,
+      "height": 360,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/recipe-spam/recipe-header-beach-social-food.png",
+      "cardIds": [
+        "recipe-spam"
+      ],
+      "category": "beach-social-food",
+      "type": "image/png",
+      "width": 640,
+      "height": 360,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/recipe-spam/recipe-header-sensory-descriptive.png",
+      "cardIds": [
+        "recipe-spam"
+      ],
+      "category": "sensory-descriptive",
+      "type": "image/png",
+      "width": 640,
+      "height": 360,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/recipe-spam/recipe-header-abstract-generic.png",
+      "cardIds": [
+        "recipe-spam"
+      ],
+      "category": "abstract-generic",
+      "type": "image/png",
+      "width": 640,
+      "height": 360,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/recipe-spam/recipe-sidebar-texture.png",
+      "cardIds": [
+        "recipe-spam"
+      ],
+      "category": null,
+      "type": "image/png",
+      "width": 256,
+      "height": 256,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/rejection-letter/letterhead-marine-animal.png",
+      "cardIds": [
+        "rejection-letter"
+      ],
+      "category": "marine-animal",
+      "type": "image/png",
+      "width": 800,
+      "height": 180,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/rejection-letter/letterhead-marine-flora.png",
+      "cardIds": [
+        "rejection-letter"
+      ],
+      "category": "marine-flora",
+      "type": "image/png",
+      "width": 800,
+      "height": 180,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/rejection-letter/letterhead-water-weather.png",
+      "cardIds": [
+        "rejection-letter"
+      ],
+      "category": "water-weather",
+      "type": "image/png",
+      "width": 800,
+      "height": 180,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/rejection-letter/letterhead-shore-geology.png",
+      "cardIds": [
+        "rejection-letter"
+      ],
+      "category": "shore-geology",
+      "type": "image/png",
+      "width": 800,
+      "height": 180,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/rejection-letter/letterhead-places-geography.png",
+      "cardIds": [
+        "rejection-letter"
+      ],
+      "category": "places-geography",
+      "type": "image/png",
+      "width": 800,
+      "height": 180,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/rejection-letter/letterhead-boats-nautical.png",
+      "cardIds": [
+        "rejection-letter"
+      ],
+      "category": "boats-nautical",
+      "type": "image/png",
+      "width": 800,
+      "height": 180,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/rejection-letter/letterhead-beach-gear-activity.png",
+      "cardIds": [
+        "rejection-letter"
+      ],
+      "category": "beach-gear-activity",
+      "type": "image/png",
+      "width": 800,
+      "height": 180,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/rejection-letter/letterhead-beach-social-food.png",
+      "cardIds": [
+        "rejection-letter"
+      ],
+      "category": "beach-social-food",
+      "type": "image/png",
+      "width": 800,
+      "height": 180,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/rejection-letter/letterhead-sensory-descriptive.png",
+      "cardIds": [
+        "rejection-letter"
+      ],
+      "category": "sensory-descriptive",
+      "type": "image/png",
+      "width": 800,
+      "height": 180,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/rejection-letter/letterhead-abstract-generic.png",
+      "cardIds": [
+        "rejection-letter"
+      ],
+      "category": "abstract-generic",
+      "type": "image/png",
+      "width": 800,
+      "height": 180,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/rejection-letter/paper-texture.png",
+      "cardIds": [
+        "rejection-letter"
+      ],
+      "category": null,
+      "type": "image/png",
+      "width": 800,
+      "height": 600,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/bored-distraction/distraction-marine-animal.png",
+      "cardIds": [
+        "bored-distraction"
+      ],
+      "category": "marine-animal",
+      "type": "image/png",
+      "width": 1200,
+      "height": 400,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/bored-distraction/distraction-marine-flora.png",
+      "cardIds": [
+        "bored-distraction"
+      ],
+      "category": "marine-flora",
+      "type": "image/png",
+      "width": 1200,
+      "height": 400,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/bored-distraction/distraction-water-weather.png",
+      "cardIds": [
+        "bored-distraction"
+      ],
+      "category": "water-weather",
+      "type": "image/png",
+      "width": 1200,
+      "height": 400,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/bored-distraction/distraction-shore-geology.png",
+      "cardIds": [
+        "bored-distraction"
+      ],
+      "category": "shore-geology",
+      "type": "image/png",
+      "width": 1200,
+      "height": 400,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/bored-distraction/distraction-places-geography.png",
+      "cardIds": [
+        "bored-distraction"
+      ],
+      "category": "places-geography",
+      "type": "image/png",
+      "width": 1200,
+      "height": 400,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/bored-distraction/distraction-boats-nautical.png",
+      "cardIds": [
+        "bored-distraction"
+      ],
+      "category": "boats-nautical",
+      "type": "image/png",
+      "width": 1200,
+      "height": 400,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/bored-distraction/distraction-beach-gear-activity.png",
+      "cardIds": [
+        "bored-distraction"
+      ],
+      "category": "beach-gear-activity",
+      "type": "image/png",
+      "width": 1200,
+      "height": 400,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/bored-distraction/distraction-beach-social-food.png",
+      "cardIds": [
+        "bored-distraction"
+      ],
+      "category": "beach-social-food",
+      "type": "image/png",
+      "width": 1200,
+      "height": 400,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/bored-distraction/distraction-sensory-descriptive.png",
+      "cardIds": [
+        "bored-distraction"
+      ],
+      "category": "sensory-descriptive",
+      "type": "image/png",
+      "width": 1200,
+      "height": 400,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/bored-distraction/distraction-abstract-generic.png",
+      "cardIds": [
+        "bored-distraction"
+      ],
+      "category": "abstract-generic",
+      "type": "image/png",
+      "width": 1200,
+      "height": 400,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/forced-break/break-icon-generic.png",
+      "cardIds": [
+        "forced-break"
+      ],
+      "category": null,
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/forced-break/break-icon-marine-animal.png",
+      "cardIds": [
+        "forced-break"
+      ],
+      "category": "marine-animal",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/forced-break/break-icon-marine-flora.png",
+      "cardIds": [
+        "forced-break"
+      ],
+      "category": "marine-flora",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/forced-break/break-icon-water-weather.png",
+      "cardIds": [
+        "forced-break"
+      ],
+      "category": "water-weather",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/forced-break/break-icon-shore-geology.png",
+      "cardIds": [
+        "forced-break"
+      ],
+      "category": "shore-geology",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/forced-break/break-icon-places-geography.png",
+      "cardIds": [
+        "forced-break"
+      ],
+      "category": "places-geography",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/forced-break/break-icon-boats-nautical.png",
+      "cardIds": [
+        "forced-break"
+      ],
+      "category": "boats-nautical",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/forced-break/break-icon-beach-gear-activity.png",
+      "cardIds": [
+        "forced-break"
+      ],
+      "category": "beach-gear-activity",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/forced-break/break-icon-beach-social-food.png",
+      "cardIds": [
+        "forced-break"
+      ],
+      "category": "beach-social-food",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/forced-break/break-icon-sensory-descriptive.png",
+      "cardIds": [
+        "forced-break"
+      ],
+      "category": "sensory-descriptive",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/forced-break/break-icon-abstract-generic.png",
+      "cardIds": [
+        "forced-break"
+      ],
+      "category": "abstract-generic",
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/face-swap/face-crab.png",
+      "cardIds": [
+        "face-swap"
+      ],
+      "category": "marine-animal",
+      "type": "image/png",
+      "width": 256,
+      "height": 256,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/face-swap/face-shark.png",
+      "cardIds": [
+        "face-swap"
+      ],
+      "category": "marine-animal",
+      "type": "image/png",
+      "width": 256,
+      "height": 256,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/face-swap/face-sunglasses.png",
+      "cardIds": [
+        "face-swap"
+      ],
+      "category": "beach-gear-activity",
+      "type": "image/png",
+      "width": 256,
+      "height": 256,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/face-swap/face-clownfish.png",
+      "cardIds": [
+        "face-swap"
+      ],
+      "category": "marine-animal",
+      "type": "image/png",
+      "width": 256,
+      "height": 256,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/face-swap/face-surfer-wipeout.png",
+      "cardIds": [
+        "face-swap"
+      ],
+      "category": "beach-gear-activity",
+      "type": "image/png",
+      "width": 256,
+      "height": 256,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/face-swap/face-marine-animal.png",
+      "cardIds": [
+        "face-swap"
+      ],
+      "category": "marine-animal",
+      "type": "image/png",
+      "width": 256,
+      "height": 256,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/face-swap/face-marine-flora.png",
+      "cardIds": [
+        "face-swap"
+      ],
+      "category": "marine-flora",
+      "type": "image/png",
+      "width": 256,
+      "height": 256,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/face-swap/face-water-weather.png",
+      "cardIds": [
+        "face-swap"
+      ],
+      "category": "water-weather",
+      "type": "image/png",
+      "width": 256,
+      "height": 256,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/face-swap/face-shore-geology.png",
+      "cardIds": [
+        "face-swap"
+      ],
+      "category": "shore-geology",
+      "type": "image/png",
+      "width": 256,
+      "height": 256,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/face-swap/face-places-geography.png",
+      "cardIds": [
+        "face-swap"
+      ],
+      "category": "places-geography",
+      "type": "image/png",
+      "width": 256,
+      "height": 256,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/face-swap/face-boats-nautical.png",
+      "cardIds": [
+        "face-swap"
+      ],
+      "category": "boats-nautical",
+      "type": "image/png",
+      "width": 256,
+      "height": 256,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/face-swap/face-beach-gear-activity.png",
+      "cardIds": [
+        "face-swap"
+      ],
+      "category": "beach-gear-activity",
+      "type": "image/png",
+      "width": 256,
+      "height": 256,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/face-swap/face-beach-social-food.png",
+      "cardIds": [
+        "face-swap"
+      ],
+      "category": "beach-social-food",
+      "type": "image/png",
+      "width": 256,
+      "height": 256,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/face-swap/face-sensory-descriptive.png",
+      "cardIds": [
+        "face-swap"
+      ],
+      "category": "sensory-descriptive",
+      "type": "image/png",
+      "width": 256,
+      "height": 256,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/face-swap/face-abstract-generic.png",
+      "cardIds": [
+        "face-swap"
+      ],
+      "category": "abstract-generic",
+      "type": "image/png",
+      "width": 256,
+      "height": 256,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/chess-gambit/chess-board-mini.png",
+      "cardIds": [
+        "chess-gambit"
+      ],
+      "category": null,
+      "type": "image/png",
+      "width": 300,
+      "height": 300,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/chess-gambit/chess-piece-sprites.png",
+      "cardIds": [
+        "chess-gambit"
+      ],
+      "category": null,
+      "type": "image/png",
+      "width": 384,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/critics-rating/star-filled.png",
+      "cardIds": [
+        "critics-rating"
+      ],
+      "category": null,
+      "type": "image/png",
+      "width": 32,
+      "height": 32,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/critics-rating/star-empty.png",
+      "cardIds": [
+        "critics-rating"
+      ],
+      "category": null,
+      "type": "image/png",
+      "width": 32,
+      "height": 32,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/cards/critics-rating/critic-silhouette-marine.png",
+      "cardIds": [
+        "critics-rating"
+      ],
+      "category": null,
+      "type": "image/png",
+      "width": 128,
+      "height": 128,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack"
+    },
+    {
+      "path": "public/assets/audio/playlists/loop-marine-animal.mp3",
+      "cardIds": [
+        "beach-playlist"
+      ],
+      "category": "marine-animal",
+      "type": "audio/mpeg",
+      "width": null,
+      "height": null,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack",
+      "durationSeconds": 15.0
+    },
+    {
+      "path": "public/assets/audio/playlists/loop-marine-flora.mp3",
+      "cardIds": [
+        "beach-playlist"
+      ],
+      "category": "marine-flora",
+      "type": "audio/mpeg",
+      "width": null,
+      "height": null,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack",
+      "durationSeconds": 15.0
+    },
+    {
+      "path": "public/assets/audio/playlists/loop-water-weather.mp3",
+      "cardIds": [
+        "beach-playlist"
+      ],
+      "category": "water-weather",
+      "type": "audio/mpeg",
+      "width": null,
+      "height": null,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack",
+      "durationSeconds": 15.0
+    },
+    {
+      "path": "public/assets/audio/playlists/loop-shore-geology.mp3",
+      "cardIds": [
+        "beach-playlist"
+      ],
+      "category": "shore-geology",
+      "type": "audio/mpeg",
+      "width": null,
+      "height": null,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack",
+      "durationSeconds": 15.0
+    },
+    {
+      "path": "public/assets/audio/playlists/loop-places-geography.mp3",
+      "cardIds": [
+        "beach-playlist"
+      ],
+      "category": "places-geography",
+      "type": "audio/mpeg",
+      "width": null,
+      "height": null,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack",
+      "durationSeconds": 15.0
+    },
+    {
+      "path": "public/assets/audio/playlists/loop-boats-nautical.mp3",
+      "cardIds": [
+        "beach-playlist"
+      ],
+      "category": "boats-nautical",
+      "type": "audio/mpeg",
+      "width": null,
+      "height": null,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack",
+      "durationSeconds": 15.0
+    },
+    {
+      "path": "public/assets/audio/playlists/loop-beach-gear-activity.mp3",
+      "cardIds": [
+        "beach-playlist"
+      ],
+      "category": "beach-gear-activity",
+      "type": "audio/mpeg",
+      "width": null,
+      "height": null,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack",
+      "durationSeconds": 15.0
+    },
+    {
+      "path": "public/assets/audio/playlists/loop-beach-social-food.mp3",
+      "cardIds": [
+        "beach-playlist"
+      ],
+      "category": "beach-social-food",
+      "type": "audio/mpeg",
+      "width": null,
+      "height": null,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack",
+      "durationSeconds": 15.0
+    },
+    {
+      "path": "public/assets/audio/playlists/loop-sensory-descriptive.mp3",
+      "cardIds": [
+        "beach-playlist"
+      ],
+      "category": "sensory-descriptive",
+      "type": "audio/mpeg",
+      "width": null,
+      "height": null,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack",
+      "durationSeconds": 15.0
+    },
+    {
+      "path": "public/assets/audio/playlists/loop-abstract-generic.mp3",
+      "cardIds": [
+        "beach-playlist"
+      ],
+      "category": "abstract-generic",
+      "type": "audio/mpeg",
+      "width": null,
+      "height": null,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack",
+      "durationSeconds": 15.0
+    },
+    {
+      "path": "public/assets/audio/sfx/sfx-meme-cannon.mp3",
+      "cardIds": [
+        "meme-cannon"
+      ],
+      "category": null,
+      "type": "audio/mpeg",
+      "width": null,
+      "height": null,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack",
+      "durationSeconds": 0.49
+    },
+    {
+      "path": "public/assets/audio/sfx/sfx-brainrot.mp3",
+      "cardIds": [
+        "brainrot"
+      ],
+      "category": null,
+      "type": "audio/mpeg",
+      "width": null,
+      "height": null,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack",
+      "durationSeconds": 0.45
+    },
+    {
+      "path": "public/assets/audio/sfx/sfx-status-dog.mp3",
+      "cardIds": [
+        "status-dog"
+      ],
+      "category": null,
+      "type": "audio/mpeg",
+      "width": null,
+      "height": null,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack",
+      "durationSeconds": 0.26
+    },
+    {
+      "path": "public/assets/audio/sfx/sfx-forced-break.mp3",
+      "cardIds": [
+        "forced-break"
+      ],
+      "category": null,
+      "type": "audio/mpeg",
+      "width": null,
+      "height": null,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack",
+      "durationSeconds": 1.25
+    },
+    {
+      "path": "public/assets/audio/sfx/sfx-recipe-spam.mp3",
+      "cardIds": [
+        "recipe-spam"
+      ],
+      "category": null,
+      "type": "audio/mpeg",
+      "width": null,
+      "height": null,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack",
+      "durationSeconds": 1.3
+    },
+    {
+      "path": "public/assets/audio/sfx/sfx-rejection-letter.mp3",
+      "cardIds": [
+        "rejection-letter"
+      ],
+      "category": null,
+      "type": "audio/mpeg",
+      "width": null,
+      "height": null,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack",
+      "durationSeconds": 0.9
+    },
+    {
+      "path": "public/assets/audio/sfx/sfx-dice-roll.mp3",
+      "cardIds": [
+        "dice-roll"
+      ],
+      "category": null,
+      "type": "audio/mpeg",
+      "width": null,
+      "height": null,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack",
+      "durationSeconds": 1.15
+    },
+    {
+      "path": "public/assets/audio/sfx/sfx-critics-rating.mp3",
+      "cardIds": [
+        "critics-rating"
+      ],
+      "category": null,
+      "type": "audio/mpeg",
+      "width": null,
+      "height": null,
+      "source": "Generated in ChatGPT via local Python vector drawing and audio synthesis script",
+      "license": "User-owned AI generated",
+      "attribution": "Generated for Ben Zhou / Tidal Wordle asset pack",
+      "durationSeconds": 0.5
+    }
+  ],
+  "cardsNoAssets": [
+    {
+      "cardId": "playful-insult",
+      "assets": []
+    },
+    {
+      "cardId": "letter-reveal",
+      "assets": []
+    },
+    {
+      "cardId": "cosmic-reset",
+      "assets": []
+    },
+    {
+      "cardId": "marine-hint",
+      "assets": []
+    },
+    {
+      "cardId": "tide-whisper",
+      "assets": []
+    },
+    {
+      "cardId": "forecast",
+      "assets": []
+    },
+    {
+      "cardId": "related-current",
+      "assets": []
+    },
+    {
+      "cardId": "resume-polish",
+      "assets": []
+    }
+  ],
+  "logicOnlyCardsWithOptionalAssets": [
+    {
+      "cardId": "dice-roll",
+      "requiredAssets": [],
+      "optionalAssets": [
+        "public/assets/audio/sfx/sfx-dice-roll.mp3"
+      ]
+    }
+  ],
+  "missing": []
+}

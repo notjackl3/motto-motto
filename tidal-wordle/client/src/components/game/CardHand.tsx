@@ -1,40 +1,28 @@
-import { useEffect, useRef } from 'react';
 import { useGameStore } from '../../stores/gameStore';
 import CardRenderer from '../cards/CardRenderer';
-import { playSfx } from '../../lib/audio';
 
 export default function CardHand() {
-  const hand = useGameStore((s) => s.myHand);
-  const knownIdsRef = useRef<Set<string>>(new Set());
-
-  // SFX + animation trigger: detect freshly drawn cards.
-  useEffect(() => {
-    const known = knownIdsRef.current;
-    const newOnes = hand.filter((c) => !known.has(c.id));
-    if (newOnes.length > 0 && known.size > 0) {
-      playSfx('cardDraw');
-    }
-    knownIdsRef.current = new Set(hand.map((c) => c.id));
-  }, [hand]);
+  const history = useGameStore((s) => s.cardDrawHistory);
+  const showCardDetailPopup = useGameStore((s) => s.showCardDetailPopup);
 
   return (
-    <div className="backdrop-blur-sm bg-black/40 rounded-xl p-3 border border-white/10 shadow-lg">
-      <div className="flex items-baseline justify-between mb-2">
-        <div className="text-xs uppercase tracking-widest opacity-70">Your hand</div>
-        <div className="text-[10px] opacity-50">
-          {hand.length} card{hand.length === 1 ? '' : 's'}
-        </div>
+    <div className="bg-black/50 rounded-lg px-3 py-2 border border-white/10">
+      <div className="text-xs uppercase opacity-70 mb-2">
+        Card history (last 5 — tap a card for details)
       </div>
-      <div className="flex gap-3 overflow-x-auto pb-1">
-        {hand.length === 0 ? (
-          <div className="text-sm opacity-60 italic px-2 py-3">
-            No cards in hand yet.
+      <div className="flex gap-2 overflow-x-auto overflow-y-visible pb-1 min-h-[5.5rem] items-center">
+        {history.length === 0 ? (
+          <div className="text-sm opacity-60 italic py-4">
+            Cards appear after your first guess
           </div>
         ) : (
-          hand.map((card) => (
-            <div key={card.id} className="card-deal flex-shrink-0">
-              <CardRenderer card={card} />
-            </div>
+          history.map((card, i) => (
+            <CardRenderer
+              key={`${card.id}-${i}`}
+              card={card}
+              compact
+              onClick={() => showCardDetailPopup(card, 'history')}
+            />
           ))
         )}
       </div>

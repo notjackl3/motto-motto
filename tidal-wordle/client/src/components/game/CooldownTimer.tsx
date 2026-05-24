@@ -1,58 +1,98 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useGameStore } from '../../stores/gameStore';
-
-// Match the server-side GUESS_COOLDOWN_MS for the progress denominator.
-const COOLDOWN_MS = 3000;
-
-const RADIUS = 36;
-const CIRC = 2 * Math.PI * RADIUS;
+import StickerImage from '../cards/StickerImage';
 
 export default function CooldownTimer() {
   const endsAt = useGameStore((s) => s.myCooldownEndsAt);
+  const cooldownFrozen = useGameStore((s) => s.cooldownFrozen);
+  const forcedBreakLabel = useGameStore((s) => s.forcedBreakLabel);
+  const forcedBreakIconUrl = useGameStore((s) => s.forcedBreakIconUrl);
+  const forcedBreakIconFallbackUrl = useGameStore((s) => s.forcedBreakIconFallbackUrl);
+  const forcedBreakPending = useGameStore((s) => s.forcedBreakPending);
+  const myGuesses = useGameStore((s) => s.myGuesses);
+  const statusDogEffect = useGameStore((s) =>
+    s.activeEffects.find(
+      (e) => e.cardId === 'status-dog' && e.target === 'self' && e.expiresAt
+    )
+  );
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 100);
+    const t = setInterval(() => setNow(Date.now()), 250);
     return () => clearInterval(t);
   }, []);
 
-  const remaining = endsAt ? Math.max(0, endsAt - now) : 0;
-  const seconds = remaining / 1000;
-  const progress = remaining > 0 ? Math.min(1, remaining / COOLDOWN_MS) : 0;
-  const ready = remaining === 0;
+  const guessCooldownRemaining =
+    endsAt && !cooldownFrozen ? Math.max(0, endsAt - now) : 0;
+  const guessSeconds = Math.ceil(guessCooldownRemaining / 1000);
+
+  const colorRevealEndsAt = useMemo(() => {
+    let latest: number | null = null;
+    for (const guess of myGuesses) {
+      if (guess.colorsRevealAt && guess.colorsRevealAt > now) {
+        if (latest === null || guess.colorsRevealAt > latest) {
+          latest = guess.colorsRevealAt;
+        }
+      }
+    }
+    return latest;
+  }, [myGuesses, now]);
+
+  const colorRevealRemaining = colorRevealEndsAt
+    ? Math.max(0, colorRevealEndsAt - now)
+    : 0;
+  const colorRevealSeconds = Math.ceil(colorRevealRemaining / 1000);
+
+  const showColorReveal =
+    Boolean(forcedBreakLabel) &&
+    (forcedBreakPending || colorRevealSeconds > 0);
+
+  const statusDogRemaining = statusDogEffect?.expiresAt
+    ? Math.max(0, statusDogEffect.expiresAt - now)
+    : 0;
+  const statusDogSeconds = Math.ceil(statusDogRemaining / 1000);
 
   return (
-    <div className="relative w-28 h-28 select-none">
-      <svg viewBox="0 0 90 90" className="absolute inset-0 -rotate-90">
-        <circle
-          cx="45"
-          cy="45"
-          r={RADIUS}
-          stroke="rgba(255,255,255,0.12)"
-          strokeWidth="6"
-          fill="none"
-        />
-        <circle
-          cx="45"
-          cy="45"
-          r={RADIUS}
-          stroke={ready ? '#9ad4d6' : '#f4e1c1'}
-          strokeWidth="6"
-          fill="none"
-          strokeLinecap="round"
-          strokeDasharray={CIRC}
-          strokeDashoffset={CIRC * (1 - progress)}
-          style={{ transition: 'stroke-dashoffset 120ms linear, stroke 300ms ease' }}
-        />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <div className="text-[10px] uppercase tracking-widest opacity-70">
-          Cooldown
-        </div>
-        <div className={`text-2xl font-bold ${ready ? 'text-seafoam' : 'text-sand'}`}>
-          {ready ? 'Ready' : `${seconds.toFixed(1)}s`}
+    <div className="bg-black/40 rounded-lg p-3 text-center space-y-3">
+      <div>
+        <div className="text-xs uppercase opacity-70">Guess cooldown</div>
+        <div className="text-2xl font-bold">
+          {cooldownFrozen ? 'Paused' : guessSeconds > 0 ? `${guessSeconds}s` : 'Ready'}
         </div>
       </div>
+      {showColorReveal && (
+        <div className="border-t border-white/10 pt-2">
+          <div className="text-xs uppercase opacity-70">Color reveal</div>
+          <div className="text-xl font-bold text-seafoam">
+            {forcedBreakPending && colorRevealSeconds === 0
+              ? 'Next guess'
+              : `${colorRevealSeconds}s`}
+          </div>
+          {forcedBreakLabel && (
+            <div className="flex flex-col items-center gap-1 mt-1">
+              {forcedBreakIconUrl && (
+                <StickerImage
+                  src={forcedBreakIconUrl}
+                  fallbackSrc={forcedBreakIconFallbackUrl ?? undefined}
+                  alt=""
+                  size="sm"
+                  className="w-8 h-8"
+                />
+              )}
+              <p className="text-xs text-seafoam/90 leading-snug">{forcedBreakLabel}</p>
+            </div>
+          )}
+        </div>
+      )}
+      {statusDogSeconds > 0 && (
+        <div className="border-t border-white/10 pt-2">
+          <div className="text-xs uppercase opacity-70">Status Dog</div>
+          <div className="text-xl font-bold text-amber-300">{statusDogSeconds}s</div>
+          <p className="text-xs mt-1 text-amber-200/80 leading-snug">
+            One tile is covered on your board
+          </p>
+        </div>
+      )}
     </div>
   );
 }
